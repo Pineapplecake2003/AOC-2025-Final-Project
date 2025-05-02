@@ -96,12 +96,15 @@ run:
 .PHONY: array% pe%
 
 pe%:
+	mkdir -p wave
 	make run PE=$*
 
 array%:
+	mkdir -p wave
 	make run ARRAY=$*
 
 ppu%:
+	mkdir -p wave
 	make run PPU=$*
 
 
