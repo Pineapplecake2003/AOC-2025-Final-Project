@@ -124,7 +124,7 @@ void transaction(VPE* dut, int& send_data_type, Index* index, const vector<vecto
     switch (send_data_type) {
         case SEND_CONFIG:
             set_signal(dut, dut->PE_en, 1);
-            set_signal(dut, dut->i_config, ((FILTER_RS << 10) + ((OFMAP_CH - 1) << 7) + ((OFMAP_COL - 1) << 2) + (I_CH - 1)));            send_data_type = SEND_FILT;
+            set_signal(dut, dut->i_config, (((FILTER_RS - 1) << 10) + ((OFMAP_CH - 1) << 7) + ((OFMAP_COL - 1) << 2) + (I_CH - 1)));            send_data_type = SEND_FILT;
             break;
         case SEND_FILT:
             set_signal(dut, dut->PE_en, 0);
