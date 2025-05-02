@@ -61,9 +61,6 @@ logic [`IFMAP_INDEX_BIT - 1:0]  conv_ifmap_cnt;
 logic [`FILTER_INDEX_BIT - 1:0] conv_filter_cnt;
 logic [`OFMAP_INDEX_BIT - 1:0]  conv_result_cnt;
 
-// push counter
-logic [`IFMAP_INDEX_BIT - 1: 0] push_ifmap_cnt;
-
 //split filter & ifmap 
 logic [`FILTER_SIZE - 1:0] split_filter[0:3];
 logic [`IFMAP_SIZE - 1:0] split_ifmap[0:3];
@@ -93,8 +90,6 @@ always @(posedge clk or posedge rst) begin
     conv_ifmap_cnt <= `IFMAP_INDEX_BIT'b0;
 		conv_filter_cnt <= `FILTER_INDEX_BIT'b0;
 		conv_result_cnt <= `OFMAP_INDEX_BIT'b0;
-
-		push_ifmap_cnt <= `IFMAP_INDEX_BIT'b0;
 	end
 	else begin
 		case (state)
@@ -165,7 +160,7 @@ always @(posedge clk or posedge rst) begin
 				end
 				if(next_state == READ_IFMAP)begin
 					// push ifmap
-					for (int i = 0; i < 12; i++) 
+					for (i = 0; i < 12; i++) 
 						ifmap_spad[i] <= (i[2:0] + shift < 12) ? 
 							ifmap_spad[i[2:0] + shift] : 
 							`IFMAP_SIZE'b0;
@@ -176,8 +171,6 @@ always @(posedge clk or posedge rst) begin
 					conv_filter_cnt <= `FILTER_INDEX_BIT'b0;
         	//reset psum_cnt
 					psum_spad_cnt <= `OFMAP_INDEX_BIT'b0;
-					//reset push counter
-					push_ifmap_cnt <= `IFMAP_INDEX_BIT'b0;
 					// ifmap pointer decrease by q
 					ifmap_spad_cnt <= ifmap_spad_cnt - {1'b0, q};
 				end
@@ -283,7 +276,12 @@ always @(*) begin
 		end
 		WRITE_OPSUM:begin
       if(({1'b0, conv_result_cnt} == (p - 3'b1)) && opsum_ready)begin
-        next_state = READ_IFMAP;
+        if (output_col_cnt == F) begin
+					next_state = IDLE;
+				end
+				else begin
+					next_state = READ_IFMAP;
+				end
       end
       else begin
         next_state = WRITE_OPSUM;
