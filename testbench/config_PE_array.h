@@ -38,9 +38,9 @@ const int e = 8;
 const int IFMAP_COL = 18;
 const int OFMAP_COL = IFMAP_COL - FILT_ROW + 1;
 const int LN_CONFIG = 27;
-
+const int FILTER_RS = 3;
 const unsigned long long PE_EN = (1ULL << (PE_ARRAY_H * PE_ARRAY_W)) - 1;
-const int PE_CONFIG = ((p - 1) << 7) + ((OFMAP_COL - 1) << 2) + (q - 1);
+const int PE_CONFIG = ((FILTER_RS - 1) << 10) + ((p - 1) << 7) + ((OFMAP_COL - 1) << 2) + (q - 1);
 
 #elif (TBA == 1)
 const string DATA_SRC = "./testbench/PE_array_test_data/tb1/";
@@ -65,8 +65,9 @@ const int e = 8;
 const int IFMAP_COL = 34;
 const int OFMAP_COL = IFMAP_COL - FILT_ROW + 1;
 const int LN_CONFIG = 27;
+const int FILTER_RS = 3;
 const unsigned long long PE_EN = (1ULL << (PE_ARRAY_H * PE_ARRAY_W)) - 1;
-const int PE_CONFIG = ((p - 1) << 7) + ((OFMAP_COL - 1) << 2) + (q - 1);
+const int PE_CONFIG = ((FILTER_RS - 1) << 10) + ((p - 1) << 7) + ((OFMAP_COL - 1) << 2) + (q - 1);
 
 #elif (TBA == 2)
 const string DATA_SRC = "./testbench/PE_array_test_data/tb2/";
@@ -91,8 +92,9 @@ const int e = 8;
 const int IFMAP_COL = 18;
 const int OFMAP_COL = IFMAP_COL - FILT_ROW + 1;
 const int LN_CONFIG = 31;
+const int FILTER_RS = 3;
 const unsigned long long PE_EN = (1ULL << (PE_ARRAY_H * PE_ARRAY_W)) - 1;
-const int PE_CONFIG = ((p - 1) << 7) + ((OFMAP_COL - 1) << 2) + (q - 1);
+const int PE_CONFIG = ((FILTER_RS - 1) << 10) + ((p - 1) << 7) + ((OFMAP_COL - 1) << 2) + (q - 1);
 
 #elif (TBA == 3)
 const string DATA_SRC = "./testbench/PE_array_test_data/tb3/";
@@ -117,8 +119,9 @@ const int e = 4;
 const int IFMAP_COL = 18;
 const int OFMAP_COL = IFMAP_COL - FILT_ROW + 1;
 const int LN_CONFIG = 31;
+const int FILTER_RS = 3;
 const unsigned long long PE_EN = (1ULL << (PE_ARRAY_H * PE_ARRAY_W)) - 1;
-const int PE_CONFIG = ((p - 1) << 7) + ((OFMAP_COL - 1) << 2) + (q - 1);
+const int PE_CONFIG = ((FILTER_RS - 1) << 10) + ((p - 1) << 7) + ((OFMAP_COL - 1) << 2) + (q - 1);
 
 #elif (TBA == 4)
 const string DATA_SRC = "./testbench/PE_array_test_data/tb4/";
@@ -143,8 +146,9 @@ const int e = 4;
 const int IFMAP_COL = 18;
 const int OFMAP_COL = IFMAP_COL - FILT_ROW + 1;
 const int LN_CONFIG = 27;
+const int FILTER_RS = 3;
 const unsigned long long PE_EN = (1ULL << (PE_ARRAY_H * PE_ARRAY_W)) - 1;
-const int PE_CONFIG = ((p - 1) << 7) + ((OFMAP_COL - 1) << 2) + (q - 1);
+const int PE_CONFIG = ((FILTER_RS - 1) << 10) + ((p - 1) << 7) + ((OFMAP_COL - 1) << 2) + (q - 1);
 
 #elif (TBA == 5)
 const string DATA_SRC = "./testbench/PE_array_test_data/tb5/";
@@ -169,8 +173,9 @@ const int e = 16;
 const int IFMAP_COL = 18;
 const int OFMAP_COL = IFMAP_COL - FILT_ROW + 1;
 const int LN_CONFIG = 27;
+const int FILTER_RS = 3;
 const unsigned long long PE_EN = (1ULL << (PE_ARRAY_H * PE_ARRAY_W)) - 1;
-const int PE_CONFIG = ((p - 1) << 7) + ((OFMAP_COL - 1) << 2) + (q - 1);
+const int PE_CONFIG = ((FILTER_RS - 1) << 10) + ((p - 1) << 7) + ((OFMAP_COL - 1) << 2) + (q - 1);
 
 #endif
 
