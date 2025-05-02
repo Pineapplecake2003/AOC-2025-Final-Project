@@ -1,21 +1,21 @@
 `include "define.svh"
 module PE (
-  input clk,
-  input rst,
-  input PE_en,
-  input [`CONFIG_SIZE-1:0] i_config,
-  input [`DATA_BITS-1:0] ifmap,
-  input [`DATA_BITS-1:0] filter,
-  input [`DATA_BITS-1:0] ipsum,
-  input ifmap_valid,
-  input filter_valid,
-  input ipsum_valid,
-  input opsum_ready,
-  output logic [`DATA_BITS-1:0] opsum,
-  output logic ifmap_ready,
-  output logic filter_ready,
-  output logic ipsum_ready,
-  output logic opsum_valid
+	input clk,
+	input rst,
+	input PE_en,
+	input [`CONFIG_SIZE-1:0] i_config,
+	input [`DATA_BITS-1:0] ifmap,
+	input [`DATA_BITS-1:0] filter,
+	input [`DATA_BITS-1:0] ipsum,
+	input ifmap_valid,
+	input filter_valid,
+	input ipsum_valid,
+	input opsum_ready,
+	output logic [`DATA_BITS-1:0] opsum,
+	output logic ifmap_ready,
+	output logic filter_ready,
+	output logic ipsum_ready,
+	output logic opsum_valid
 );
 integer i;
 
@@ -35,15 +35,15 @@ always_comb begin
 end
 
 always @(posedge clk or posedge rst) begin
-  if(rst)begin
-    i_config_reg <= `CONFIG_SIZE'b0;
-  end
-  else if (PE_en)begin
+	if(rst)begin
+		i_config_reg <= `CONFIG_SIZE'b0;
+	end
+	else if (PE_en)begin
 		i_config_reg <= i_config;
-  end
-  else begin
-    i_config_reg <= i_config_reg;
-  end
+	end
+	else begin
+		i_config_reg <= i_config_reg;
+	end
 end
 
 //spad
@@ -140,23 +140,23 @@ always @(posedge clk or posedge rst) begin
 				end
 			end
 			CONV:begin
-        //MAC
-        psum_spad[conv_result_cnt] <= psum_spad[conv_result_cnt] + (
+    	  //MAC
+				psum_spad[conv_result_cnt] <= psum_spad[conv_result_cnt] + (
 					filter_spad[conv_filter_cnt] * ifmap_spad[conv_ifmap_cnt]
 				);
 				// filter, ifmap, and psum pointer update.
-        conv_filter_cnt <= conv_filter_cnt + `FILTER_INDEX_BIT'b1;
-        if(conv_ifmap_cnt == ifmap_spad_cnt - `IFMAP_INDEX_BIT'b1)begin
-          conv_ifmap_cnt <= `IFMAP_INDEX_BIT'b0;
-          conv_result_cnt <= conv_result_cnt + `OFMAP_INDEX_BIT'b1;
-        end
-        else begin
-          conv_ifmap_cnt <= conv_ifmap_cnt + `IFMAP_INDEX_BIT'b1;
-        end
-      end
-      WRITE_OPSUM:begin
-        if(opsum_ready)begin
-          conv_result_cnt <= conv_result_cnt + `OFMAP_INDEX_BIT'b1;
+					conv_filter_cnt <= conv_filter_cnt + `FILTER_INDEX_BIT'b1;
+					if(conv_ifmap_cnt == ifmap_spad_cnt - `IFMAP_INDEX_BIT'b1)begin
+						conv_ifmap_cnt <= `IFMAP_INDEX_BIT'b0;
+						conv_result_cnt <= conv_result_cnt + `OFMAP_INDEX_BIT'b1;
+					end
+					else begin
+						conv_ifmap_cnt <= conv_ifmap_cnt + `IFMAP_INDEX_BIT'b1;
+					end
+				end
+				WRITE_OPSUM:begin
+				if(opsum_ready)begin
+					conv_result_cnt <= conv_result_cnt + `OFMAP_INDEX_BIT'b1;
 				end
 				if(next_state == READ_IFMAP)begin
 					// push ifmap
@@ -169,12 +169,12 @@ always @(posedge clk or posedge rst) begin
 					//conv_result_cnt will overflow to 0 don't need to reset.
 					conv_ifmap_cnt <= `IFMAP_INDEX_BIT'b0;
 					conv_filter_cnt <= `FILTER_INDEX_BIT'b0;
-        	//reset psum_cnt
+    	  	//reset psum_cnt
 					psum_spad_cnt <= `OFMAP_INDEX_BIT'b0;
 					// ifmap pointer decrease by q
 					ifmap_spad_cnt <= ifmap_spad_cnt - {1'b0, q};
 				end
-      end
+			end
 			default: begin
 				for (i = 0;i <`IFMAP_SPAD_LEN ; i = i + 1) begin
 					ifmap_spad[i] <= `IFMAP_SIZE'b0;
@@ -257,36 +257,36 @@ always @(*) begin
 			end
 		end
 		READ_IPSUM: begin
-      if(({1'b0, psum_spad_cnt} == (p - 3'b1)) && ipsum_valid)begin
-        //readed all ipsum
-        next_state = CONV;
-      end
-      else begin
-        // not yet done
-        next_state = READ_IPSUM;
-      end
+			if(({1'b0, psum_spad_cnt} == (p - 3'b1)) && ipsum_valid)begin
+			  //readed all ipsum
+				next_state = CONV;
+			end
+			else begin
+			  // not yet done
+				next_state = READ_IPSUM;
+			end
 		end
 		CONV:begin
-      if(conv_filter_cnt == filter_spad_cnt - `FILTER_INDEX_BIT'b1)begin
-        next_state = WRITE_OPSUM;
-      end
-      else begin
+			if(conv_filter_cnt == filter_spad_cnt - `FILTER_INDEX_BIT'b1)begin
+				next_state = WRITE_OPSUM;
+			end
+			else begin
 				next_state = CONV;
-      end
+			end
 		end
 		WRITE_OPSUM:begin
-      if(({1'b0, conv_result_cnt} == (p - 3'b1)) && opsum_ready)begin
-        if (output_col_cnt == F) begin
+			if(({1'b0, conv_result_cnt} == (p - 3'b1)) && opsum_ready)begin
+				if (output_col_cnt == F) begin
 					next_state = IDLE;
 				end
 				else begin
 					next_state = READ_IFMAP;
 				end
-      end
-      else begin
-        next_state = WRITE_OPSUM;
-      end
-    end
+			end
+			else begin
+				next_state = WRITE_OPSUM;
+			end
+		end
 		default: next_state = IDLE;
 	endcase
 end
@@ -300,7 +300,6 @@ always_comb begin
 	ifmap_ready = (state == READ_IFMAP) ? 1'b1 : 1'b0;
 	ipsum_ready = (state == READ_IPSUM) ? 1'b1 : 1'b0;
 	opsum_valid = (state == WRITE_OPSUM)? 1'b1: 1'b0;
-
 end
 
 
