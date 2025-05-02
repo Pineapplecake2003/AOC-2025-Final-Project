@@ -26,12 +26,29 @@ logic  [2:0] p; // output channel
 logic  [4:0] F; // output column
 logic  [2:0] q; // input channel
 logic  [1:0] filter_rs;
-always_comb begin
-	filter_rs = i_config_reg[11:10];
-	mode = i_config_reg[9];
-	p = {1'b0, i_config_reg[8:7]} + 3'b1;
-	F = i_config_reg[6:2];
-	q = {1'b0, i_config_reg[1:0]} + 3'b1;
+
+always @(posedge clk or posedge rst) begin
+	if(rst)begin
+		filter_rs 	<= 2'b0;
+		mode		<= 1'b0;
+		p 			<= 3'b0;
+		F 			<= 5'b0;
+		q 			<= 3'b0; 
+	end
+	else if(PE_en)begin
+		filter_rs 	<= i_config[11:10] + 2'b1;
+		mode		<= i_config[9];
+		p 			<= {1'b0, i_config_reg[8:7]} + 3'b1;
+		F 			<= i_config_reg[6:2];
+		q 			<= {1'b0, i_config_reg[1:0]} + 3'b1; 
+	end
+	else begin
+		filter_rs 	<= filter_rs; 	
+		mode		<= mode;		
+		p 			<= p; 			
+		F 			<= F; 			
+		q 			<= q; 			
+	end
 end
 
 always @(posedge clk or posedge rst) begin

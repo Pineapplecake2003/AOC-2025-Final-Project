@@ -30,7 +30,7 @@ VERILATOR_FLAGS += --trace
 VERILATOR_FLAGS += --trace-max-array 1024
 
 # Run Verilator in debug mode
-VERILATOR_FLAGS += --debug
+# VERILATOR_FLAGS += --debug
 
 LOG_FILE ?= logs/terminal_text.log
 POST_PROCESS :=
