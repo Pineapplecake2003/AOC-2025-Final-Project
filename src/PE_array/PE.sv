@@ -87,7 +87,7 @@ always @(posedge clk or posedge rst) begin
 		filter_spad_cnt <= `FILTER_INDEX_BIT'b0;
 		psum_spad_cnt <= `OFMAP_INDEX_BIT'b0;
     
-    conv_ifmap_cnt <= `IFMAP_INDEX_BIT'b0;
+		conv_ifmap_cnt <= `IFMAP_INDEX_BIT'b0;
 		conv_filter_cnt <= `FILTER_INDEX_BIT'b0;
 		conv_result_cnt <= `OFMAP_INDEX_BIT'b0;
 	end
@@ -140,40 +140,39 @@ always @(posedge clk or posedge rst) begin
 				end
 			end
 			CONV:begin
-    	  //MAC
+			//MAC
 				psum_spad[conv_result_cnt] <= psum_spad[conv_result_cnt] + (
 					filter_spad[conv_filter_cnt] * ifmap_spad[conv_ifmap_cnt]
 				);
 				// filter, ifmap, and psum pointer update.
-					conv_filter_cnt <= conv_filter_cnt + `FILTER_INDEX_BIT'b1;
-					if(conv_ifmap_cnt == ifmap_spad_cnt - `IFMAP_INDEX_BIT'b1)begin
-						conv_ifmap_cnt <= `IFMAP_INDEX_BIT'b0;
-						conv_result_cnt <= conv_result_cnt + `OFMAP_INDEX_BIT'b1;
-					end
-					else begin
-						conv_ifmap_cnt <= conv_ifmap_cnt + `IFMAP_INDEX_BIT'b1;
-					end
-				end
-				WRITE_OPSUM:begin
-				if(opsum_ready)begin
+				conv_filter_cnt <= conv_filter_cnt + `FILTER_INDEX_BIT'b1;
+				if(conv_ifmap_cnt == ifmap_spad_cnt - `IFMAP_INDEX_BIT'b1)begin
+					conv_ifmap_cnt <= `IFMAP_INDEX_BIT'b0;
 					conv_result_cnt <= conv_result_cnt + `OFMAP_INDEX_BIT'b1;
 				end
-				if(next_state == READ_IFMAP)begin
-					// push ifmap
-					for (i = 0; i < 12; i++) 
-						ifmap_spad[i] <= (i[2:0] + shift < 12) ? 
-							ifmap_spad[i[2:0] + shift] : 
-							`IFMAP_SIZE'b0;
-
-					//reset conv cnt
-					//conv_result_cnt will overflow to 0 don't need to reset.
-					conv_ifmap_cnt <= `IFMAP_INDEX_BIT'b0;
-					conv_filter_cnt <= `FILTER_INDEX_BIT'b0;
-    	  	//reset psum_cnt
-					psum_spad_cnt <= `OFMAP_INDEX_BIT'b0;
-					// ifmap pointer decrease by q
-					ifmap_spad_cnt <= ifmap_spad_cnt - {1'b0, q};
+				else begin
+					conv_ifmap_cnt <= conv_ifmap_cnt + `IFMAP_INDEX_BIT'b1;
 				end
+			end
+			WRITE_OPSUM:begin
+			if(opsum_ready)begin
+				conv_result_cnt <= conv_result_cnt + `OFMAP_INDEX_BIT'b1;
+			end
+			if(next_state == READ_IFMAP)begin
+				// push ifmap
+				for (i = 0; i < 12; i++) 
+					ifmap_spad[i] <= (i[2:0] + shift < 12) ? 
+						ifmap_spad[i[2:0] + shift] : 
+						`IFMAP_SIZE'b0;
+				//reset conv cnt
+				//conv_result_cnt will overflow to 0 don't need to reset.
+				conv_ifmap_cnt <= `IFMAP_INDEX_BIT'b0;
+				conv_filter_cnt <= `FILTER_INDEX_BIT'b0;
+				//reset psum_cnt
+				psum_spad_cnt <= `OFMAP_INDEX_BIT'b0;
+				// ifmap pointer decrease by q
+				ifmap_spad_cnt <= ifmap_spad_cnt - {1'b0, q};
+			end
 			end
 			default: begin
 				for (i = 0;i <`IFMAP_SPAD_LEN ; i = i + 1) begin
@@ -212,9 +211,9 @@ reg [2:0] state;
 reg [2:0] next_state;
 parameter IDLE          	= 3'd0;
 parameter READ_FILTER   	= 3'd1;
-parameter READ_IFMAP			= 3'd2;
+parameter READ_IFMAP		= 3'd2;
 parameter READ_IPSUM    	= 3'd3;
-parameter CONV						= 3'd4;
+parameter CONV				= 3'd4;
 parameter WRITE_OPSUM   	= 3'd5;
 
 always @(posedge clk or posedge rst) begin
@@ -258,11 +257,11 @@ always @(*) begin
 		end
 		READ_IPSUM: begin
 			if(({1'b0, psum_spad_cnt} == (p - 3'b1)) && ipsum_valid)begin
-			  //readed all ipsum
+				//readed all ipsum
 				next_state = CONV;
 			end
 			else begin
-			  // not yet done
+				// not yet done
 				next_state = READ_IPSUM;
 			end
 		end
