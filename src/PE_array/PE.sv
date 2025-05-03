@@ -11,22 +11,22 @@ module PE (
 	input filter_valid,
 	input ipsum_valid,
 	input opsum_ready,
-	output logic [`DATA_BITS-1:0] opsum,
-	output logic ifmap_ready,
-	output logic filter_ready,
-	output logic ipsum_ready,
-	output logic opsum_valid
+	output reg [`DATA_BITS-1:0] opsum,
+	output reg ifmap_ready,
+	output reg filter_ready,
+	output reg ipsum_ready,
+	output reg opsum_valid
 );
 integer i;
 
 // i_config
-logic [`CONFIG_SIZE-1:0] i_config_reg;
-logic  mode;
-logic  [2:0] p; // output channel
-logic  [4:0] F; // output column
-logic  [2:0] q; // input channel
-logic  [1:0] filter_rs;
-always_comb begin
+reg [`CONFIG_SIZE-1:0] i_config_reg;
+reg  mode;
+reg  [2:0] p; // output channel
+reg  [4:0] F; // output column
+reg  [2:0] q; // input channel
+reg  [1:0] filter_rs;
+always@(*) begin
 	filter_rs = i_config_reg[11:10] + 2'b1;
 	mode = i_config_reg[9];
 	p = {1'b0, i_config_reg[8:7]} + 3'b1;
@@ -47,23 +47,23 @@ always @(posedge clk or posedge rst) begin
 end
 
 //spad
-logic signed [`IFMAP_SIZE - 1:0] ifmap_spad  [0:`IFMAP_SPAD_LEN - 1];
-logic signed [`FILTER_SIZE - 1:0]filter_spad [0:`FILTER_SPAD_LEN - 1];
-logic signed [`PSUM_SIZE - 1:0]	 psum_spad [0:`OFMAP_SPAD_LEN - 1];
+reg signed [`IFMAP_SIZE - 1:0] ifmap_spad  [0:`IFMAP_SPAD_LEN - 1];
+reg signed [`FILTER_SIZE - 1:0]filter_spad [0:`FILTER_SPAD_LEN - 1];
+reg signed [`PSUM_SIZE - 1:0]	 psum_spad [0:`OFMAP_SPAD_LEN - 1];
 
 //spad counter
-logic [`IFMAP_INDEX_BIT - 1:0]  ifmap_spad_cnt;
-logic [`FILTER_INDEX_BIT - 1:0] filter_spad_cnt;
-logic [`OFMAP_INDEX_BIT - 1:0]  psum_spad_cnt;
+reg [`IFMAP_INDEX_BIT - 1:0]  ifmap_spad_cnt;
+reg [`FILTER_INDEX_BIT - 1:0] filter_spad_cnt;
+reg [`OFMAP_INDEX_BIT - 1:0]  psum_spad_cnt;
 
 // conv counter
-logic [`IFMAP_INDEX_BIT - 1:0]  conv_ifmap_cnt;
-logic [`FILTER_INDEX_BIT - 1:0] conv_filter_cnt;
-logic [`OFMAP_INDEX_BIT - 1:0]  conv_result_cnt;
+reg [`IFMAP_INDEX_BIT - 1:0]  conv_ifmap_cnt;
+reg [`FILTER_INDEX_BIT - 1:0] conv_filter_cnt;
+reg [`OFMAP_INDEX_BIT - 1:0]  conv_result_cnt;
 
 //split filter & ifmap 
-logic [`FILTER_SIZE - 1:0] split_filter[0:3];
-logic [`IFMAP_SIZE - 1:0] split_ifmap[0:3];
+reg [`FILTER_SIZE - 1:0] split_filter[0:3];
+reg [`IFMAP_SIZE - 1:0] split_ifmap[0:3];
 
 wire [3:0] shift;
 assign shift = (q >= 1 && q <= 4) ? {1'b0, q} : 4'd12;
@@ -290,7 +290,7 @@ always @(*) begin
 	endcase
 end
 
-always_comb begin
+always@(*) begin
 	// output opsum
 	opsum = psum_spad[conv_result_cnt];
 
