@@ -41,6 +41,17 @@ const int FILT_COL = 3;
 const int I_CH = 4;
 const int OFMAP_CH = 4;
 const int FILTER_RS = 3;
+#elif (TB_PE == 3)
+const string IFMAP_FILE = "./testbench/PE_test_data/tb3/ifmap_tb3.txt";
+const string FILT_FILE = "./testbench/PE_test_data/tb3/filter_tb3.txt";
+const string IPSUM_FILE = "./testbench/PE_test_data/tb3/ipsum_tb3.txt";
+const string OPSUM_FILE = "./testbench/PE_test_data/tb3/ofmap_tb3.txt";
+const int IFMAP_COL = 32;
+const int OFMAP_COL = 32;
+const int FILT_COL = 1;
+const int I_CH = 4;
+const int OFMAP_CH = 4;
+const int FILTER_RS = 1;
 #endif
 
 #endif  // CONFIG_H
