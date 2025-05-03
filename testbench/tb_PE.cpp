@@ -76,7 +76,7 @@ void load_test_data(vector<vector<uint8_t>>& ifmap_data, vector<vector<vector<in
     ss.str(line);  // 重設 stringstream 的內容
     ss.clear();    // 清除 stringstream 的狀態
     for (int i = 0; i < OFMAP_CH; i++) {
-        for (int j = 0; j < 3; j++) {
+        for (int j = 0; j < FILTER_RS; j++) {
             for (int k = 0; k < I_CH; k++) {
                 if (getline(ss, value, ',')) {
                     filter_data[i][j][k] = stoi(value);
@@ -111,7 +111,24 @@ void load_test_data(vector<vector<uint8_t>>& ifmap_data, vector<vector<vector<in
         }
     }
 }
-
+void printFilterData(const std::vector<std::vector<std::vector<int8_t>>>& filter_data) {
+    std::cout << "Filter Data Information:\n";
+    std::cout << "Dimensions: [" << OFMAP_CH << " x 1 x " << I_CH << "]\n\n";
+    
+    for (size_t i = 0; i < OFMAP_CH; i++) {
+        std::cout << "Channel " << i << ":\n";
+        for (size_t j = 0; j < 1; j++) {
+            std::cout << "  Row " << j << ": ";
+            for (size_t k = 0; k < I_CH; k++) {
+                std::cout << "[" << i << "][" << j << "][" << k << "]="
+                          << static_cast<int>(filter_data[i][j][k]) << " ";
+            }
+            std::cout << std::endl;
+        }
+        std::cout << std::endl;
+    }
+    
+}
 void transaction(VPE* dut, int& send_data_type, Index* index, const vector<vector<vector<int8_t>>>& filter_data,
                  const vector<vector<uint8_t>>& ifmap_data, const vector<vector<int>>& ipsum_data,
                  vector<vector<int>>& opsum_data, bool& opsum_end) {
@@ -132,6 +149,7 @@ void transaction(VPE* dut, int& send_data_type, Index* index, const vector<vecto
             set_signal(dut, dut->filter_valid, rand() % 2);  // randomize idata_valid 0 or 1
             for (int i = 0; i < I_CH; i++)
                 send_data += (filter_data[index->count_filter_num][index->count_filter_col][i] & 0xFF) << (8 * i);
+                // printFilterData(filter_data);
             if (dut->filter_valid) {
                 set_signal(dut, dut->filter, send_data);
             } else {
@@ -249,7 +267,7 @@ int main(int argc, char** argv) {
     // print_config();
     // Load test data
     vector<vector<uint8_t>> ifmap_data(IFMAP_COL, vector<uint8_t>(I_CH));
-    vector<vector<vector<int8_t>>> filter_data(OFMAP_CH, vector<vector<int8_t>>(3, vector<int8_t>(I_CH)));
+    vector<vector<vector<int8_t>>> filter_data(OFMAP_CH, vector<vector<int8_t>>(FILTER_RS, vector<int8_t>(I_CH)));
     vector<vector<int>> ipsum_data(OFMAP_COL, vector<int>(OFMAP_CH));
     vector<vector<int>> opsum_data(OFMAP_COL, vector<int>(OFMAP_CH));
     vector<vector<int>> opsum_data_golden(OFMAP_COL, vector<int>(OFMAP_CH));
