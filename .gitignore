@@ -3,5 +3,5 @@
 /.vscode/*
 /logs/*
 /picture/*
-test.cpp
-a.out
+test.*
+*.out
