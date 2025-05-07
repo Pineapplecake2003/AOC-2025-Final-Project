@@ -141,7 +141,7 @@ void transaction(VPE* dut, int& send_data_type, Index* index, const vector<vecto
     switch (send_data_type) {
         case SEND_CONFIG:
             set_signal(dut, dut->PE_en, 1);
-            set_signal(dut, dut->i_config, (((FILTER_RS - 1) << 10) + ((OFMAP_CH - 1) << 7) + ((OFMAP_COL - 1) << 2) + (I_CH - 1)));            send_data_type = SEND_FILT;
+            set_signal(dut, dut->i_config, ((DEPTHWISE<<12)+((FILTER_RS - 1) << 10) + ((OFMAP_CH - 1) << 7) + ((OFMAP_COL - 1) << 2) + (I_CH - 1)));            send_data_type = SEND_FILT;
             break;
         case SEND_FILT:
             set_signal(dut, dut->PE_en, 0);
@@ -156,15 +156,27 @@ void transaction(VPE* dut, int& send_data_type, Index* index, const vector<vecto
                 set_signal(dut, dut->filter, 0);
             }
             if (dut->filter_valid && dut->filter_ready) {
-                if (index->count_filter_col == (FILT_COL - 1) && index->count_filter_num == (OFMAP_CH - 1)) {
-                    send_data_type = SEND_IFMAP;
-                    index->count_filter_num = 0;
-                    index->count_filter_col = 0;
-                } else if (index->count_filter_col == FILT_COL - 1) {
-                    index->count_filter_col = 0;
-                    index->count_filter_num++;
-                } else
-                    index->count_filter_col++;
+                if(DEPTHWISE){
+                    if (index->count_filter_col == (FILT_COL - 1)) {
+                        send_data_type = SEND_IFMAP;
+                        index->count_filter_num = 0;
+                        index->count_filter_col = 0;
+                    } else if (index->count_filter_col == FILT_COL - 1) {
+                        index->count_filter_col = 0;
+                        index->count_filter_num++;
+                    } else
+                        index->count_filter_col++;
+                }else{
+                    if (index->count_filter_col == (FILT_COL - 1) && index->count_filter_num == (OFMAP_CH - 1)) {
+                        send_data_type = SEND_IFMAP;
+                        index->count_filter_num = 0;
+                        index->count_filter_col = 0;
+                    } else if (index->count_filter_col == FILT_COL - 1) {
+                        index->count_filter_col = 0;
+                        index->count_filter_num++;
+                    } else
+                        index->count_filter_col++;
+                }
             }
             break;
 

@@ -64,7 +64,7 @@ default: all
 
 .PHONY: all pe_all array_all ppu_all
 
-pe_all: pe0 pe1 pe2 pe3
+pe_all: pe0 pe1 pe2 pe3 pe4 pe5 pe6
 array_all: array0 array1 array2 array3 array4 array5
 ppu_all: ppu0 ppu1 ppu2
 

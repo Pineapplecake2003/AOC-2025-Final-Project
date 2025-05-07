@@ -26,7 +26,9 @@ reg  [2:0] p; // output channel
 reg  [4:0] F; // output column
 reg  [2:0] q; // input channel
 reg  [1:0] filter_rs;
+reg depthwise;
 always@(*) begin
+	depthwise = i_config_reg[12];
 	filter_rs = i_config_reg[11:10] + 2'b1;
 	mode = i_config_reg[9];
 	p = {1'b0, i_config_reg[8:7]} + 3'b1;
@@ -51,6 +53,9 @@ reg signed [`IFMAP_SIZE - 1:0] ifmap_spad  [0:`IFMAP_SPAD_LEN - 1];
 reg signed [`FILTER_SIZE - 1:0]filter_spad [0:`FILTER_SPAD_LEN - 1];
 reg signed [`PSUM_SIZE - 1:0]	 psum_spad [0:`OFMAP_SPAD_LEN - 1];
 
+wire debug_wire1 = {1'b0,conv_result_cnt} == (p-1);
+wire debug_wire2 = conv_ifmap_cnt == ((filter_rs * q) -1);
+
 //spad counter
 reg [`IFMAP_INDEX_BIT - 1:0]  ifmap_spad_cnt;
 reg [`FILTER_INDEX_BIT - 1:0] filter_spad_cnt;
@@ -60,6 +65,9 @@ reg [`OFMAP_INDEX_BIT - 1:0]  psum_spad_cnt;
 reg [`IFMAP_INDEX_BIT - 1:0]  conv_ifmap_cnt;
 reg [`FILTER_INDEX_BIT - 1:0] conv_filter_cnt;
 reg [`OFMAP_INDEX_BIT - 1:0]  conv_result_cnt;
+
+// depthwise base count
+reg [`FILTER_INDEX_BIT - 1:0]  depthwise_conv_base_cnt;
 
 //split filter & ifmap 
 reg [`FILTER_SIZE - 1:0] split_filter[0:3];
@@ -90,6 +98,8 @@ always @(posedge clk or posedge rst) begin
 		conv_ifmap_cnt <= `IFMAP_INDEX_BIT'b0;
 		conv_filter_cnt <= `FILTER_INDEX_BIT'b0;
 		conv_result_cnt <= `OFMAP_INDEX_BIT'b0;
+
+		depthwise_conv_base_cnt <= `FILTER_INDEX_BIT'b0;
 	end
 	else begin
 		case (state)
@@ -144,14 +154,29 @@ always @(posedge clk or posedge rst) begin
 				psum_spad[conv_result_cnt] <= psum_spad[conv_result_cnt] + (
 					filter_spad[conv_filter_cnt] * ifmap_spad[conv_ifmap_cnt]
 				);
-				// filter, ifmap, and psum pointer update.
-				conv_filter_cnt <= conv_filter_cnt + `FILTER_INDEX_BIT'b1;
-				if(conv_ifmap_cnt == ifmap_spad_cnt - `IFMAP_INDEX_BIT'b1)begin
-					conv_ifmap_cnt <= `IFMAP_INDEX_BIT'b0;
-					conv_result_cnt <= conv_result_cnt + `OFMAP_INDEX_BIT'b1;
+				if(!depthwise)begin
+					// filter, ifmap, and psum pointer update.
+					conv_filter_cnt <= conv_filter_cnt + `FILTER_INDEX_BIT'b1;
+					if(conv_ifmap_cnt == ifmap_spad_cnt - `IFMAP_INDEX_BIT'b1)begin
+						conv_ifmap_cnt <= `IFMAP_INDEX_BIT'b0;
+						conv_result_cnt <= conv_result_cnt + `OFMAP_INDEX_BIT'b1;
+					end
+					else begin
+						conv_ifmap_cnt <= conv_ifmap_cnt + `IFMAP_INDEX_BIT'b1;
+					end
 				end
 				else begin
-					conv_ifmap_cnt <= conv_ifmap_cnt + `IFMAP_INDEX_BIT'b1;
+					conv_filter_cnt <= conv_filter_cnt + {3'b0,q};
+					conv_ifmap_cnt <= conv_ifmap_cnt + q;
+					if({1'b0,conv_ifmap_cnt} + {1'b0,q} > q * filter_rs-1/*IFMAP_LEN*/)begin
+						conv_filter_cnt <= depthwise_conv_base_cnt + `FILTER_INDEX_BIT'b1;
+						conv_ifmap_cnt <= depthwise_conv_base_cnt[`IFMAP_INDEX_BIT-1:0] + `IFMAP_INDEX_BIT'b1;
+						depthwise_conv_base_cnt <= depthwise_conv_base_cnt + `FILTER_INDEX_BIT'b1;
+						conv_result_cnt <= conv_result_cnt + 1;
+					end
+				end
+				if(next_state == WRITE_OPSUM)begin
+					conv_result_cnt <= `OFMAP_INDEX_BIT'b0;
 				end
 			end
 			WRITE_OPSUM:begin
@@ -165,13 +190,15 @@ always @(posedge clk or posedge rst) begin
 						ifmap_spad[i[2:0] + shift] : 
 						`IFMAP_SIZE'b0;
 				//reset conv cnt
-				//conv_result_cnt will overflow to 0 don't need to reset.
+				conv_result_cnt <= `OFMAP_INDEX_BIT'b0;
 				conv_ifmap_cnt <= `IFMAP_INDEX_BIT'b0;
 				conv_filter_cnt <= `FILTER_INDEX_BIT'b0;
 				//reset psum_cnt
 				psum_spad_cnt <= `OFMAP_INDEX_BIT'b0;
 				// ifmap pointer decrease by q
 				ifmap_spad_cnt <= ifmap_spad_cnt - {1'b0, q};
+
+				depthwise_conv_base_cnt <= `FILTER_INDEX_BIT'b0;
 			end
 			end
 			default: begin
@@ -236,13 +263,25 @@ always @(*) begin
 			end
 		end
 		READ_FILTER: begin
-			if({26'b0, filter_spad_cnt} == (p * q * filter_rs))begin
-				// readed all filter
-				next_state = READ_IFMAP;
+			if(!depthwise) begin
+				if({26'b0, filter_spad_cnt} == (p * q * filter_rs))begin
+					// readed all filter
+					next_state = READ_IFMAP;
+				end
+				else begin
+					// not yet done
+					next_state = READ_FILTER;
+				end
 			end
 			else begin
-				// not yet done
-				next_state = READ_FILTER;
+				if({26'b0, filter_spad_cnt} == (q * filter_rs))begin
+					// readed all filter
+					next_state = READ_IFMAP;
+				end
+				else begin
+					// not yet done
+					next_state = READ_FILTER;
+				end
 			end
 		end
 		READ_IFMAP: begin
@@ -266,11 +305,21 @@ always @(*) begin
 			end
 		end
 		CONV:begin
-			if(conv_filter_cnt == filter_spad_cnt - `FILTER_INDEX_BIT'b1)begin
-				next_state = WRITE_OPSUM;
+			if(!depthwise)begin
+				if(conv_filter_cnt == filter_spad_cnt - `FILTER_INDEX_BIT'b1)begin
+					next_state = WRITE_OPSUM;
+				end
+				else begin
+					next_state = CONV;
+				end
 			end
 			else begin
-				next_state = CONV;
+				if({1'b0,conv_result_cnt} == (p-1) && conv_ifmap_cnt == ((filter_rs * q) -1))begin
+					next_state = WRITE_OPSUM;
+				end
+				else begin
+					next_state = CONV;
+				end
 			end
 		end
 		WRITE_OPSUM:begin
