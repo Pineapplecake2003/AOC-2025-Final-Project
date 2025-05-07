@@ -19,6 +19,7 @@ const int FILT_COL = 3;
 const int I_CH = 3;
 const int OFMAP_CH = 4;
 const int FILTER_RS = 3;
+const int DEPTHWISE = 0;
 #elif (TB_PE == 1)
 const string IFMAP_FILE = "./testbench/PE_test_data/tb1/ifmap_tb1.txt";
 const string FILT_FILE = "./testbench/PE_test_data/tb1/filter_tb1.txt";
@@ -30,6 +31,7 @@ const int FILT_COL = 3;
 const int I_CH = 3;
 const int OFMAP_CH = 4;
 const int FILTER_RS = 3;
+const int DEPTHWISE = 0;
 #elif (TB_PE == 2)
 const string IFMAP_FILE = "./testbench/PE_test_data/tb2/ifmap_tb2.txt";
 const string FILT_FILE = "./testbench/PE_test_data/tb2/filter_tb2.txt";
@@ -41,6 +43,7 @@ const int FILT_COL = 3;
 const int I_CH = 4;
 const int OFMAP_CH = 4;
 const int FILTER_RS = 3;
+const int DEPTHWISE = 0;
 #elif (TB_PE == 3)
 const string IFMAP_FILE = "./testbench/PE_test_data/tb3/ifmap_tb3.txt";
 const string FILT_FILE = "./testbench/PE_test_data/tb3/filter_tb3.txt";
@@ -52,6 +55,19 @@ const int FILT_COL = 1;
 const int I_CH = 4;
 const int OFMAP_CH = 4;
 const int FILTER_RS = 1;
+const int DEPTHWISE = 0;
+#elif (TB_PE == 4)
+const string IFMAP_FILE = "./testbench/PE_test_data/tb3/ifmap_tb3.txt";
+const string FILT_FILE = "./testbench/PE_test_data/tb3/filter_tb3.txt";
+const string IPSUM_FILE = "./testbench/PE_test_data/tb3/ipsum_tb3.txt";
+const string OPSUM_FILE = "./testbench/PE_test_data/tb3/ofmap_tb3.txt";
+const int IFMAP_COL = 18;
+const int OFMAP_COL = 16;
+const int FILT_COL = 3;
+const int I_CH = 4;
+const int OFMAP_CH = 4;
+const int FILTER_RS = 3;
+const int DEPTHWISE = 1;
 #endif
 
 #endif  // CONFIG_H
