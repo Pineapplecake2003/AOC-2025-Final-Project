@@ -5,3 +5,5 @@
 /picture/*
 test.*
 *.out
+*.cpp
+*.py
