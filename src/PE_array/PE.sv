@@ -53,8 +53,11 @@ reg signed [`IFMAP_SIZE - 1:0] ifmap_spad  [0:`IFMAP_SPAD_LEN - 1];
 reg signed [`FILTER_SIZE - 1:0]filter_spad [0:`FILTER_SPAD_LEN - 1];
 reg signed [`PSUM_SIZE - 1:0]	 psum_spad [0:`OFMAP_SPAD_LEN - 1];
 
-wire debug_wire1 = {1'b0,conv_result_cnt} == (p-1);
-wire debug_wire2 = conv_ifmap_cnt == ((filter_rs * q) -1);
+wire [7:0]debug_wire1 = ifmap_spad[conv_ifmap_cnt];
+wire [7:0]debug_wire2 = filter_spad[conv_filter_cnt];
+wire [7:0]debug_wire3 = split_ifmap[3];
+wire [7:0]debug_wire4 = split_ifmap[3]^128;
+wire [31:0]debug_wire5 = filter_spad[conv_filter_cnt] * ifmap_spad[conv_ifmap_cnt];
 
 //spad counter
 reg [`IFMAP_INDEX_BIT - 1:0]  ifmap_spad_cnt;
@@ -263,26 +266,35 @@ always @(*) begin
 			end
 		end
 		READ_FILTER: begin
-			if(!depthwise) begin
-				if({26'b0, filter_spad_cnt} == (p * q * filter_rs))begin
-					// readed all filter
-					next_state = READ_IFMAP;
-				end
-				else begin
-					// not yet done
-					next_state = READ_FILTER;
-				end
+			if({26'b0, filter_spad_cnt} == (p * q * filter_rs))begin
+				// readed all filter
+				next_state = READ_IFMAP;
 			end
 			else begin
-				if({26'b0, filter_spad_cnt} == (q * filter_rs))begin
-					// readed all filter
-					next_state = READ_IFMAP;
-				end
-				else begin
-					// not yet done
-					next_state = READ_FILTER;
-				end
+				// not yet done
+				next_state = READ_FILTER;
 			end
+			// now assume read all filter
+			// if(!depthwise) begin
+			// 	if({26'b0, filter_spad_cnt} == (p * q * filter_rs))begin
+			// 		// readed all filter
+			// 		next_state = READ_IFMAP;
+			// 	end
+			// 	else begin
+			// 		// not yet done
+			// 		next_state = READ_FILTER;
+			// 	end
+			// end
+			// else begin
+			// 	if({26'b0, filter_spad_cnt} == (q * filter_rs))begin
+			// 		// readed all filter
+			// 		next_state = READ_IFMAP;
+			// 	end
+			// 	else begin
+			// 		// not yet done
+			// 		next_state = READ_FILTER;
+			// 	end
+			// end
 		end
 		READ_IFMAP: begin
 			if({28'b0, ifmap_spad_cnt} == ({29'b0, q} * filter_rs))begin

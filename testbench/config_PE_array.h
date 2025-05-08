@@ -40,7 +40,8 @@ const int OFMAP_COL = IFMAP_COL - FILT_ROW + 1;
 const int LN_CONFIG = 27;
 const int FILTER_RS = 3;
 const unsigned long long PE_EN = (1ULL << (PE_ARRAY_H * PE_ARRAY_W)) - 1;
-const int PE_CONFIG = ((FILTER_RS - 1) << 10) + ((p - 1) << 7) + ((OFMAP_COL - 1) << 2) + (q - 1);
+const int DEPTHWISE = 0;
+const int PE_CONFIG = (DEPTHWISE << 12) + ((FILTER_RS - 1) << 10) + ((p - 1) << 7) + ((OFMAP_COL - 1) << 2) + (q - 1);
 
 #elif (TBA == 1)
 const string DATA_SRC = "./testbench/PE_array_test_data/tb1/";
@@ -69,7 +70,9 @@ const int OFMAP_COL = IFMAP_COL - FILT_ROW + 1;
 const int LN_CONFIG = 27;
 const int FILTER_RS = 3;
 const unsigned long long PE_EN = (1ULL << (PE_ARRAY_H * PE_ARRAY_W)) - 1;
-const int PE_CONFIG = ((FILTER_RS - 1) << 10) + ((p - 1) << 7) + ((OFMAP_COL - 1) << 2) + (q - 1);
+const int DEPTHWISE = 0;
+const int PE_CONFIG = (DEPTHWISE << 12) + ((FILTER_RS - 1) << 10) + ((p - 1) << 7) + ((OFMAP_COL - 1) << 2) + (q - 1);
+
 
 #elif (TBA == 2)
 const string DATA_SRC = "./testbench/PE_array_test_data/tb2/";
@@ -98,7 +101,9 @@ const int OFMAP_COL = IFMAP_COL - FILT_ROW + 1;
 const int LN_CONFIG = 31;
 const int FILTER_RS = 3;
 const unsigned long long PE_EN = (1ULL << (PE_ARRAY_H * PE_ARRAY_W)) - 1;
-const int PE_CONFIG = ((FILTER_RS - 1) << 10) + ((p - 1) << 7) + ((OFMAP_COL - 1) << 2) + (q - 1);
+const int DEPTHWISE = 0;
+const int PE_CONFIG = (DEPTHWISE << 12) + ((FILTER_RS - 1) << 10) + ((p - 1) << 7) + ((OFMAP_COL - 1) << 2) + (q - 1);
+
 
 #elif (TBA == 3)
 const string DATA_SRC = "./testbench/PE_array_test_data/tb3/";
@@ -127,7 +132,9 @@ const int OFMAP_COL = IFMAP_COL - FILT_ROW + 1;
 const int LN_CONFIG = 31;
 const int FILTER_RS = 3;
 const unsigned long long PE_EN = (1ULL << (PE_ARRAY_H * PE_ARRAY_W)) - 1;
-const int PE_CONFIG = ((FILTER_RS - 1) << 10) + ((p - 1) << 7) + ((OFMAP_COL - 1) << 2) + (q - 1);
+const int DEPTHWISE = 0;
+const int PE_CONFIG = (DEPTHWISE << 12) + ((FILTER_RS - 1) << 10) + ((p - 1) << 7) + ((OFMAP_COL - 1) << 2) + (q - 1);
+
 
 #elif (TBA == 4)
 const string DATA_SRC = "./testbench/PE_array_test_data/tb4/";
@@ -156,7 +163,9 @@ const int OFMAP_COL = IFMAP_COL - FILT_ROW + 1;
 const int LN_CONFIG = 27;
 const int FILTER_RS = 3;
 const unsigned long long PE_EN = (1ULL << (PE_ARRAY_H * PE_ARRAY_W)) - 1;
-const int PE_CONFIG = ((FILTER_RS - 1) << 10) + ((p - 1) << 7) + ((OFMAP_COL - 1) << 2) + (q - 1);
+const int DEPTHWISE = 0;
+const int PE_CONFIG = (DEPTHWISE << 12) + ((FILTER_RS - 1) << 10) + ((p - 1) << 7) + ((OFMAP_COL - 1) << 2) + (q - 1);
+
 
 #elif (TBA == 5)
 const string DATA_SRC = "./testbench/PE_array_test_data/tb5/";
@@ -185,8 +194,38 @@ const int OFMAP_COL = IFMAP_COL - FILT_ROW + 1;
 const int LN_CONFIG = 27;
 const int FILTER_RS = 3;
 const unsigned long long PE_EN = (1ULL << (PE_ARRAY_H * PE_ARRAY_W)) - 1;
-const int PE_CONFIG = ((FILTER_RS - 1) << 10) + ((p - 1) << 7) + ((OFMAP_COL - 1) << 2) + (q - 1);
+const int DEPTHWISE = 0;
+const int PE_CONFIG = (DEPTHWISE << 12) + ((FILTER_RS - 1) << 10) + ((p - 1) << 7) + ((OFMAP_COL - 1) << 2) + (q - 1);
 
+#elif (TBA == 6)
+const string DATA_SRC = "./testbench/PE_array_test_data/tb6/";
+const string CONFIG_SRC = "./testbench/PE_array_test_data/tb6/";
+const string IFMAP_CONFIG_XID_FILE = CONFIG_SRC + "ifmap_config_chain_XID_tb6.txt";
+const string IFMAP_CONFIG_YID_FILE = CONFIG_SRC + "ifmap_config_chain_YID_tb6.txt";
+const string FILTER_CONFIG_XID_FILE = CONFIG_SRC + "filter_config_chain_XID_tb6.txt";
+const string FILTER_CONFIG_YID_FILE = CONFIG_SRC + "filter_config_chain_YID_tb6.txt";
+const string IPSUM_CONFIG_XID_FILE = CONFIG_SRC + "ipsum_config_chain_XID_tb6.txt";
+const string IPSUM_CONFIG_YID_FILE = CONFIG_SRC + "ipsum_config_chain_YID_tb6.txt";
+const string OPSUM_CONFIG_XID_FILE = CONFIG_SRC + "opsum_config_chain_XID_tb6.txt";
+const string OPSUM_CONFIG_YID_FILE = CONFIG_SRC + "opsum_config_chain_YID_tb6.txt";
+const string IFMAP_FILE = DATA_SRC + "ifmap_tb6.txt";
+const string FILTER_FILE = DATA_SRC + "filter_tb6.txt";
+const string IPSUM_FILE = DATA_SRC + "ipsum_tb6.txt";
+const string OPSUM_FILE = DATA_SRC + "opsum_tb6.txt";
+const int FILT_ROW = 3;
+const int FILT_COL = 3;
+const int p = 4;
+const int q = 4;
+const int r = 1;
+const int t = 1;
+const int e = 16;
+const int IFMAP_COL = 18;
+const int OFMAP_COL = IFMAP_COL - FILT_ROW + 1;
+const int LN_CONFIG = 27;
+const int FILTER_RS = 3;
+const unsigned long long PE_EN = (1ULL << (PE_ARRAY_H * PE_ARRAY_W)) - 1;
+const int DEPTHWISE = 1;
+const int PE_CONFIG = (DEPTHWISE << 12) + ((FILTER_RS - 1) << 10) + ((p - 1) << 7) + ((OFMAP_COL - 1) << 2) + (q - 1);
 #endif
 
 #endif

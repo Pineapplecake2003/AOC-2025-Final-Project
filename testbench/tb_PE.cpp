@@ -156,27 +156,37 @@ void transaction(VPE* dut, int& send_data_type, Index* index, const vector<vecto
                 set_signal(dut, dut->filter, 0);
             }
             if (dut->filter_valid && dut->filter_ready) {
-                if(DEPTHWISE){
-                    if (index->count_filter_col == (FILT_COL - 1)) {
-                        send_data_type = SEND_IFMAP;
-                        index->count_filter_num = 0;
-                        index->count_filter_col = 0;
-                    } else if (index->count_filter_col == FILT_COL - 1) {
-                        index->count_filter_col = 0;
-                        index->count_filter_num++;
-                    } else
-                        index->count_filter_col++;
-                }else{
-                    if (index->count_filter_col == (FILT_COL - 1) && index->count_filter_num == (OFMAP_CH - 1)) {
-                        send_data_type = SEND_IFMAP;
-                        index->count_filter_num = 0;
-                        index->count_filter_col = 0;
-                    } else if (index->count_filter_col == FILT_COL - 1) {
-                        index->count_filter_col = 0;
-                        index->count_filter_num++;
-                    } else
-                        index->count_filter_col++;
-                }
+                if (index->count_filter_col == (FILT_COL - 1) && index->count_filter_num == (OFMAP_CH - 1)) {
+                    send_data_type = SEND_IFMAP;
+                    index->count_filter_num = 0;
+                    index->count_filter_col = 0;
+                } else if (index->count_filter_col == FILT_COL - 1) {
+                    index->count_filter_col = 0;
+                    index->count_filter_num++;
+                } else
+                    index->count_filter_col++;
+                // now assume read all filter whether DEPTHWISE
+                // if(DEPTHWISE){
+                //     if (index->count_filter_col == (FILT_COL - 1)) {
+                //         send_data_type = SEND_IFMAP;
+                //         index->count_filter_num = 0;
+                //         index->count_filter_col = 0;
+                //     } else if (index->count_filter_col == FILT_COL - 1) {
+                //         index->count_filter_col = 0;
+                //         index->count_filter_num++;
+                //     } else
+                //         index->count_filter_col++;
+                // }else{
+                //     if (index->count_filter_col == (FILT_COL - 1) && index->count_filter_num == (OFMAP_CH - 1)) {
+                //         send_data_type = SEND_IFMAP;
+                //         index->count_filter_num = 0;
+                //         index->count_filter_col = 0;
+                //     } else if (index->count_filter_col == FILT_COL - 1) {
+                //         index->count_filter_col = 0;
+                //         index->count_filter_num++;
+                //     } else
+                //         index->count_filter_col++;
+                // }
             }
             break;
 

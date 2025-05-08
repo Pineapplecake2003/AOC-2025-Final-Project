@@ -321,8 +321,22 @@ void send_data(VPE_array* dut, vector<vector<vector<int>>>& ifmap, vector<vector
                         if (index->count_filter_num == p * t - 1) {
                             index->count_filter_num = 0;
                             send_filter_end = 1;
-                        } else
+                        } else{
                             index->count_filter_num++;
+                        }
+                        // count filter
+                        // now assume read all filter whether DEPTHWISE
+                        // if(!DEPTHWISE){
+                        //     if (index->count_filter_num == p * t - 1) {
+                        //         index->count_filter_num = 0;
+                        //         send_filter_end = 1;
+                        //     } else
+                        //         index->count_filter_num++;
+                        // }
+                        // else{
+                        //     index->count_filter_num = 0;
+                        //     send_filter_end = 1;
+                        // }
                     } else
                         index->count_filter_row++;
                 } else
@@ -506,7 +520,7 @@ void check_output(const vector<vector<vector<int>>>& opsum_data, const vector<ve
                     cout << "opsum[" << i << "][" << j << "][" << k << "]: your result = " << setw(6)
                          << opsum_data[i][j][k] << ", expect = " << setw(6) << opsum_data_golden[i][j][k] << endl;
                 } else {
-                    cout << "opsum[" << i << "][" << j << "][" << k << "]: pass" << endl;
+                    cout << "opsum[" << i << "][" << j << "][" << k << "]: pass " << setw(6) << opsum_data_golden[i][j][k]<< endl;
                 }
             }
         }
