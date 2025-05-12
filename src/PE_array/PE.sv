@@ -169,13 +169,15 @@ always @(posedge clk or posedge rst) begin
 					end
 				end
 				else begin
-					conv_filter_cnt <= conv_filter_cnt + {3'b0,q};
-					conv_ifmap_cnt <= conv_ifmap_cnt + q;
 					if({1'b0,conv_ifmap_cnt} + {1'b0,q} > q * filter_rs-1/*IFMAP_LEN*/)begin
 						conv_filter_cnt <= depthwise_conv_base_cnt + `FILTER_INDEX_BIT'b1;
 						conv_ifmap_cnt <= depthwise_conv_base_cnt[`IFMAP_INDEX_BIT-1:0] + `IFMAP_INDEX_BIT'b1;
 						depthwise_conv_base_cnt <= depthwise_conv_base_cnt + `FILTER_INDEX_BIT'b1;
 						conv_result_cnt <= conv_result_cnt + 1;
+					end
+					else begin
+						conv_filter_cnt <= conv_filter_cnt + {3'b0,q};
+						conv_ifmap_cnt <= conv_ifmap_cnt + q;
 					end
 				end
 				if(next_state == WRITE_OPSUM)begin
