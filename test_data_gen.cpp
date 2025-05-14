@@ -1,14 +1,14 @@
 #include <stdio.h>
 #include <stdint.h>
 
-#define IN_CHANNEL      2
+#define IN_CHANNEL      4
 #define IN_HEIGHT       1
-#define IN_WIDTH        34
+#define IN_WIDTH        6
 #define KERNEL_SIZE_W   3
 #define KERNEL_SIZE_H   1
 #define OUT_HEIGHT      1//(IN_HEIGHT - KERNEL_SIZE + 1)
 #define OUT_WIDTH       (IN_WIDTH - KERNEL_SIZE_W + 1)
-#define OUT_CHANNEL     2
+#define OUT_CHANNEL     4
 
 int main(){
     // 輸入 feature map、卷積核和偏置（ipsum）定義
