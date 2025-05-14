@@ -1,6 +1,7 @@
 SRC1 = $(wildcard ./src/PE_array/PE.sv)
 SRC2 = $(wildcard ./src/PE_array/PE_array.sv)
 SRC3 = $(wildcard ./src/PPU/PPU.sv)
+SRC4 = $(wildcard ./src/PE_array/SUPER.sv)
 
 ifeq ($(VERILATOR_ROOT),)
 VERILATOR = verilator
@@ -55,6 +56,14 @@ ifneq ($(PPU),)
     TARGET=VPPU
     LOG_FILE = logs/terminal_text_ppu$(PPU).log
     POST_PROCESS = @chmod 666 ./testbench/tb_PPU.cpp
+else
+ifneq ($(SUPER),)
+    VERILATOR_FLAGS += -CFLAGS "-DTB_SUPER=$(SUPER)"
+    LOG_FILE = logs/terminal_text_super$(SUPER).log
+    VERILATOR_INPUT = $(SRC4) ./testbench/tb_SUPER.cpp
+    TARGET = VSUPER
+    POST_PROCESS = @chmod 666 ./testbench/tb_SUPER.cpp
+endif
 endif
 endif
 endif
@@ -62,13 +71,14 @@ endif
 ######################################################################
 default: all
 
-.PHONY: all pe_all array_all ppu_all
+.PHONY: all pe_all array_all ppu_all super_all
 
 pe_all: pe0 pe1 pe2 pe3 pe4 pe5 pe6
 array_all: array0 array1 array2 array3 array4 array5 array6
 ppu_all: ppu0 ppu1 ppu2
+super_all:super0 super1 super2 super3
 
-all: pe_all array_all ppu_all
+all: pe_all array_all ppu_all super_all
 
 run:
 	@echo
@@ -93,7 +103,7 @@ run:
 ######################################################################
 # Specific Testbench Targets
 # Pass TB_select as a parameter to the simulation executable
-.PHONY: array% pe%
+.PHONY: array% pe% super%
 
 pe%:
 	mkdir -p wave
@@ -107,7 +117,9 @@ ppu%:
 	mkdir -p wave
 	make run PPU=$*
 
-
+super%:
+	mkdir -p wave
+	make run SUPER=$*
 
 ######################################################################
 # Other targets
