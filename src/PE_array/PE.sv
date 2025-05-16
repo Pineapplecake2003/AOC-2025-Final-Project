@@ -69,9 +69,6 @@ reg [`IFMAP_INDEX_BIT - 1:0]  conv_ifmap_cnt;
 reg [`FILTER_INDEX_BIT - 1:0] conv_filter_cnt;
 reg [`OFMAP_INDEX_BIT - 1:0]  conv_result_cnt;
 
-// depthwise base count
-reg [`FILTER_INDEX_BIT - 1:0]  depthwise_conv_base_cnt;
-
 //split filter & ifmap 
 reg [`FILTER_SIZE - 1:0] split_filter[0:3];
 reg [`IFMAP_SIZE - 1:0] split_ifmap[0:3];
@@ -101,8 +98,6 @@ always @(posedge clk or posedge rst) begin
 		conv_ifmap_cnt <= `IFMAP_INDEX_BIT'b0;
 		conv_filter_cnt <= `FILTER_INDEX_BIT'b0;
 		conv_result_cnt <= `OFMAP_INDEX_BIT'b0;
-
-		depthwise_conv_base_cnt <= `FILTER_INDEX_BIT'b0;
 	end
 	else begin
 		case (state)
@@ -157,7 +152,17 @@ always @(posedge clk or posedge rst) begin
 				psum_spad[conv_result_cnt] <= psum_spad[conv_result_cnt] + (
 					filter_spad[conv_filter_cnt] * ifmap_spad[conv_ifmap_cnt]
 				);
-				if(!depthwise)begin
+				if(depthwise)begin
+					if(conv_result_cnt == q[1:0]-2'b1)begin
+						conv_result_cnt <= `OFMAP_INDEX_BIT'b0;
+					end
+					else begin
+						conv_result_cnt <= conv_result_cnt + `OFMAP_INDEX_BIT'b1;
+					end
+					conv_filter_cnt <= conv_filter_cnt + `FILTER_INDEX_BIT'b1;
+					conv_ifmap_cnt <= conv_ifmap_cnt + `IFMAP_INDEX_BIT'b1;
+				end
+				else begin
 					// filter, ifmap, and psum pointer update.
 					conv_filter_cnt <= conv_filter_cnt + `FILTER_INDEX_BIT'b1;
 					if(conv_ifmap_cnt == ifmap_spad_cnt - `IFMAP_INDEX_BIT'b1)begin
@@ -167,21 +172,6 @@ always @(posedge clk or posedge rst) begin
 					else begin
 						conv_ifmap_cnt <= conv_ifmap_cnt + `IFMAP_INDEX_BIT'b1;
 					end
-				end
-				else begin
-					if({1'b0,conv_ifmap_cnt} + {1'b0,q} > q * filter_rs-1/*IFMAP_LEN*/)begin
-						conv_filter_cnt <= depthwise_conv_base_cnt + `FILTER_INDEX_BIT'b1;
-						conv_ifmap_cnt <= depthwise_conv_base_cnt[`IFMAP_INDEX_BIT-1:0] + `IFMAP_INDEX_BIT'b1;
-						depthwise_conv_base_cnt <= depthwise_conv_base_cnt + `FILTER_INDEX_BIT'b1;
-						conv_result_cnt <= conv_result_cnt + 1;
-					end
-					else begin
-						conv_filter_cnt <= conv_filter_cnt + {3'b0,q};
-						conv_ifmap_cnt <= conv_ifmap_cnt + q;
-					end
-				end
-				if(next_state == WRITE_OPSUM)begin
-					conv_result_cnt <= `OFMAP_INDEX_BIT'b0;
 				end
 			end
 			WRITE_OPSUM:begin
@@ -202,8 +192,6 @@ always @(posedge clk or posedge rst) begin
 				psum_spad_cnt <= `OFMAP_INDEX_BIT'b0;
 				// ifmap pointer decrease by q
 				ifmap_spad_cnt <= ifmap_spad_cnt - {1'b0, q};
-
-				depthwise_conv_base_cnt <= `FILTER_INDEX_BIT'b0;
 			end
 			end
 			default: begin
@@ -309,13 +297,25 @@ always @(*) begin
 			end
 		end
 		READ_IPSUM: begin
-			if(({1'b0, psum_spad_cnt} == (p - 3'b1)) && ipsum_valid)begin
-				//readed all ipsum
-				next_state = CONV;
+			if(depthwise)begin
+				if(({1'b0, psum_spad_cnt} == (q - 3'b1)) && ipsum_valid)begin
+					//readed all ipsum
+					next_state = CONV;
+				end
+				else begin
+					// not yet done
+					next_state = READ_IPSUM;
+				end
 			end
 			else begin
-				// not yet done
-				next_state = READ_IPSUM;
+				if(({1'b0, psum_spad_cnt} == (p - 3'b1)) && ipsum_valid)begin
+					//readed all ipsum
+					next_state = CONV;
+				end
+				else begin
+					// not yet done
+					next_state = READ_IPSUM;
+				end
 			end
 		end
 		CONV:begin
@@ -328,7 +328,7 @@ always @(*) begin
 				end
 			end
 			else begin
-				if({1'b0,conv_result_cnt} == (p-1) && conv_ifmap_cnt == ((filter_rs * q) -1))begin
+				if({1'b0,conv_result_cnt} == (q-1) && conv_ifmap_cnt == ((filter_rs * q) -1))begin
 					next_state = WRITE_OPSUM;
 				end
 				else begin
@@ -337,16 +337,31 @@ always @(*) begin
 			end
 		end
 		WRITE_OPSUM:begin
-			if(({1'b0, conv_result_cnt} == (p - 3'b1)) && opsum_ready)begin
-				if (output_col_cnt == F) begin
-					next_state = IDLE;
+			if(depthwise)begin
+				if(({1'b0, conv_result_cnt} == (q - 3'b1)) && opsum_ready)begin
+					if (output_col_cnt == F) begin
+						next_state = IDLE;
+					end
+					else begin
+						next_state = READ_IFMAP;
+					end
 				end
 				else begin
-					next_state = READ_IFMAP;
+					next_state = WRITE_OPSUM;
 				end
 			end
 			else begin
-				next_state = WRITE_OPSUM;
+				if(({1'b0, conv_result_cnt} == (p - 3'b1)) && opsum_ready)begin
+					if (output_col_cnt == F) begin
+						next_state = IDLE;
+					end
+					else begin
+						next_state = READ_IFMAP;
+					end
+				end
+				else begin
+					next_state = WRITE_OPSUM;
+				end
 			end
 		end
 		default: next_state = IDLE;

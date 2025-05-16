@@ -136,6 +136,13 @@ dist:
 	python release.py
 	cd release && zip -r ../aoc2025-lab3.zip .
 
+gen_test_data_for_array:
+	g++ test_data_gen.cpp -DWHOLE_IFMAP
+	./a.out > data.log
+
+gen_test_data_for_pe:
+	g++ test_data_gen.cpp -DWHOLE_IFMAP
+	./a.out > data.log
 maintainer-copy::
 clean mostlyclean distclean maintainer-clean::
-	-rm -rf obj_dir logs *.log *.dmp *.vpd wave/*.vcd wave/*.fsdb coverage.dat core *.zip release
+	-rm -rf obj_dir logs a.out *.log *.dmp *.vpd wave/*.vcd wave/*.fsdb coverage.dat core *.zip release

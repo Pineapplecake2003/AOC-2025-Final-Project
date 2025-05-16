@@ -1,14 +1,19 @@
 #include <stdio.h>
 #include <stdint.h>
+#include <stdlib.h>
 
-#define IN_CHANNEL      4
-#define IN_HEIGHT       1
-#define IN_WIDTH        6
+#define q               4
+#define r               1
+#define p               4
+#define t               1
+#define IN_CHANNEL      q*r
+#define IN_HEIGHT       18
+#define IN_WIDTH        18
 #define KERNEL_SIZE_W   3
-#define KERNEL_SIZE_H   1
-#define OUT_HEIGHT      1//(IN_HEIGHT - KERNEL_SIZE + 1)
+#define KERNEL_SIZE_H   3
+#define OUT_HEIGHT      (IN_HEIGHT - KERNEL_SIZE_H + 1)
 #define OUT_WIDTH       (IN_WIDTH - KERNEL_SIZE_W + 1)
-#define OUT_CHANNEL     4
+#define OUT_CHANNEL     p*t
 
 int main(){
     // 輸入 feature map、卷積核和偏置（ipsum）定義
@@ -232,7 +237,117 @@ int main(){
         }
     }
     #else
-    // ...待寫
+    // ifmap
+    for (int row = 0; row < IN_HEIGHT; row++){
+        for (int col = 0; col < IN_WIDTH; col++){
+            for (int c = 0; c < IN_CHANNEL; c++){
+                fprintf(ifmap_file, "%d", int8_t(ifmap[c][row][col] + (uint8_t)128));
+                if(!(col == IN_WIDTH-1 && c == IN_CHANNEL-1 && row == IN_HEIGHT-1)){
+                    fprintf(ifmap_file, ",");
+                }
+            }
+        }
+    }
+    // depthwise filter
+    // int pointwise_limit = p;
+    // int num_filter = 1;
+    // for (int tt = 0; tt < t; tt++){
+    //     for (int row = 0; row < KERNEL_SIZE_H; row++){
+    //         for (int col = 0; col < KERNEL_SIZE_W; col++){
+    //             for (int c = 0; c < IN_CHANNEL; c++){
+    //                 fprintf(filter_file, "%d,", depthwise_filter[c][row][col]);
+    //             }
+    //         }
+    //     }
+    //     // pointwise filter
+    //     for (; num_filter < pointwise_limit; num_filter++){
+    //         for (int row = 0; row < KERNEL_SIZE_H; row++){
+    //             for (int col = 0; col < KERNEL_SIZE_W; col++){
+    //                 for (int c = 0; c < IN_CHANNEL; c++){
+    //                     //printf("index: [%d][%d][0][0], to zero: %d\n", (num_filter-1)*KERNEL_SIZE_W + col, c, (num_filter-1)*KERNEL_SIZE_W + col <= pointwise_limit-1);
+    //                     if(num_filter > p){
+    //                         if((num_filter-4)*KERNEL_SIZE_W + col+1<= pointwise_limit-1){
+    //                             fprintf(filter_file, "%d", pointwise_filter[(num_filter-4)*KERNEL_SIZE_W + col+1][c][0][0]);}
+    //                         else{
+    //                             fprintf(filter_file, "%d", 0);
+    //                         }
+    //                     }
+    //                     else{
+    //                         if((num_filter-1)*KERNEL_SIZE_W + col <= pointwise_limit-1){
+    //                             fprintf(filter_file, "%d", pointwise_filter[(num_filter-1)*KERNEL_SIZE_W + col][c][0][0]);
+    //                         }else{
+    //                             fprintf(filter_file, "%d", 0);
+    //                         }
+    //                     }
+    //                     
+    //                     if(!(tt == t-1 && num_filter == p*t-1 && col == KERNEL_SIZE_W-1 && row == KERNEL_SIZE_H-1 && c == IN_CHANNEL-1)){
+    //                         fprintf(filter_file, ",");
+    //                     }
+    //                 }
+    //             }
+    //         }
+    //     }
+    //     pointwise_limit = pointwise_limit + p;
+    //     num_filter = 5;
+    // }
+    int point_num = 0;
+    for (int tt = 0; tt < t; tt++){
+        for (int row = 0; row < KERNEL_SIZE_H; row++){
+            for (int col = 0; col < KERNEL_SIZE_W; col++){
+                for (int c = 0; c < IN_CHANNEL; c++){
+                    fprintf(filter_file, "%d,", depthwise_filter[c][row][col]);
+                }
+            }
+        }
+        for (int aa = 0; aa < 3; aa++){
+            for (int ic = 0; ic < IN_CHANNEL; ic++){
+                fprintf(filter_file, "%d,", pointwise_filter[0][ic][0][0]);
+            }
+            for (int ic = 0; ic < IN_CHANNEL; ic++){
+                fprintf(filter_file, "%d,", pointwise_filter[1][ic][0][0]);
+            }
+            for (int ic = 0; ic < IN_CHANNEL; ic++){
+                fprintf(filter_file, "%d,", pointwise_filter[2][ic][0][0]);
+            }
+        }
+        for (int aa = 0; aa < 3; aa++){
+            for (int ic = 0; ic < IN_CHANNEL; ic++){
+                fprintf(filter_file, "%d,", pointwise_filter[3][ic][0][0]);
+            }
+            for (int ic = 0; ic < IN_CHANNEL; ic++){
+                fprintf(filter_file, "%d,", 0);
+            }
+            for (int ic = 0; ic < IN_CHANNEL; ic++){
+                fprintf(filter_file, "%d,", 0);
+            }
+        }
+        for (int aa = 0; aa < 3; aa++){
+            for (int ic = 0; ic < IN_CHANNEL; ic++){
+                fprintf(filter_file, "%d,", 0);
+            }
+            for (int ic = 0; ic < IN_CHANNEL; ic++){
+                fprintf(filter_file, "%d,", 0);
+            }
+            for (int ic = 0; ic < IN_CHANNEL; ic++){
+                fprintf(filter_file, "%d,", 0);
+            }
+        }
+    }
+    //output opsum
+    for (int row = 0; row < OUT_HEIGHT; row++){
+        for (int col = 0; col < OUT_WIDTH; col++){
+            for (int c = 0; c < OUT_CHANNEL; c++){
+                fprintf(opsum_file, "%d", opsum[c][row][col]);
+                fprintf(point_ipsum_file, "%d", pointwise_ipsum[c][row][col]);
+                fprintf(depth_ipsum_file, "%d", 0);
+                if(!(col == OUT_WIDTH-1 && c == OUT_CHANNEL-1 && row == OUT_HEIGHT-1)){
+                    fprintf(opsum_file, ",");
+                    fprintf(point_ipsum_file, ",");
+                    fprintf(depth_ipsum_file,",");
+                }
+            }
+        }
+    }
     #endif
 
     return 0;

@@ -1,4 +1,5 @@
 `include "src/PE_array/PE.sv"
+`include "src/PE_array/SUPER.sv"
 `include "src/PE_array/GIN/GIN.sv"
 `include "src/PE_array/GON/GON.sv"
 `include "define.svh"
@@ -72,45 +73,100 @@ always @(posedge clk or posedge rst) begin
 	end
 end
 
+logic depthwise;
+always @(posedge clk or posedge rst) begin
+  if(rst)begin
+    depthwise <= 1'b0;
+  end
+  else if(&PE_en)begin
+    depthwise <= PE_config[`CONFIG_SIZE-1];
+  end
+  else begin
+    depthwise <= depthwise;
+  end
+end
+
 // PEs
 logic [DATA_SIZE - 1:0] to_PE_filter;
 logic [DATA_SIZE - 1:0] to_PE_ifmap;
 logic [DATA_SIZE - 1:0] to_PE_ispum[NUMS_PE_COL * NUMS_PE_ROW - 1 :0];
+logic [DATA_SIZE - 1:0] to_PE_pointwise_ispum[NUMS_PE_COL * 2 - 1 :0];
 logic [DATA_SIZE * NUMS_PE_COL * NUMS_PE_ROW - 1:0] out_PE_ospum;
 
 logic [NUMS_PE_COL * NUMS_PE_ROW - 1 :0] filter_ready;
 logic [NUMS_PE_COL * NUMS_PE_ROW - 1 :0] ifmap_ready;
 logic [NUMS_PE_COL * NUMS_PE_ROW - 1 :0] ipsum_ready;
+logic [NUMS_PE_COL * NUMS_PE_ROW - 1 :0] to_GIN_ipsum_ready;
+logic [NUMS_PE_COL * 2 - 1 :0] pointwise_ipsum_ready;
 logic [NUMS_PE_COL * NUMS_PE_ROW - 1 :0] opsum_ready;
 
 logic [NUMS_PE_COL * NUMS_PE_ROW - 1 :0] filter_valid;
 logic [NUMS_PE_COL * NUMS_PE_ROW - 1 :0] ifmap_valid;
 logic [NUMS_PE_COL * NUMS_PE_ROW - 1 :0] ipsum_valid;
+logic [NUMS_PE_COL * 2 - 1 :0] pointwise_ipsum_valid;
 logic [NUMS_PE_COL * NUMS_PE_ROW - 1 :0] opsum_valid;
 genvar i_pe;
 generate
+  /*
+   * pe index                                                       addition direction ↓
+   * col[7] col[6] col[5] col[4] col[3] col[2] col[1] col[0]
+   *     47     46     45     44     43    42      41     40 row[5]
+   *     39     38     37     36     35    34      33     32 row[4]
+   *     31     30     29     28     27    26      25     24 row[3] <- super row
+   *     23     22     21     20     19    18      17     16 row[2]
+   *     15     14     13     12     11    10       9      8 row[1]
+   *      7      6      5      4      3     2       1      0 row[0] <- super row
+   */
   for (i_pe = 0;i_pe < NUMS_PE_COL * NUMS_PE_ROW ;i_pe=i_pe+1 ) begin: PE_dachi
-    PE pe(
-      .clk(clk),
-      .rst(rst),
-      .PE_en(PE_en[i_pe]),
-      .i_config(PE_config),
+    if((i_pe / NUMS_PE_COL) % 3 == 0)begin // row0 or row3
+      SUPER super_pe(
+        .clk(clk),
+        .rst(rst),
+        .PE_en(PE_en[i_pe]),
+        .i_config(PE_config),
 
-      .ifmap(to_PE_ifmap),
-      .filter(to_PE_filter),
-      .ipsum(to_PE_ispum[i_pe]),
-			.opsum(out_PE_ospum[DATA_SIZE * i_pe +: DATA_SIZE]),
+        .ifmap(to_PE_ifmap),
+        .filter(to_PE_filter),
+        .depthwise_ipsum(to_PE_ispum[i_pe]),
+        .pointwise_ipsum(to_PE_pointwise_ispum[(i_pe / 24) * NUMS_PE_COL + i_pe % NUMS_PE_COL]),
+        .opsum(out_PE_ospum[DATA_SIZE * i_pe +: DATA_SIZE]),
 
-      .ifmap_valid(ifmap_valid[i_pe]),
-      .filter_valid(filter_valid[i_pe]),
-      .ipsum_valid(ipsum_valid[i_pe]),
-      .opsum_valid(opsum_valid[i_pe]),
-      
-      .ifmap_ready(ifmap_ready[i_pe]),
-      .filter_ready(filter_ready[i_pe]),
-      .ipsum_ready(ipsum_ready[i_pe]),
-			.opsum_ready(opsum_ready[i_pe])
-    );
+        .ifmap_valid(ifmap_valid[i_pe]),
+        .filter_valid(filter_valid[i_pe]),
+        .depthwise_ipsum_valid(ipsum_valid[i_pe]),
+        .pointwise_ipsum_valid(pointwise_ipsum_valid[(i_pe / 24) * NUMS_PE_COL + i_pe % NUMS_PE_COL]),
+        .opsum_valid(opsum_valid[i_pe]),
+        
+        .ifmap_ready(ifmap_ready[i_pe]),
+        .filter_ready(filter_ready[i_pe]),
+        .depthwise_ipsum_ready(ipsum_ready[i_pe]),
+        .pointwise_ipsum_ready(pointwise_ipsum_ready[(i_pe / 24) * NUMS_PE_COL + i_pe % NUMS_PE_COL]),
+        .opsum_ready(opsum_ready[i_pe])
+      );
+    end 
+    else begin
+      PE pe(
+        .clk(clk),
+        .rst(rst),
+        .PE_en(PE_en[i_pe]),
+        .i_config(PE_config),
+
+        .ifmap(to_PE_ifmap),
+        .filter(to_PE_filter),
+        .ipsum(to_PE_ispum[i_pe]),
+		  	.opsum(out_PE_ospum[DATA_SIZE * i_pe +: DATA_SIZE]),
+
+        .ifmap_valid(ifmap_valid[i_pe]),
+        .filter_valid(filter_valid[i_pe]),
+        .ipsum_valid(ipsum_valid[i_pe]),
+        .opsum_valid(opsum_valid[i_pe]),
+
+        .ifmap_ready(ifmap_ready[i_pe]),
+        .filter_ready(filter_ready[i_pe]),
+        .ipsum_ready(ipsum_ready[i_pe]),
+        .opsum_ready(opsum_ready[i_pe])
+      );
+    end
   end
 endgenerate
 
@@ -180,26 +236,82 @@ GIN gin_ipsum(
   .set_YID(set_YID),
   .YID_scan_in(ipsum_YID_scan_in),
 
-  .PE_ready(ipsum_ready),
+  .PE_ready(to_GIN_ipsum_ready),
   .PE_valid(out_GIN_ipsum_valid),
   .PE_data(out_GIN_ipsum)
 );
 integer i;
 always @(*) begin
-	for (i = 0;i < NUMS_PE_COL * NUMS_PE_ROW ;i=i+1 ) begin
-		if(i >= NUMS_PE_COL * NUMS_PE_ROW - NUMS_PE_COL) begin
-			ipsum_valid[i] = out_GIN_ipsum_valid[i];
-			to_PE_ispum[i] = out_GIN_ipsum;
-		end
-		else begin
-			ipsum_valid[i]  = (LN_config[(i >> 3)])? 
-        opsum_valid[i + 8] : 
-        out_GIN_ipsum_valid[i];
-			to_PE_ispum[i] = (LN_config[(i >> 3)])? 
-        out_PE_ospum[DATA_SIZE * (i + 8) +: DATA_SIZE] : 
-        out_GIN_ipsum;
-		end
-	end
+  for (i = 0;i < NUMS_PE_COL * NUMS_PE_ROW ;i=i+1 ) begin
+    if(depthwise && i >= NUMS_PE_COL * 5 )begin
+      to_GIN_ipsum_ready[i] = pointwise_ipsum_ready[((i-16) / 24) * NUMS_PE_COL + (i-16) % NUMS_PE_COL];
+    end
+    else if(depthwise && i >= NUMS_PE_COL * 2 && i < NUMS_PE_COL * 3)begin
+      to_GIN_ipsum_ready[i] = pointwise_ipsum_ready[((i-16) / 24) * NUMS_PE_COL + (i-16) % NUMS_PE_COL];
+    end
+    else begin
+      to_GIN_ipsum_ready[i] = ipsum_ready[i];
+    end
+  end
+end
+always @(*) begin
+  if(depthwise)begin
+    for (i = 0;i < NUMS_PE_COL * NUMS_PE_ROW ;i=i+1 ) begin
+      if((i >= NUMS_PE_COL * 3 && i < NUMS_PE_COL * 4)) begin // row[3]
+        pointwise_ipsum_valid[(i / 24) * NUMS_PE_COL + i % NUMS_PE_COL] = out_GIN_ipsum_valid[i+16];
+        to_PE_pointwise_ispum[(i / 24) * NUMS_PE_COL + i % NUMS_PE_COL] = out_GIN_ipsum;
+      end
+      else if((i >= NUMS_PE_COL * 0 && i < NUMS_PE_COL * 1))begin // row[0]
+        pointwise_ipsum_valid[i] = (LN_config[2])? opsum_valid[i + 24] : out_GIN_ipsum_valid[i+16];
+        to_PE_pointwise_ispum[i] = (LN_config[2])? out_PE_ospum[DATA_SIZE * (i+24) +: DATA_SIZE]:out_GIN_ipsum;
+      end
+      else begin end
+    end
+  end
+  else begin
+    for (i = 0;i < 16 ;i=i+1 ) begin
+      pointwise_ipsum_valid[i] = 1'b0;
+      to_PE_pointwise_ispum[i] = 32'b0;
+    end
+  end
+end
+always @(*) begin
+  if(depthwise)begin
+    for (i = 0;i < NUMS_PE_COL * NUMS_PE_ROW ;i=i+1 ) begin
+      if(i >= NUMS_PE_COL * NUMS_PE_ROW - NUMS_PE_COL) begin // row[5]
+        ipsum_valid[i] = 1'b1;
+        to_PE_ispum[i] = `DATA_BITS'b0;
+      end
+      else if(i >= NUMS_PE_COL * 2 && i < NUMS_PE_COL * 3)begin // row[2] i>>3=2
+        ipsum_valid[i] = 1'b1;
+        to_PE_ispum[i] = `DATA_BITS'b0;
+      end
+      else begin // row[0] row[1] row[3] row[4]
+        ipsum_valid[i]  = (LN_config[(i >> 3)])? 
+          opsum_valid[i + 8] : 
+          out_GIN_ipsum_valid[i];
+        to_PE_ispum[i] = (LN_config[(i >> 3)])? 
+          out_PE_ospum[DATA_SIZE * (i + 8) +: DATA_SIZE] : 
+          out_GIN_ipsum;
+      end
+    end
+  end
+  else begin
+	  for (i = 0;i < NUMS_PE_COL * NUMS_PE_ROW ;i=i+1 ) begin
+	  	if(i >= NUMS_PE_COL * NUMS_PE_ROW - NUMS_PE_COL) begin
+        ipsum_valid[i] = out_GIN_ipsum_valid[i];
+        to_PE_ispum[i] = out_GIN_ipsum;
+      end
+      else begin
+        ipsum_valid[i]  = (LN_config[(i >> 3)])? 
+          opsum_valid[i + 8] : 
+          out_GIN_ipsum_valid[i];
+        to_PE_ispum[i] = (LN_config[(i >> 3)])? 
+          out_PE_ospum[DATA_SIZE * (i + 8) +: DATA_SIZE] : 
+          out_GIN_ipsum;
+      end
+    end
+  end
 end
 
 // GON
@@ -227,6 +339,22 @@ GON gon_opsum(
 
 always @(*) begin
   for (i = 0; i < NUMS_PE_COL * NUMS_PE_ROW; i = i + 1) begin
+    if(depthwise)begin
+      if(i < NUMS_PE_COL) begin
+        opsum_ready[i] = out_GON_ready[i];
+      end
+      else if(i >= NUMS_PE_COL * 3 && i < NUMS_PE_COL * 4)begin // row[3]
+        opsum_ready[i] = (LN_config[(i >> 3) - 1])? 
+          pointwise_ipsum_ready[((i-24) / 24) * NUMS_PE_COL + (i-24) % NUMS_PE_COL] : 
+          out_GON_ready[i];
+      end
+      else begin
+        opsum_ready[i] = (LN_config[(i >> 3) - 1])? 
+          ipsum_ready[i - 8] : 
+          out_GON_ready[i];
+      end
+    end
+    else begin
       if(i < NUMS_PE_COL) begin
           opsum_ready[i] = out_GON_ready[i];
       end
@@ -235,6 +363,7 @@ always @(*) begin
             ipsum_ready[i - 8] : 
             out_GON_ready[i];
       end
+    end
   end
 end
 endmodule
