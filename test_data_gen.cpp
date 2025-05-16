@@ -248,6 +248,7 @@ int main(){
             }
         }
     }
+    /////////////////////////////////////////////// DON'T LOOK THIS SECTION
     // depthwise filter
     // int pointwise_limit = p;
     // int num_filter = 1;
@@ -333,6 +334,8 @@ int main(){
             }
         }
     }
+    /////////////////////////////////////////////// DON'T LOOK THIS SECTION
+
     //output opsum
     for (int row = 0; row < OUT_HEIGHT; row++){
         for (int col = 0; col < OUT_WIDTH; col++){
