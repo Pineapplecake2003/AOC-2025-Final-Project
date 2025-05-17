@@ -5,9 +5,9 @@
 #define q               4
 #define r               1
 #define p               4
-#define t               1
+#define t               4
 #define IN_CHANNEL      q*r
-#define IN_HEIGHT       18
+#define IN_HEIGHT       6
 #define IN_WIDTH        18
 #define KERNEL_SIZE_W   3
 #define KERNEL_SIZE_H   3
@@ -292,6 +292,7 @@ int main(){
     //     num_filter = 5;
     // }
     int point_num = 0;
+    int pointwise_filter_num = 0;
     for (int tt = 0; tt < t; tt++){
         for (int row = 0; row < KERNEL_SIZE_H; row++){
             for (int col = 0; col < KERNEL_SIZE_W; col++){
@@ -302,18 +303,18 @@ int main(){
         }
         for (int aa = 0; aa < 3; aa++){
             for (int ic = 0; ic < IN_CHANNEL; ic++){
-                fprintf(filter_file, "%d,", pointwise_filter[0][ic][0][0]);
+                fprintf(filter_file, "%d,", pointwise_filter[pointwise_filter_num][ic][0][0]);
             }
             for (int ic = 0; ic < IN_CHANNEL; ic++){
-                fprintf(filter_file, "%d,", pointwise_filter[1][ic][0][0]);
+                fprintf(filter_file, "%d,", pointwise_filter[pointwise_filter_num+1][ic][0][0]);
             }
             for (int ic = 0; ic < IN_CHANNEL; ic++){
-                fprintf(filter_file, "%d,", pointwise_filter[2][ic][0][0]);
+                fprintf(filter_file, "%d,", pointwise_filter[pointwise_filter_num+2][ic][0][0]);
             }
         }
         for (int aa = 0; aa < 3; aa++){
             for (int ic = 0; ic < IN_CHANNEL; ic++){
-                fprintf(filter_file, "%d,", pointwise_filter[3][ic][0][0]);
+                fprintf(filter_file, "%d,", pointwise_filter[pointwise_filter_num+3][ic][0][0]);
             }
             for (int ic = 0; ic < IN_CHANNEL; ic++){
                 fprintf(filter_file, "%d,", 0);
@@ -322,7 +323,7 @@ int main(){
                 fprintf(filter_file, "%d,", 0);
             }
         }
-        for (int aa = 0; aa < 3; aa++){
+        for (int aa = 0; aa < 3 && p == 4; aa++){
             for (int ic = 0; ic < IN_CHANNEL; ic++){
                 fprintf(filter_file, "%d,", 0);
             }
@@ -333,6 +334,7 @@ int main(){
                 fprintf(filter_file, "%d,", 0);
             }
         }
+        pointwise_filter_num += 4;
     }
     /////////////////////////////////////////////// DON'T LOOK THIS SECTION
 
