@@ -27,6 +27,7 @@ reg  [4:0] F; // output column
 reg  [2:0] q; // input channel
 reg  [1:0] filter_rs;
 reg depthwise;
+// split config
 always@(*) begin
 	depthwise = i_config_reg[12];
 	filter_rs = i_config_reg[11:10] + 2'b1;
@@ -69,17 +70,109 @@ reg [`IFMAP_INDEX_BIT - 1:0]  conv_ifmap_cnt;
 reg [`FILTER_INDEX_BIT - 1:0] conv_filter_cnt;
 reg [`OFMAP_INDEX_BIT - 1:0]  conv_result_cnt;
 
+// used for pop out ifmap element
+wire [3:0] shift;
+assign shift = (q >= 1 && q <= 4) ? {1'b0, q} : 4'd12;
+
 //split filter & ifmap 
 reg [`FILTER_SIZE - 1:0] split_filter[0:3];
 reg [`IFMAP_SIZE - 1:0] split_ifmap[0:3];
-
-wire [3:0] shift;
-assign shift = (q >= 1 && q <= 4) ? {1'b0, q} : 4'd12;
 always@(*) begin
 	{split_filter[3], split_filter[2], split_filter[1], split_filter[0]} = filter;
 	{split_ifmap[3], split_ifmap[2], split_ifmap[1], split_ifmap[0]} = ifmap;
 end
 
+// counters logic
+always @(posedge clk or posedge rst) begin
+	if(rst)begin
+		ifmap_spad_cnt <= `IFMAP_INDEX_BIT'b0;
+		filter_spad_cnt <= `FILTER_INDEX_BIT'b0;
+		psum_spad_cnt <= `OFMAP_INDEX_BIT'b0;
+    
+		conv_ifmap_cnt <= `IFMAP_INDEX_BIT'b0;
+		conv_filter_cnt <= `FILTER_INDEX_BIT'b0;
+		conv_result_cnt <= `OFMAP_INDEX_BIT'b0;
+	end
+	else begin
+		case (state)
+			READ_FILTER:begin
+				filter_spad_cnt <= (filter_valid)? 
+					filter_spad_cnt + {3'b0, q}:
+					filter_spad_cnt;
+			end
+			READ_IFMAP:begin
+				ifmap_spad_cnt <= (ifmap_valid)?
+					ifmap_spad_cnt + {1'b0, q}:
+					ifmap_spad_cnt;
+			end
+			READ_IPSUM:begin
+				psum_spad_cnt <= (ipsum_valid)?
+					psum_spad_cnt + `OFMAP_INDEX_BIT'b1:
+					psum_spad_cnt;
+			end
+			CONV:begin
+				conv_filter_cnt <= conv_filter_cnt + `FILTER_INDEX_BIT'b1;
+				if(depthwise)begin
+					/**
+					 * assume q=3
+					 * time ----------------------->
+					 * filter cnt 0 1 2 3 4 5 6 7 8
+					 * ifmap cnt  0 1 2 3 4 5 6 7 8
+					 * psum cnt   0 1 2 0 1 2 0 1 2
+					 */
+					conv_ifmap_cnt <= conv_ifmap_cnt + `IFMAP_INDEX_BIT'b1;
+					if(conv_result_cnt == q[1:0]-2'b1)begin
+						// to depthwise ipsum limit(`q` channel)
+						conv_result_cnt <= `OFMAP_INDEX_BIT'b0;
+					end
+					else begin
+						conv_result_cnt <= conv_result_cnt + `OFMAP_INDEX_BIT'b1;
+					end
+				end
+				else begin
+					/**
+					 * assume q=3
+					 * 				filer_num = 0				filer_num = 1
+					 * filter cnt  0  1  2  3  4  5  6  7  8 | 9 10 11 12 13 14 15 16 17
+					 * ifmap cnt   0  1  2  3  4  5  6  7  8 | 0  1  2  3  4  5  6  7  8
+					 * psum cnt    0  0  0  0  0  0  0  0  0 | 1  1  1  1  1  1  1  1  1 
+					 * time ------------------------------------------------------------>
+					 */
+					if(conv_ifmap_cnt == ifmap_spad_cnt - `IFMAP_INDEX_BIT'b1)begin
+						conv_ifmap_cnt <= `IFMAP_INDEX_BIT'b0;
+						conv_result_cnt <= conv_result_cnt + `OFMAP_INDEX_BIT'b1;
+					end
+					else begin
+						conv_ifmap_cnt <= conv_ifmap_cnt + `IFMAP_INDEX_BIT'b1;
+					end
+				end
+			end
+			WRITE_OPSUM:begin
+				conv_result_cnt <= (opsum_ready)?
+					conv_result_cnt + `OFMAP_INDEX_BIT'b1:
+					conv_result_cnt;
+				if(next_state == READ_IFMAP)begin
+					//reset conv cnt
+					conv_result_cnt <= `OFMAP_INDEX_BIT'b0;
+					conv_ifmap_cnt <= `IFMAP_INDEX_BIT'b0;
+					conv_filter_cnt <= `FILTER_INDEX_BIT'b0;
+					//reset psum_cnt
+					psum_spad_cnt <= `OFMAP_INDEX_BIT'b0;
+					// ifmap pointer decrease by q
+					ifmap_spad_cnt <= ifmap_spad_cnt - {1'b0, q};
+				end
+			end
+			default: begin
+				ifmap_spad_cnt <= `IFMAP_INDEX_BIT'b0;
+				filter_spad_cnt <= `FILTER_INDEX_BIT'b0;
+				psum_spad_cnt <= `OFMAP_INDEX_BIT'b0;
+				conv_ifmap_cnt <= `IFMAP_INDEX_BIT'b0;
+				conv_filter_cnt <= `FILTER_INDEX_BIT'b0;
+				conv_result_cnt <= `OFMAP_INDEX_BIT'b0;
+			end
+		endcase
+	end
+end
 always @(posedge clk or posedge rst) begin
 	if(rst)begin
 		for (i = 0;i <`IFMAP_SPAD_LEN ; i = i + 1) begin
@@ -91,23 +184,12 @@ always @(posedge clk or posedge rst) begin
 		for (i = 0;i <`OFMAP_SPAD_LEN ; i = i + 1) begin
 			psum_spad[i] <= `PSUM_SIZE'b0;
 		end
-		ifmap_spad_cnt <= `IFMAP_INDEX_BIT'b0;
-		filter_spad_cnt <= `FILTER_INDEX_BIT'b0;
-		psum_spad_cnt <= `OFMAP_INDEX_BIT'b0;
-    
-		conv_ifmap_cnt <= `IFMAP_INDEX_BIT'b0;
-		conv_filter_cnt <= `FILTER_INDEX_BIT'b0;
-		conv_result_cnt <= `OFMAP_INDEX_BIT'b0;
 	end
 	else begin
 		case (state)
-			IDLE:begin
-				ifmap_spad_cnt <= `IFMAP_INDEX_BIT'b0;
-				filter_spad_cnt <= `FILTER_INDEX_BIT'b0;
-				psum_spad_cnt <= `OFMAP_INDEX_BIT'b0;
-			end 
 			READ_FILTER:begin
-				psum_spad_cnt <= `OFMAP_INDEX_BIT'b0;
+				// read four elements at a time, 
+				// but `filter_spad_cnt`(as pointer) increase by `q` once.
 				if(filter_valid)begin
 					filter_spad[
 						filter_spad_cnt + `FILTER_INDEX_BIT'd0
@@ -121,10 +203,11 @@ always @(posedge clk or posedge rst) begin
 					filter_spad[
 						filter_spad_cnt + `FILTER_INDEX_BIT'd3
 					] <=  split_filter[3];
-					filter_spad_cnt <= filter_spad_cnt + {3'b0, q};
 				end
 			end
 			READ_IFMAP:begin
+				// read four elements at a time, 
+				// but `ifmap_spad_cnt`(as pointer) increase by `q` once.
 				if(ifmap_valid)begin
 					ifmap_spad[
 						ifmap_spad_cnt + `IFMAP_INDEX_BIT'd0
@@ -138,13 +221,11 @@ always @(posedge clk or posedge rst) begin
 					ifmap_spad[
 						ifmap_spad_cnt + `IFMAP_INDEX_BIT'd3
 					] <= split_ifmap[3]  ^ `IFMAP_SIZE'd128;
-					ifmap_spad_cnt <= ifmap_spad_cnt + {1'b0, q};
 				end
 			end
 			READ_IPSUM:begin
 				if(ipsum_valid)begin
 					psum_spad[psum_spad_cnt] <= ipsum;
-					psum_spad_cnt <= psum_spad_cnt + `OFMAP_INDEX_BIT'b1;
 				end
 			end
 			CONV:begin
@@ -152,46 +233,15 @@ always @(posedge clk or posedge rst) begin
 				psum_spad[conv_result_cnt] <= psum_spad[conv_result_cnt] + (
 					filter_spad[conv_filter_cnt] * ifmap_spad[conv_ifmap_cnt]
 				);
-				if(depthwise)begin
-					if(conv_result_cnt == q[1:0]-2'b1)begin
-						conv_result_cnt <= `OFMAP_INDEX_BIT'b0;
-					end
-					else begin
-						conv_result_cnt <= conv_result_cnt + `OFMAP_INDEX_BIT'b1;
-					end
-					conv_filter_cnt <= conv_filter_cnt + `FILTER_INDEX_BIT'b1;
-					conv_ifmap_cnt <= conv_ifmap_cnt + `IFMAP_INDEX_BIT'b1;
-				end
-				else begin
-					// filter, ifmap, and psum pointer update.
-					conv_filter_cnt <= conv_filter_cnt + `FILTER_INDEX_BIT'b1;
-					if(conv_ifmap_cnt == ifmap_spad_cnt - `IFMAP_INDEX_BIT'b1)begin
-						conv_ifmap_cnt <= `IFMAP_INDEX_BIT'b0;
-						conv_result_cnt <= conv_result_cnt + `OFMAP_INDEX_BIT'b1;
-					end
-					else begin
-						conv_ifmap_cnt <= conv_ifmap_cnt + `IFMAP_INDEX_BIT'b1;
-					end
-				end
 			end
 			WRITE_OPSUM:begin
-			if(opsum_ready)begin
-				conv_result_cnt <= conv_result_cnt + `OFMAP_INDEX_BIT'b1;
-			end
 			if(next_state == READ_IFMAP)begin
-				// push ifmap
+				// pop out the oldest ifmap
+				// TODO stride == 2
 				for (i = 0; i < 12; i++) 
 					ifmap_spad[i] <= (i[2:0] + shift < 12) ? 
 						ifmap_spad[i[2:0] + shift] : 
 						`IFMAP_SIZE'b0;
-				//reset conv cnt
-				conv_result_cnt <= `OFMAP_INDEX_BIT'b0;
-				conv_ifmap_cnt <= `IFMAP_INDEX_BIT'b0;
-				conv_filter_cnt <= `FILTER_INDEX_BIT'b0;
-				//reset psum_cnt
-				psum_spad_cnt <= `OFMAP_INDEX_BIT'b0;
-				// ifmap pointer decrease by q
-				ifmap_spad_cnt <= ifmap_spad_cnt - {1'b0, q};
 			end
 			end
 			default: begin
@@ -204,12 +254,6 @@ always @(posedge clk or posedge rst) begin
 				for (i = 0;i <`OFMAP_SPAD_LEN ; i = i + 1) begin
 					psum_spad[i] <= `PSUM_SIZE'b0;
 				end
-				ifmap_spad_cnt <= `IFMAP_INDEX_BIT'b0;
-				filter_spad_cnt <= `FILTER_INDEX_BIT'b0;
-				psum_spad_cnt <= `OFMAP_INDEX_BIT'b0;
-				conv_ifmap_cnt <= `IFMAP_INDEX_BIT'b0;
-				conv_filter_cnt <= `FILTER_INDEX_BIT'b0;
-				conv_result_cnt <= `OFMAP_INDEX_BIT'b0;
 			end
 		endcase
 	end
@@ -319,8 +363,12 @@ always @(*) begin
 			end
 		end
 		CONV:begin
-			if(!depthwise)begin
-				if(conv_filter_cnt == filter_spad_cnt - `FILTER_INDEX_BIT'b1)begin
+			if(depthwise)begin
+				if(
+					{1'b0,conv_result_cnt} == (q-1) && 
+					conv_ifmap_cnt == ((filter_rs * q) -1)
+				)begin
+					// Go to at the waveform.
 					next_state = WRITE_OPSUM;
 				end
 				else begin
@@ -328,7 +376,8 @@ always @(*) begin
 				end
 			end
 			else begin
-				if({1'b0,conv_result_cnt} == (q-1) && conv_ifmap_cnt == ((filter_rs * q) -1))begin
+				if(conv_filter_cnt == filter_spad_cnt - `FILTER_INDEX_BIT'b1)begin
+					// Go to at the waveform.
 					next_state = WRITE_OPSUM;
 				end
 				else begin

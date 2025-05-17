@@ -30,6 +30,9 @@ VERILATOR_FLAGS += --build
 VERILATOR_FLAGS += --trace
 VERILATOR_FLAGS += --trace-max-array 1024
 
+# assign x when wire/reg not driven
+VERILATOR_FLAGS += -x-assign unique
+
 # Run Verilator in debug mode
 # VERILATOR_FLAGS += --debug
 

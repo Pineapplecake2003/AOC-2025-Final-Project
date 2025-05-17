@@ -541,7 +541,7 @@ void check_output(const vector<vector<vector<int>>>& opsum_data, const vector<ve
         inFile.close();
     }
     if (time >= MAX_CYCLE) cout << "Simulation timeout" << endl;
-    else cout << "Simulation time: " << time << " cycles"<<endl;
+    else cout << "Simulation time: " << time/10 <<" cycles"<<endl;
 }
 
 void print_config_data(vector<int>& GIN_ifmap_XID_config, vector<int>& GIN_ifmap_YID_config,
@@ -714,6 +714,13 @@ int main(int argc, char** argv) {
                           send_ipsum_end, &index, t_H, t_W);
             } else {
                 store_data(dut, opsum, &index, store_opsum_end, send_ifmap_end, send_ipsum_end, t_H, t_W);
+                // one more cycle, use for check all PE state return IDLE
+                if(store_opsum_end){
+                    step(dut, fp, time);
+                    step(dut, fp, time);
+                    step(dut, fp, time);
+                    step(dut, fp, time);
+                }
             }
         }
         if (store_opsum_end) break;

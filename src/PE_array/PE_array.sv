@@ -256,16 +256,15 @@ always @(*) begin
 end
 always @(*) begin
   if(depthwise)begin
-    for (i = 0;i < NUMS_PE_COL * NUMS_PE_ROW ;i=i+1 ) begin
-      if((i >= NUMS_PE_COL * 3 && i < NUMS_PE_COL * 4)) begin // row[3]
-        pointwise_ipsum_valid[(i / 24) * NUMS_PE_COL + i % NUMS_PE_COL] = out_GIN_ipsum_valid[i+16];
-        to_PE_pointwise_ispum[(i / 24) * NUMS_PE_COL + i % NUMS_PE_COL] = out_GIN_ipsum;
-      end
-      else if((i >= NUMS_PE_COL * 0 && i < NUMS_PE_COL * 1))begin // row[0]
+    for (i = 0;i < 16 ;i=i+1 ) begin
+      if(i>>3 == 1)begin// row[3]
+        pointwise_ipsum_valid[i] = out_GIN_ipsum_valid[i+32];
+        to_PE_pointwise_ispum[i] = out_GIN_ipsum;
+      end 
+      else begin
         pointwise_ipsum_valid[i] = (LN_config[2])? opsum_valid[i + 24] : out_GIN_ipsum_valid[i+16];
         to_PE_pointwise_ispum[i] = (LN_config[2])? out_PE_ospum[DATA_SIZE * (i+24) +: DATA_SIZE]:out_GIN_ipsum;
       end
-      else begin end
     end
   end
   else begin

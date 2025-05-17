@@ -131,14 +131,10 @@ always @(posedge clk or posedge rst) begin
 		conv_ifmap_cnt <= `IFMAP_INDEX_BIT'b0;
 		conv_filter_cnt <= `FILTER_INDEX_BIT'b0;
 		conv_result_cnt <= `OFMAP_INDEX_BIT'b0;
+		point_psum_spad_cnt <= `OFMAP_INDEX_BIT'b0;
 	end
 	else begin
 		case (state)
-			IDLE:begin
-				ifmap_spad_cnt <= `IFMAP_INDEX_BIT'b0;
-				filter_spad_cnt <= `FILTER_INDEX_BIT'b0;
-				psum_spad_cnt <= `OFMAP_INDEX_BIT'b0;
-			end 
 			READ_FILTER:begin
 				psum_spad_cnt <= `OFMAP_INDEX_BIT'b0;
 				if (filter_valid)
@@ -157,10 +153,17 @@ always @(posedge clk or posedge rst) begin
 			READ_POINT_IPSUM: begin
 				if(pointwise_ipsum_valid)
 					point_psum_spad_cnt <= point_psum_spad_cnt - `OFMAP_INDEX_BIT'b1;
-				if(next_state == DEPTH_CONV)
+				else if(next_state == DEPTH_CONV)
 					point_psum_spad_cnt <= 2'd3;
 			end
 			DEPTH_CONV:begin
+				/**
+				 * assume q=3
+				 * time ----------------------->
+				 * filter cnt 0 1 2 3 4 5 6 7 8
+				 * ifmap cnt  0 1 2 3 4 5 6 7 8
+				 * psum cnt   0 1 2 0 1 2 0 1 2
+				 */
 				if(conv_result_cnt == q[1:0]-2'b1)begin
 					conv_result_cnt <= `OFMAP_INDEX_BIT'b0;
 				end
@@ -174,8 +177,18 @@ always @(posedge clk or posedge rst) begin
 				end
 			end
 			CONV: begin
-				// filter, ifmap, and psum pointer update.
 				if(depthwise)begin
+					// Perform pointwise convolution.
+					/**
+					 * assume q=3, p=4
+					 * pointfiler_num	0		1		2			3
+					 * filter cnt  0  1  2 |  3  4  5 | 6  7  8 |  9 10 11
+					 * ifmap cnt   9 10 11 | 12 13 14 |15 16 17 | 18 19 20
+					 * psum cnt    0  0  0 |  1  1  1 | 2  2  2 |  3  3  3
+					 * time ----------------------------------------------->
+					 * 
+					 * note.  conv_ifmap_cnt now is pointing to psum_spad[0:3].
+					 */
 					conv_filter_cnt <= conv_filter_cnt + `FILTER_INDEX_BIT'b1;
 					if(conv_ifmap_cnt == {1'b0, q}-4'b1)begin
 						conv_ifmap_cnt <= `IFMAP_INDEX_BIT'b0;
@@ -186,6 +199,15 @@ always @(posedge clk or posedge rst) begin
 					end
 				end
 				else begin
+					// normal convolution
+					/**
+					 * assume q=3
+					 * 				filer_num = 0				filer_num = 1
+					 * filter cnt  0  1  2  3  4  5  6  7  8 | 9 10 11 12 13 14 15 16 17
+					 * ifmap cnt   0  1  2  3  4  5  6  7  8 | 0  1  2  3  4  5  6  7  8
+					 * psum cnt    0  0  0  0  0  0  0  0  0 | 1  1  1  1  1  1  1  1  1 
+					 * time ------------------------------------------------------------>
+					 */
 					conv_filter_cnt <= conv_filter_cnt + `FILTER_INDEX_BIT'b1;
 					if(conv_ifmap_cnt == ifmap_spad_cnt - `IFMAP_INDEX_BIT'b1)begin
 						conv_ifmap_cnt <= `IFMAP_INDEX_BIT'b0;
@@ -299,7 +321,8 @@ always @(posedge clk or posedge rst) begin
 			end
 			WRITE_OPSUM:begin
 				if(next_state == READ_IFMAP)begin
-					// push ifmap
+					// pop out the oldest ifmap
+					// TODO stride == 2
 					for (i = 0; i < 12; i++) 
 						ifmap_spad[i] <= (i[2:0] + shift < 12) ? 
 							ifmap_spad[i[2:0] + shift] : 
@@ -335,14 +358,14 @@ end
 // FSM controller
 reg [2:0] state;
 reg [2:0] next_state;
-parameter IDLE          	= 3'd0;
-parameter READ_FILTER   	= 3'd1;
-parameter READ_IFMAP		= 3'd2;
-parameter READ_IPSUM    	= 3'd3;
-parameter READ_POINT_IPSUM  = 3'd4;
-parameter DEPTH_CONV		= 3'd5;
-parameter CONV				= 3'd6;
-parameter WRITE_OPSUM   	= 3'd7;
+parameter IDLE          		= 3'd0;
+parameter READ_FILTER   		= 3'd1;
+parameter READ_IFMAP				= 3'd2;
+parameter READ_IPSUM    		= 3'd3;
+parameter READ_POINT_IPSUM	= 3'd4;
+parameter DEPTH_CONV				= 3'd5;
+parameter CONV							= 3'd6;
+parameter WRITE_OPSUM				= 3'd7;
 
 always @(posedge clk or posedge rst) begin
 	if(rst)begin
