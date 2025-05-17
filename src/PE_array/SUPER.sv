@@ -145,16 +145,16 @@ always @(posedge clk or posedge rst) begin
 					ifmap_spad_cnt <= ifmap_spad_cnt + {1'b0, q};
 			end
 			READ_IPSUM:begin
-				if(depthwise_ipsum_valid)
-					psum_spad_cnt <= psum_spad_cnt + `OFMAP_INDEX_BIT'b1;
 				if(next_state == READ_POINT_IPSUM)
 					point_psum_spad_cnt <= 2'd3;
+				else if (depthwise_ipsum_valid)
+					psum_spad_cnt <= psum_spad_cnt + `OFMAP_INDEX_BIT'b1;
 			end
 			READ_POINT_IPSUM: begin
-				if(pointwise_ipsum_valid)
-					point_psum_spad_cnt <= point_psum_spad_cnt - `OFMAP_INDEX_BIT'b1;
-				else if(next_state == DEPTH_CONV)
+				if(next_state == DEPTH_CONV)
 					point_psum_spad_cnt <= 2'd3;
+				else if(pointwise_ipsum_valid)
+					point_psum_spad_cnt <= point_psum_spad_cnt - `OFMAP_INDEX_BIT'b1;
 			end
 			DEPTH_CONV:begin
 				/**
@@ -238,7 +238,7 @@ always @(posedge clk or posedge rst) begin
 					psum_spad_cnt <= `OFMAP_INDEX_BIT'b0;
 					// ifmap pointer decrease by q
 					ifmap_spad_cnt <= ifmap_spad_cnt - {1'b0, q};
-					point_psum_spad_cnt <= 0;
+					point_psum_spad_cnt <= `OFMAP_INDEX_BIT'b0;
 				end
 			end
 			default: begin
@@ -358,14 +358,14 @@ end
 // FSM controller
 reg [2:0] state;
 reg [2:0] next_state;
-parameter IDLE          		= 3'd0;
-parameter READ_FILTER   		= 3'd1;
-parameter READ_IFMAP				= 3'd2;
-parameter READ_IPSUM    		= 3'd3;
+parameter IDLE				= 3'd0;
+parameter READ_FILTER		= 3'd1;
+parameter READ_IFMAP		= 3'd2;
+parameter READ_IPSUM		= 3'd3;
 parameter READ_POINT_IPSUM	= 3'd4;
-parameter DEPTH_CONV				= 3'd5;
-parameter CONV							= 3'd6;
-parameter WRITE_OPSUM				= 3'd7;
+parameter DEPTH_CONV		= 3'd5;
+parameter CONV				= 3'd6;
+parameter WRITE_OPSUM		= 3'd7;
 
 always @(posedge clk or posedge rst) begin
 	if(rst)begin
@@ -425,7 +425,7 @@ always @(*) begin
 			end
 		end
 		READ_POINT_IPSUM: begin
-			if((3'd7 - {1'b0, point_psum_spad_cnt} == 3'd7) && pointwise_ipsum_valid)begin
+			if(({1'b0, point_psum_spad_cnt} == 3'd4-p) && pointwise_ipsum_valid)begin
 				next_state = DEPTH_CONV;
 			end
 			else begin

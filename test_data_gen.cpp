@@ -4,10 +4,10 @@
 
 #define q               4
 #define r               1
-#define p               4
-#define t               4
+#define p               3
+#define t               1
 #define IN_CHANNEL      q*r
-#define IN_HEIGHT       6
+#define IN_HEIGHT       18
 #define IN_WIDTH        18
 #define KERNEL_SIZE_W   3
 #define KERNEL_SIZE_H   3
