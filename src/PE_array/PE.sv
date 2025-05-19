@@ -40,25 +40,23 @@ end
 always @(posedge clk or posedge rst) begin
 	if(rst)begin
 		i_config_reg <= `CONFIG_SIZE'b0;
-	end
-	else if (PE_en)begin
+	end else if (PE_en)begin
 		i_config_reg <= i_config;
-	end
-	else begin
+	end else begin
 		i_config_reg <= i_config_reg;
 	end
 end
 
 //spad
-reg signed [`IFMAP_SIZE - 1:0] ifmap_spad  [0:`IFMAP_SPAD_LEN - 1];
-reg signed [`FILTER_SIZE - 1:0]filter_spad [0:`FILTER_SPAD_LEN - 1];
-reg signed [`PSUM_SIZE - 1:0]	 psum_spad [0:`OFMAP_SPAD_LEN - 1];
+reg signed [`IFMAP_SIZE - 1:0]  ifmap_spad  [0:`IFMAP_SPAD_LEN - 1];
+reg signed [`FILTER_SIZE - 1:0] filter_spad [0:`FILTER_SPAD_LEN - 1];
+reg signed [`PSUM_SIZE - 1:0]	psum_spad   [0:`OFMAP_SPAD_LEN - 1];
 
-wire [7:0]debug_wire1 = ifmap_spad[conv_ifmap_cnt];
-wire [7:0]debug_wire2 = filter_spad[conv_filter_cnt];
-wire [7:0]debug_wire3 = split_ifmap[3];
-wire [7:0]debug_wire4 = split_ifmap[3]^128;
-wire [31:0]debug_wire5 = filter_spad[conv_filter_cnt] * ifmap_spad[conv_ifmap_cnt];
+wire [7:0] debug_wire1 = ifmap_spad  [conv_ifmap_cnt];
+wire [7:0] debug_wire2 = filter_spad [conv_filter_cnt];
+wire [7:0] debug_wire3 = split_ifmap [3];
+wire [7:0] debug_wire4 = split_ifmap [3]^128;
+wire [31:0]debug_wire5 = filter_spad [conv_filter_cnt] * ifmap_spad[conv_ifmap_cnt];
 
 //spad counter
 reg [`IFMAP_INDEX_BIT - 1:0]  ifmap_spad_cnt;
@@ -76,7 +74,7 @@ assign shift = (q >= 1 && q <= 4) ? {1'b0, q} : 4'd12;
 
 //split filter & ifmap 
 reg [`FILTER_SIZE - 1:0] split_filter[0:3];
-reg [`IFMAP_SIZE - 1:0] split_ifmap[0:3];
+reg [`IFMAP_SIZE - 1:0]  split_ifmap[0:3];
 always@(*) begin
 	{split_filter[3], split_filter[2], split_filter[1], split_filter[0]} = filter;
 	{split_ifmap[3], split_ifmap[2], split_ifmap[1], split_ifmap[0]} = ifmap;
@@ -92,8 +90,7 @@ always @(posedge clk or posedge rst) begin
 		conv_ifmap_cnt <= `IFMAP_INDEX_BIT'b0;
 		conv_filter_cnt <= `FILTER_INDEX_BIT'b0;
 		conv_result_cnt <= `OFMAP_INDEX_BIT'b0;
-	end
-	else begin
+	end else begin
 		case (state)
 			READ_FILTER:begin
 				filter_spad_cnt <= (filter_valid)? 
