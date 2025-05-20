@@ -1,6 +1,7 @@
 /wave/*.vcd
 /obj_dir/*
 /.vscode/*
+/logs/*
 /picture/*
 test.*
 *.out
