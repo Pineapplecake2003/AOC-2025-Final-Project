@@ -50,12 +50,6 @@ module PE (
     logic signed [`FILTER_SIZE - 1:0] filter_spad [0:`FILTER_SPAD_LEN - 1];
     logic signed [`PSUM_SIZE - 1:0]   psum_spad   [0:`OFMAP_SPAD_LEN - 1];
 
-    wire [7:0]  debug_wire1 = ifmap_spad  [conv_ifmap_cnt];
-    wire [7:0]  debug_wire2 = filter_spad [conv_filter_cnt];
-    wire [7:0]  debug_wire3 = split_ifmap [3];
-    wire [7:0]  debug_wire4 = split_ifmap [3]^128;
-    wire [31:0] debug_wire5 = filter_spad [conv_filter_cnt] * ifmap_spad[conv_ifmap_cnt];
-
     //spad counter
     logic [`IFMAP_INDEX_BIT - 1:0]  ifmap_spad_cnt;
     logic [`FILTER_INDEX_BIT - 1:0] filter_spad_cnt;
@@ -81,6 +75,14 @@ module PE (
         {split_ifmap[3], split_ifmap[2], split_ifmap[1], split_ifmap[0]} = ifmap;
     end
 
+    // Debug wires
+    wire [7:0]  debug_wire1 = ifmap_spad  [conv_ifmap_cnt];
+    wire [7:0]  debug_wire2 = filter_spad [conv_filter_cnt];
+    wire [7:0]  debug_wire3 = split_ifmap [3];
+    wire [7:0]  debug_wire4 = split_ifmap [3]^128;
+    wire [31:0] debug_wire5 = filter_spad [conv_filter_cnt] * ifmap_spad[conv_ifmap_cnt];
+    wire        debug_wire6 = skip_mul_filter[conv_filter_cnt] || skip_mul_ifmap[conv_ifmap_cnt];
+
     // FSM state definitions
     typedef enum logic [2:0] {
         IDLE        = 3'd0,
@@ -93,7 +95,10 @@ module PE (
 
     state_t state;
     state_t next_state;
-    
+
+    logic [`FILTER_SPAD_LEN - 1 : 0] skip_mul_filter;
+    logic [`IFMAP_SPAD_LEN - 1 : 0] skip_mul_ifmap;
+
     // counters logic
     always_ff @(posedge clk or posedge rst) begin
         if (rst) begin
@@ -104,6 +109,9 @@ module PE (
             conv_ifmap_cnt  <= '0;
             conv_filter_cnt <= '0;
             conv_result_cnt <= '0;
+
+            skip_mul_filter <= '0;
+            skip_mul_ifmap  <= '0;
             
             for (i = 0; i < `IFMAP_SPAD_LEN;  i++)  ifmap_spad[i]  <= '0;
             for (i = 0; i < `FILTER_SPAD_LEN; i++)  filter_spad[i] <= '0;
@@ -114,6 +122,8 @@ module PE (
                     if (filter_valid) begin
                         for (i = 0; i < 4; i++) begin
                             filter_spad[filter_spad_cnt + i[`FILTER_INDEX_BIT-1:0]] <= split_filter[i];
+                            // TODO: Gate inactive
+                            skip_mul_filter[filter_spad_cnt + i[`FILTER_INDEX_BIT-1:0]] <= split_filter[i] == '0 ? 1'b1 : 1'b0;
                         end
                         filter_spad_cnt <= filter_spad_cnt + {3'b0, q};
                     end
@@ -122,6 +132,8 @@ module PE (
                     if (ifmap_valid) begin
                         for (i = 0; i < 4; i++) begin
                             ifmap_spad[ifmap_spad_cnt + i[`IFMAP_INDEX_BIT-1:0]] <= (split_ifmap[i] ^ `IFMAP_SIZE'd128);
+                            // TODO: Gate inactive
+                            skip_mul_ifmap[ifmap_spad_cnt + i[`IFMAP_INDEX_BIT-1:0]] <= split_ifmap[i] == `IFMAP_SIZE'd128 ? 1'b1 : 1'b0;
                         end
                         ifmap_spad_cnt <= ifmap_spad_cnt + {1'b0, q};
                     end
@@ -133,7 +145,10 @@ module PE (
                     end
                 end
                 CONV: begin
-                    psum_spad[conv_result_cnt] <= psum_spad[conv_result_cnt] + (filter_spad[conv_filter_cnt] * ifmap_spad[conv_ifmap_cnt]);
+                    // TODO: Gate inactive
+                    psum_spad[conv_result_cnt] <= (skip_mul_filter[conv_filter_cnt] || skip_mul_ifmap[conv_ifmap_cnt]) ? 
+                        psum_spad[conv_result_cnt]:
+                        psum_spad[conv_result_cnt] + (filter_spad[conv_filter_cnt] * ifmap_spad[conv_ifmap_cnt]);
                     conv_filter_cnt <= conv_filter_cnt + `FILTER_INDEX_BIT'b1;
                     if (depthwise) begin
                         /**
@@ -179,8 +194,11 @@ module PE (
                         ifmap_spad_cnt <= ifmap_spad_cnt - {1'b0, q};
                         // pop out the oldest ifmap
                         // TODO stride == 2
-                        for (i = 0; i < 12; i++) 
+                        for (i = 0; i < 12; i++) begin
                             ifmap_spad[i] <= (i[2:0] + shift < 12) ? ifmap_spad[i[2:0] + shift] : 'b0;
+                            // TODO: Gate inactive
+                            skip_mul_ifmap[i] <= (i[2:0] + shift < 12) ? skip_mul_ifmap[i[2:0] + shift] : 'b0;
+                        end
                     end
                 end
                 default: begin
