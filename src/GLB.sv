@@ -11,7 +11,7 @@ module GLB (
     reg [7:0] mem [0:65535];
     always @(posedge clk or posedge rst) begin
         if(rst)begin
-            for (i = 0; i < GLB_SIZE; i=i+1) begin
+            for (i = 0; i < `GLB_SIZE; i=i+1) begin
                 mem[address] <= 8'b0;
             end
         end
