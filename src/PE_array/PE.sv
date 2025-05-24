@@ -146,6 +146,8 @@ always @(posedge clk or posedge rst) begin
 						conv_ifmap_cnt <= conv_ifmap_cnt + `IFMAP_INDEX_BIT'b1;
 					end
 				end
+				if(next_state == WRITE_OPSUM)
+					conv_result_cnt <= `OFMAP_INDEX_BIT'b0;
 			end
 			WRITE_OPSUM:begin
 				conv_result_cnt <= (opsum_ready)?

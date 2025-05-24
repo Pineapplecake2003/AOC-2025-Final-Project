@@ -4,8 +4,8 @@
 
 #define q               4
 #define r               6
-#define p               4
-#define t               3
+#define p               2
+#define t               5
 #define IN_CHANNEL      q*r
 #define IN_HEIGHT       1
 #define IN_WIDTH        1

@@ -217,8 +217,10 @@ always @(posedge clk or posedge rst) begin
 						conv_ifmap_cnt <= conv_ifmap_cnt + `IFMAP_INDEX_BIT'b1;
 					end
 				end
-				if(next_state == WRITE_OPSUM)
+				if(next_state == WRITE_OPSUM)begin
 					point_psum_spad_cnt <= 3;
+					conv_result_cnt <= 0;
+				end
 			end
 			WRITE_OPSUM:begin
 				if(depthwise)begin

@@ -637,10 +637,21 @@ void reset_tag(VPE_array* dut) {
 }
 
 void map_para_analysis(int& t_H, int& t_W) {
-    #if (TBA == 14) // linear testbench
+    #if (TBA == 14) // linear testbench 1
         int merge_num = (e + 3 - 1) / 3;
     
         int merged_PE_ARRAY_W = 3 * merge_num;
+        int merged_PE_ARRAY_H = 6 / merge_num;
+    
+        int array_H_tile = merged_PE_ARRAY_H / FILT_ROW;
+        int array_W_tile = merged_PE_ARRAY_W / e;
+    
+        t_H = array_H_tile / r;
+        t_W = t / t_H;
+    #elif (TBA == 15) // linear testbench 2
+        int merge_num = (e + 5 - 1) / 5;
+    
+        int merged_PE_ARRAY_W = 5 * merge_num;
         int merged_PE_ARRAY_H = 6 / merge_num;
     
         int array_H_tile = merged_PE_ARRAY_H / FILT_ROW;
