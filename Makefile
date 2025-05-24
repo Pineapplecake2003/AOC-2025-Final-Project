@@ -151,4 +151,4 @@ gen_test_data_for_pe:
 	./a.out > data.log
 maintainer-copy::
 clean mostlyclean distclean maintainer-clean::
-	-rm -rf obj_dir logs a.out *.log *.dmp *.vpd wave/*.vcd wave/*.fsdb coverage.dat core *.zip release
+	-rm -rf obj_dir logs a.out *.txt *.log *.dmp *.vpd wave/*.vcd wave/*.fsdb coverage.dat core *.zip release
