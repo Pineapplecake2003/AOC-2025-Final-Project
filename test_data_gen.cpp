@@ -3,14 +3,14 @@
 #include <stdlib.h>
 
 #define q               4
-#define r               1
-#define p               3
-#define t               1
+#define r               6
+#define p               4
+#define t               3
 #define IN_CHANNEL      q*r
-#define IN_HEIGHT       18
-#define IN_WIDTH        18
-#define KERNEL_SIZE_W   3
-#define KERNEL_SIZE_H   3
+#define IN_HEIGHT       1
+#define IN_WIDTH        1
+#define KERNEL_SIZE_W   1
+#define KERNEL_SIZE_H   1
 #define OUT_HEIGHT      (IN_HEIGHT - KERNEL_SIZE_H + 1)
 #define OUT_WIDTH       (IN_WIDTH - KERNEL_SIZE_W + 1)
 #define OUT_CHANNEL     p*t
@@ -77,35 +77,52 @@ int main(){
         }
     }
     
-    // -------------------------------------------------------------------------
-    // Depthwise convolution: 每個輸入通道用對應的 3x3 核做卷積
-    for (int c = 0; c < IN_CHANNEL; c++){
-        for (int i = 0; i < OUT_HEIGHT; i++){
-            for (int j = 0; j < OUT_WIDTH; j++){
-                int32_t sum = 0;
-                for (int ki = 0; ki < KERNEL_SIZE_H; ki++){
-                    for (int kj = 0; kj < KERNEL_SIZE_W; kj++){
-                        sum += (int32_t)ifmap[c][i + ki][j + kj] * depthwise_filter[c][ki][kj];
+    #ifdef USE_DEPTHWISE
+        // Depthwise convolution
+        for (int c = 0; c < IN_CHANNEL; c++){
+            for (int i = 0; i < OUT_HEIGHT; i++){
+                for (int j = 0; j < OUT_WIDTH; j++){
+                    int32_t sum = 0;
+                    for (int ki = 0; ki < KERNEL_SIZE_H; ki++){
+                        for (int kj = 0; kj < KERNEL_SIZE_W; kj++){
+                            sum += (int32_t)ifmap[c][i + ki][j + kj] * depthwise_filter[c][ki][kj];
+                        }
                     }
+                    depthwise_result[c][i][j] = sum + depthwise_ipsum[c][i][j];
                 }
-                depthwise_result[c][i][j] = sum + depthwise_ipsum[c][i][j];
             }
         }
-    }
-    
-    // -------------------------------------------------------------------------
-    // Pointwise convolution: 使用 1x1 卷積核來跨通道整合特徵
-    for (int oc = 0; oc < OUT_CHANNEL; oc++){
-        for (int i = 0; i < OUT_HEIGHT; i++){
-            for (int j = 0; j < OUT_WIDTH; j++){
-                int32_t sum = 0;
-                for (int ic = 0; ic < IN_CHANNEL; ic++){
-                    sum += depthwise_result[ic][i][j] * pointwise_filter[oc][ic][0][0];
+
+        // Pointwise convolution
+        for (int oc = 0; oc < OUT_CHANNEL; oc++){
+            for (int i = 0; i < OUT_HEIGHT; i++){
+                for (int j = 0; j < OUT_WIDTH; j++){
+                    int32_t sum = 0;
+                    for (int ic = 0; ic < IN_CHANNEL; ic++){
+                        sum += depthwise_result[ic][i][j] * pointwise_filter[oc][ic][0][0];
+                    }
+                    opsum[oc][i][j] = sum + pointwise_ipsum[oc][i][j];
                 }
-                opsum[oc][i][j] = sum + pointwise_ipsum[oc][i][j];
             }
         }
-    }
+    #else
+        // General convolution (kernel: OUT_CHANNEL x IN_CHANNEL x 1 x 1)
+        for (int oc = 0; oc < OUT_CHANNEL; oc++){
+            for (int i = 0; i < OUT_HEIGHT; i++){
+                for (int j = 0; j < OUT_WIDTH; j++){
+                    int32_t sum = 0;
+                    for (int ic = 0; ic < IN_CHANNEL; ic++){
+                        for (int ki = 0; ki < KERNEL_SIZE_H; ki++){
+                            for (int kj = 0; kj < KERNEL_SIZE_W; kj++){
+                                sum += ifmap[ic][i + ki][j + kj] * pointwise_filter[oc][ic][ki][kj];
+                            }
+                        }
+                    }
+                    opsum[oc][i][j] = sum + pointwise_ipsum[oc][i][j];
+                }
+            }
+        }
+    #endif
     
     // -------------------------------------------------------------------------
     // 印出各個陣列內容
@@ -123,6 +140,7 @@ int main(){
         printf("\n");
     }
     
+    #ifdef USE_DEPTHWISE
     // 印出 depthwise_filter
     printf("depthwise_filter:\n");
     for (int c = 0; c < IN_CHANNEL; c++){
@@ -135,6 +153,7 @@ int main(){
         }
         printf("\n");
     }
+    #endif
     
     // 印出 pointwise_filter (1x1 核)
     printf("pointwise_filter:\n");
@@ -146,6 +165,7 @@ int main(){
         printf("\n");
     }
     
+    #ifdef USE_DEPTHWISE
     // 印出 depthwise_ipsum
     printf("depthwise_ipsum:\n");
     for (int c = 0; c < IN_CHANNEL; c++){
@@ -158,7 +178,8 @@ int main(){
         }
         printf("\n");
     }
-    
+    #endif
+
     // 印出 pointwise_ipsum
     printf("pointwise_ipsum:\n");
     for (int oc = 0; oc < OUT_CHANNEL; oc++){
@@ -171,7 +192,8 @@ int main(){
         }
         printf("\n");
     }
-    
+
+    #ifdef USE_DEPTHWISE
     // 印出 depthwise_result (深度卷積後的結果)
     printf("depthwise_result (after depthwise convolution):\n");
     for (int c = 0; c < IN_CHANNEL; c++){
@@ -184,7 +206,7 @@ int main(){
         }
         printf("\n");
     }
-    
+    #endif
     // 印出 opsum (逐點卷積後的最終結果)
     printf("opsum (final result after pointwise convolution):\n");
     for (int oc = 0; oc < OUT_CHANNEL; oc++){
@@ -248,49 +270,7 @@ int main(){
             }
         }
     }
-    /////////////////////////////////////////////// DON'T LOOK THIS SECTION
-    // depthwise filter
-    // int pointwise_limit = p;
-    // int num_filter = 1;
-    // for (int tt = 0; tt < t; tt++){
-    //     for (int row = 0; row < KERNEL_SIZE_H; row++){
-    //         for (int col = 0; col < KERNEL_SIZE_W; col++){
-    //             for (int c = 0; c < IN_CHANNEL; c++){
-    //                 fprintf(filter_file, "%d,", depthwise_filter[c][row][col]);
-    //             }
-    //         }
-    //     }
-    //     // pointwise filter
-    //     for (; num_filter < pointwise_limit; num_filter++){
-    //         for (int row = 0; row < KERNEL_SIZE_H; row++){
-    //             for (int col = 0; col < KERNEL_SIZE_W; col++){
-    //                 for (int c = 0; c < IN_CHANNEL; c++){
-    //                     //printf("index: [%d][%d][0][0], to zero: %d\n", (num_filter-1)*KERNEL_SIZE_W + col, c, (num_filter-1)*KERNEL_SIZE_W + col <= pointwise_limit-1);
-    //                     if(num_filter > p){
-    //                         if((num_filter-4)*KERNEL_SIZE_W + col+1<= pointwise_limit-1){
-    //                             fprintf(filter_file, "%d", pointwise_filter[(num_filter-4)*KERNEL_SIZE_W + col+1][c][0][0]);}
-    //                         else{
-    //                             fprintf(filter_file, "%d", 0);
-    //                         }
-    //                     }
-    //                     else{
-    //                         if((num_filter-1)*KERNEL_SIZE_W + col <= pointwise_limit-1){
-    //                             fprintf(filter_file, "%d", pointwise_filter[(num_filter-1)*KERNEL_SIZE_W + col][c][0][0]);
-    //                         }else{
-    //                             fprintf(filter_file, "%d", 0);
-    //                         }
-    //                     }
-    //                     
-    //                     if(!(tt == t-1 && num_filter == p*t-1 && col == KERNEL_SIZE_W-1 && row == KERNEL_SIZE_H-1 && c == IN_CHANNEL-1)){
-    //                         fprintf(filter_file, ",");
-    //                     }
-    //                 }
-    //             }
-    //         }
-    //     }
-    //     pointwise_limit = pointwise_limit + p;
-    //     num_filter = 5;
-    // }
+    #ifdef USE_DEPTHWISE
     int point_num = 0;
     int pointwise_filter_num = 0;
     for (int tt = 0; tt < t; tt++){
@@ -336,7 +316,20 @@ int main(){
         }
         pointwise_filter_num += 4;
     }
-    /////////////////////////////////////////////// DON'T LOOK THIS SECTION
+    #else
+    for(int oc =0; oc < OUT_CHANNEL; oc++){
+        for (int ic = 0; ic < IN_CHANNEL; ic++){
+            if(oc == 10 || oc == 11){
+                fprintf(filter_file, "%d", 0);
+            } else {
+                fprintf(filter_file, "%d", pointwise_filter[oc][ic][0][0]);
+            }
+            if(!(oc == OUT_CHANNEL-1 && ic == IN_CHANNEL-1)){
+                fprintf(filter_file, ",");
+            }
+        }
+    }
+    #endif
 
     //output opsum
     for (int row = 0; row < OUT_HEIGHT; row++){
