@@ -1,4 +1,6 @@
+`include "./src/PE_array/Mutiplier_gating.sv"
 `include "./include/define.svh"
+
 module PE (
     input                              clk,
     input                              rst,
@@ -96,8 +98,18 @@ module PE (
     state_t state;
     state_t next_state;
 
+    // skip_mul logic
     logic [`FILTER_SPAD_LEN - 1 : 0] skip_mul_filter;
-    logic [`IFMAP_SPAD_LEN - 1 : 0] skip_mul_ifmap;
+    logic [`IFMAP_SPAD_LEN - 1 : 0]  skip_mul_ifmap;
+    logic [`PSUM_SIZE - 1:0]  skip_mul_result;
+
+    Mutiplier_gating mutiplier0(
+        .clk(clk),
+        .en(skip_mul_filter[conv_filter_cnt] || skip_mul_ifmap[conv_ifmap_cnt]),
+        .a(filter_spad[conv_filter_cnt]),
+        .b(ifmap_spad[conv_ifmap_cnt]),
+        .result(skip_mul_result)
+    );
 
     // counters logic
     always_ff @(posedge clk or posedge rst) begin
@@ -147,8 +159,7 @@ module PE (
                 CONV: begin
                     // TODO: Gate inactive
                     psum_spad[conv_result_cnt] <= (skip_mul_filter[conv_filter_cnt] || skip_mul_ifmap[conv_ifmap_cnt]) ? 
-                        psum_spad[conv_result_cnt]:
-                        psum_spad[conv_result_cnt] + (filter_spad[conv_filter_cnt] * ifmap_spad[conv_ifmap_cnt]);
+                        psum_spad[conv_result_cnt] : psum_spad[conv_result_cnt] + skip_mul_result;
                     conv_filter_cnt <= conv_filter_cnt + `FILTER_INDEX_BIT'b1;
                     if (depthwise) begin
                         /**
