@@ -2,6 +2,7 @@ SRC1 = $(wildcard ./src/PE_array/PE.sv)
 SRC2 = $(wildcard ./src/PE_array/PE_array.sv)
 SRC3 = $(wildcard ./src/PPU/PPU.sv)
 SRC4 = $(wildcard ./src/PE_array/SUPER.sv)
+SRC5 = $(wildcard ./src/PE_array/piPEline.sv)
 
 ifeq ($(VERILATOR_ROOT),)
 VERILATOR = verilator
@@ -66,6 +67,14 @@ ifneq ($(SUPER),)
     VERILATOR_INPUT = $(SRC4) ./testbench/tb_SUPER.cpp
     TARGET = VSUPER
     POST_PROCESS = @chmod 666 ./testbench/tb_SUPER.cpp
+else
+ifneq ($(PIPELINE),)
+    VERILATOR_FLAGS += -CFLAGS "-DTB_VPIPELINE=$(PIPELINE)"
+    LOG_FILE = logs/terminal_text_piPEline$(PIPELINE).log
+    VERILATOR_INPUT = $(SRC5) ./testbench/tb_piPEline.cpp
+    TARGET = VpiPEline
+    POST_PROCESS = @chmod 666 ./testbench/tb_piPEline.cpp
+endif
 endif
 endif
 endif
@@ -74,9 +83,10 @@ endif
 ######################################################################
 default: all
 
-.PHONY: all pe_all array_all ppu_all super_all
+.PHONY: all pe_all array_all ppu_all super_all pipeline_all
 
 pe_all: pe0 pe1 pe2 pe3 pe4 pe5 pe6
+pipeline_all: pipeline0 pipeline1 pipeline2 pipeline3 pipeline4 pipeline5 pipeline6
 array_all: \
     array0 array1 array2 array3 array4 \
 	array5 array7 array8 array9 array10 \
@@ -84,7 +94,7 @@ array_all: \
 ppu_all: ppu0 ppu1 ppu2
 super_all:super0 super1 super2 super3 super7 super8 super9 super10
 
-all: pe_all array_all ppu_all super_all
+all: pe_all array_all ppu_all super_all pipeline_all
 
 run:
 	@echo
@@ -127,6 +137,9 @@ super%:
 	mkdir -p wave
 	make run SUPER=$*
 
+pipeline%:
+	mkdir -p wave
+	make run PIPELINE=$*
 ######################################################################
 # Other targets
 
