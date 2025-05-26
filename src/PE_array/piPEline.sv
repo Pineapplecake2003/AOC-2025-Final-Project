@@ -1,5 +1,5 @@
 `include "define.svh"
-module PE (
+module piPEline (
 	input clk,
 	input rst,
 	input PE_en,
@@ -121,7 +121,7 @@ always @(*) begin
 		end
 		CONV: begin
 			if(depthwise)begin
-				if({26'b0, filter_spad_cnt} == ((32'({1'b0, p_minus_1}) + 32'd1) * filter_rs))begin
+				if(ifmap_spad_cnt == (({2'b0, filter_rs} - 4'b1) << 2) + {2'b0, q_minus_1})begin
 					// Go to at the waveform.
 					next_state = WRITE_OPSUM;
 				end
@@ -170,13 +170,6 @@ always @(*) begin
 		end
 	endcase
 end
-reg [4:0] output_col_cnt;
-always @(posedge clk or posedge rst) begin
-	if(rst)
-		output_col_cnt <= 5'b0;
-	else if(next_state == READ_IFMAP)
-		output_col_cnt <= output_col_cnt + 5'b1;
-end
 /**
  * spad data structure
  *            spadn
@@ -191,68 +184,49 @@ end
  */
 
 // READ_SPAD state
+
+// filter spad
+always @(posedge clk or posedge rst) begin
+	if(rst)begin
+		for (i = 0;i <`FILTER_SPAD_LEN ; i = i + 1) begin
+			filter_spad[i] <= `FILTER_SIZE'b0;
+		end
+	end else if(state_read_spad == READ_FILTER && filter_valid)begin
+		{filter_spad[3], filter_spad[2], filter_spad[1], filter_spad[0]} <= filter;
+		for (i = 4; i <`FILTER_SPAD_LEN; i = i + 1) begin
+			filter_spad[i] <= filter_spad[i-4];
+		end
+	end
+end
+
+// ifmap spad
 always @(posedge clk or posedge rst) begin
 	if(rst)begin
 		for (i = 0;i <`IFMAP_SPAD_LEN ; i = i + 1) begin
 			ifmap_spad[i] <= `IFMAP_SIZE'b0;
 		end
-		for (i = 0;i <`FILTER_SPAD_LEN ; i = i + 1) begin
-			filter_spad[i] <= `FILTER_SIZE'b0;
+	end else if(state_read_spad == READ_IFMAP && ifmap_valid)begin
+		{ifmap_spad[3], ifmap_spad[2], ifmap_spad[1], ifmap_spad[0]} <= ifmap ^ 32'h80808080;
+		for (i = 4; i <`IFMAP_SPAD_LEN; i = i + 1) begin
+			ifmap_spad[i] <= ifmap_spad[i-4];
 		end
+	end
+end
+
+always @(posedge clk or posedge rst) begin
+	if(rst)begin
 		for (i = 0;i <`OFMAP_SPAD_LEN ; i = i + 1) begin
 			psum_spad[i] <= `PSUM_SIZE'b0;
 		end
-	end
-	else begin
-		case (state_read_spad)
-			READ_FILTER:begin
-				if(filter_valid)begin
-					{
-						filter_spad[3], 
-						filter_spad[2], 
-						filter_spad[1], 
-						filter_spad[0]
-					} <= filter;
-					for (i = 4; i <`FILTER_SPAD_LEN; i = i + 1) begin
-						filter_spad[i] <= filter_spad[i-4];
-					end
-				end
+	end else if(state_read_spad == READ_IPSUM)begin
+		if(ipsum_valid)begin
+			psum_spad[0] <= ipsum;
+			for (i = 1; i < `OFMAP_SPAD_LEN; i = i + 1) begin
+				psum_spad[i] <= psum_spad[i-1];
 			end
-			READ_IFMAP:begin
-				if(ifmap_valid)begin
-					{
-						ifmap_spad[3], 
-						ifmap_spad[2], 
-						ifmap_spad[1], 
-						ifmap_spad[0]
-					} <= ifmap ^ 32'b10000000_10000000_10000000_10000000;
-					for (i = 4; i <`IFMAP_SPAD_LEN; i = i + 1) begin
-						ifmap_spad[i] <= ifmap_spad[i-4];
-					end
-				end
-			end
-			READ_IPSUM:begin
-				if(ipsum_valid)begin
-					psum_spad[0] <= ipsum;
-					psum_spad[1] <= psum_spad[0];
-					psum_spad[2] <= psum_spad[1];
-					psum_spad[3] <= psum_spad[2];
-				end
-			end
-			default: begin
-				for (i = 0;i <`IFMAP_SPAD_LEN ; i = i + 1) begin
-					ifmap_spad[i] <= ifmap_spad[i];
-				end
-				for (i = 0;i <`FILTER_SPAD_LEN ; i = i + 1) begin
-					filter_spad[i] <= filter_spad[i];
-				end
-				for (i = 0;i <`OFMAP_SPAD_LEN ; i = i + 1) begin
-					psum_spad[i] <= psum_spad[i];
-				end
-				if(state_mul2 == CONV)
-					psum_spad[psum_spad_cnt_mul2] <= psum_spad[psum_spad_cnt_mul2] + {16'b0, product_result};
-			end
-		endcase
+		end
+	end else if(state_mul2 == CONV)begin
+		psum_spad[psum_spad_cnt_mul2] <= psum_spad[psum_spad_cnt_mul2] + {{16{product_result[15]}}, product_result};
 	end
 end
 
@@ -326,14 +300,6 @@ always @(posedge clk or posedge rst) begin
 					end
 				end
 			end
-			//WRITE_OPSUM :begin
-			//	if(next_state == READ_IFMAP)begin
-			//		psum_spad_cnt <= 0;
-			//		filter_spad_cnt <= 0;
-			//		ifmap_spad_cnt <= {2'b0, (filter_rs - 2'b1)} * 4;
-			//	end else if(opsum_ready && state_mul2 == WRITE_OPSUM)
-			//		psum_spad_cnt <= psum_spad_cnt - `OFMAP_INDEX_BIT'b1;
-			//end
 			default:begin 
 				if(state_mul2 == WRITE_OPSUM)begin
 					if(next_state == READ_IFMAP)begin
@@ -353,18 +319,29 @@ wire [2:0] state_mul1;
 wire [7:0] mul_operand1_mul1;
 wire [7:0] mul_operand2_mul1;
 wire [1:0] psum_spad_cnt_mul1;
+wire [7:0] filter_abs;
+wire [7:0] ifmap_abs;
+wire MSB;
+wire MSB_mul1;
+assign filter_abs = (filter_spad[filter_spad_cnt] ^ {8{filter_spad[filter_spad_cnt][7]}}) + {7'b0, filter_spad[filter_spad_cnt][7]};
+assign ifmap_abs = (ifmap_spad[ifmap_spad_cnt] ^ {8{ifmap_spad[ifmap_spad_cnt][7]}}) + {7'b0, ifmap_spad[ifmap_spad_cnt][7]};
+wire [7:0] debug1 = filter_spad[filter_spad_cnt];
+wire [7:0] debug2 = ifmap_spad[ifmap_spad_cnt];
+assign MSB = ifmap_spad[ifmap_spad_cnt][7] ^ filter_spad[filter_spad_cnt][7];
 Reg_MUL1 reg_mul1(
 	.clk(clk),
 	.rst(rst),
 	.state_read_spad(state_read_spad),
-	.mul_operand1_read_spad(filter_spad[filter_spad_cnt]),
-	.mul_operand2_read_spad(ifmap_spad[ifmap_spad_cnt]),
+	.mul_operand1_read_spad(filter_abs),
+	.mul_operand2_read_spad(ifmap_abs),
 	.psum_spad_cnt(psum_spad_cnt),
+	.MSB(MSB),
 
 	.state_mul1(state_mul1),
 	.mul_operand1_mul1(mul_operand1_mul1),
 	.mul_operand2_mul1(mul_operand2_mul1),
-	.psum_spad_cnt_mul1(psum_spad_cnt_mul1)
+	.psum_spad_cnt_mul1(psum_spad_cnt_mul1),
+	.MSB_mul1(MSB_mul1)
 );
 // MUL1 state
 reg [7:0] partial_sum[7:0];
@@ -384,6 +361,7 @@ wire [2:0] state_mul2;
 wire [11:0] middle_result_mul2;
 wire [1:0] psum_spad_cnt_mul2;
 wire [31:0] partial_sum_mul2;
+wire MSB_mul2;
 Reg_MUL2 reg_mul2(
 	.clk(clk),
 	.rst(rst),
@@ -391,11 +369,13 @@ Reg_MUL2 reg_mul2(
 	.middle_result_mul1({temp_mul1[2] ,temp_mul1[1][0] ,temp_mul1[0][0], partial_sum[0][0]}),
 	.psum_spad_cnt_mul1(psum_spad_cnt_mul1),
 	.partial_sum_mul1({partial_sum[7], partial_sum[6], partial_sum[5], partial_sum[4]}),
+	.MSB_mul1(MSB_mul1),
 
 	.state_mul2(state_mul2),
 	.middle_result_mul2(middle_result_mul2),
 	.psum_spad_cnt_mul2(psum_spad_cnt_mul2),
-	.partial_sum_mul2(partial_sum_mul2)
+	.partial_sum_mul2(partial_sum_mul2),
+	.MSB_mul2(MSB_mul2)
 );
 // MUL1 state
 reg [8:0] temp_mul2 [3:0];
@@ -407,10 +387,49 @@ always_comb begin
 end
 
 wire [15:0] product_result;
-assign product_result = {temp_mul2[3], temp_mul2[2][0], temp_mul2[1][0], temp_mul2[0][0], middle_result_mul2[3:0]};
+assign product_result = (
+	{temp_mul2[3], temp_mul2[2][0], temp_mul2[1][0], temp_mul2[0][0], middle_result_mul2[3:0]} ^ 
+	{16{MSB_mul2}}
+) + {15'b0, MSB_mul2};
+
+
+reg [`OFMAP_INDEX_BIT-1:0] write_opsum_cnt;
+always @(posedge clk or posedge rst) begin
+	if(rst)begin
+		write_opsum_cnt <= `OFMAP_INDEX_BIT'b0;
+	end
+	else if(depthwise)begin
+		if(state_mul2 == WRITE_OPSUM)begin
+			if(opsum_ready)begin
+				write_opsum_cnt <= write_opsum_cnt + `OFMAP_INDEX_BIT'b1;
+			end
+		end
+		else begin
+			write_opsum_cnt <= `OFMAP_INDEX_BIT'd0;
+		end
+	end else begin
+		if(state_mul2 == WRITE_OPSUM)begin
+			if(opsum_ready)begin
+				write_opsum_cnt <= write_opsum_cnt - `OFMAP_INDEX_BIT'b1;
+			end
+		end
+		else begin
+			write_opsum_cnt <= `OFMAP_INDEX_BIT'd3;
+		end
+	end
+end
+
+reg [4:0] output_col_cnt;
+always @(posedge clk or posedge rst) begin
+	if(rst)
+		output_col_cnt <= 5'b0;
+	else if(state_read_spad == WRITE_OPSUM && next_state == READ_IFMAP)
+		output_col_cnt <= output_col_cnt + 5'b1;
+end
+
 always@(*) begin
 	// output opsum
-	opsum = psum_spad[psum_spad_cnt_mul2];
+	opsum = psum_spad[write_opsum_cnt];
 
 	// AXI signal
 	filter_ready = (state_read_spad == READ_FILTER) ? 1'b1 : 1'b0;
@@ -427,11 +446,13 @@ module Reg_MUL1(
 	input [`FILTER_SIZE-1:0] mul_operand1_read_spad,
 	input [`IFMAP_SIZE-1:0] mul_operand2_read_spad,
 	input [`OFMAP_INDEX_BIT - 1:0] psum_spad_cnt,
+	input MSB,
 
 	output reg [2:0] state_mul1,
 	output reg [`FILTER_SIZE-1:0] mul_operand1_mul1,
 	output reg [`IFMAP_SIZE-1:0] mul_operand2_mul1,
-	output reg [`OFMAP_INDEX_BIT - 1:0] psum_spad_cnt_mul1
+	output reg [`OFMAP_INDEX_BIT - 1:0] psum_spad_cnt_mul1,
+	output reg MSB_mul1
 );
 always @(posedge clk or posedge rst) begin
 	if(rst)begin
@@ -439,12 +460,14 @@ always @(posedge clk or posedge rst) begin
 		mul_operand1_mul1 <= `FILTER_SIZE'b0;
 		mul_operand2_mul1 <= `IFMAP_SIZE'b0;
 		psum_spad_cnt_mul1 <= `OFMAP_INDEX_BIT'b0;
+		MSB_mul1 <= 1'b0;
 	end
 	else begin
 		state_mul1 <= state_read_spad;
 		mul_operand1_mul1 <= mul_operand1_read_spad;
 		mul_operand2_mul1 <= mul_operand2_read_spad;
 		psum_spad_cnt_mul1 <= psum_spad_cnt;
+		MSB_mul1 <= MSB;
 	end
 end
 endmodule
@@ -456,11 +479,13 @@ module Reg_MUL2(
 	input [11:0] middle_result_mul1,
 	input [`OFMAP_INDEX_BIT - 1:0] psum_spad_cnt_mul1,
 	input [8*4-1:0] partial_sum_mul1,
+	input MSB_mul1,
 
 	output reg [2:0] state_mul2,
 	output reg [11:0] middle_result_mul2,
 	output reg [`OFMAP_INDEX_BIT - 1:0] psum_spad_cnt_mul2,
-	output reg [8*4-1:0] partial_sum_mul2
+	output reg [8*4-1:0] partial_sum_mul2,
+	output MSB_mul2
 );
 always @(posedge clk or posedge rst) begin
 	if(rst)begin
@@ -468,12 +493,14 @@ always @(posedge clk or posedge rst) begin
 		middle_result_mul2 <= 12'b0;
 		psum_spad_cnt_mul2 <= `OFMAP_INDEX_BIT'b0;
 		partial_sum_mul2 <= 32'b0;
+		MSB_mul2 <= 1'b0;
 	end
 	else begin
 		state_mul2 <= state_mul1;
 		middle_result_mul2 <= middle_result_mul1;
 		psum_spad_cnt_mul2 <= psum_spad_cnt_mul1;
 		partial_sum_mul2 <= partial_sum_mul1;
+		MSB_mul2 <= MSB_mul1;
 	end
 end
 

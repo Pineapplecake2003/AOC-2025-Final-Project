@@ -1,4 +1,5 @@
-`include "src/PE_array/PE.sv"
+//`include "src/PE_array/PE.sv"
+`include "src/PE_array/piPEline.sv"
 `include "src/PE_array/SUPER.sv"
 `include "src/PE_array/GIN/GIN.sv"
 `include "src/PE_array/GON/GON.sv"
@@ -145,7 +146,7 @@ generate
       );
     end 
     else begin
-      PE pe(
+      piPEline pe(
         .clk(clk),
         .rst(rst),
         .PE_en(PE_en[i_pe]),
