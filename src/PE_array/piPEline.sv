@@ -3,6 +3,7 @@ module piPEline (
 	input clk,
 	input rst,
 	input PE_en,
+	input output_inverse,
 	input [`CONFIG_SIZE-1:0] i_config,
 	input [`DATA_BITS-1:0] ifmap,
 	input [`DATA_BITS-1:0] filter,
@@ -213,6 +214,7 @@ always @(posedge clk or posedge rst) begin
 	end
 end
 
+// psum spad
 always @(posedge clk or posedge rst) begin
 	if(rst)begin
 		for (i = 0;i <`OFMAP_SPAD_LEN ; i = i + 1) begin
@@ -230,6 +232,7 @@ always @(posedge clk or posedge rst) begin
 	end
 end
 
+// counter logic
 always @(posedge clk or posedge rst) begin
 	if(rst)begin
 		ifmap_spad_cnt <= `IFMAP_INDEX_BIT'b0;
@@ -255,12 +258,17 @@ always @(posedge clk or posedge rst) begin
 					ifmap_spad_cnt <= ifmap_spad_cnt;
 			end
 			READ_IPSUM:begin
-				if(next_state == CONV)
+				if(next_state == CONV)begin
 					psum_spad_cnt <= 0;
-				else if(ipsum_valid)
+					if(depthwise)
+						filter_spad_cnt <= ({4'b0,  p_minus_1} << 6'd2) * {4'b0, filter_rs};
+					else
+						filter_spad_cnt <= 6'b0;
+				end else if(ipsum_valid)begin
 					psum_spad_cnt <= psum_spad_cnt + `OFMAP_INDEX_BIT'b1;
-				else
+				end else begin
 					psum_spad_cnt <= psum_spad_cnt;
+				end
 			end
 			CONV:begin
 				if(depthwise)begin
@@ -327,6 +335,7 @@ assign filter_abs = (filter_spad[filter_spad_cnt] ^ {8{filter_spad[filter_spad_c
 assign ifmap_abs = (ifmap_spad[ifmap_spad_cnt] ^ {8{ifmap_spad[ifmap_spad_cnt][7]}}) + {7'b0, ifmap_spad[ifmap_spad_cnt][7]};
 wire [7:0] debug1 = filter_spad[filter_spad_cnt];
 wire [7:0] debug2 = ifmap_spad[ifmap_spad_cnt];
+wire [5:0] debug3 = ({3'b0, ({1'b0, p_minus_1} + 3'b1)});
 assign MSB = ifmap_spad[ifmap_spad_cnt][7] ^ filter_spad[filter_spad_cnt][7];
 Reg_MUL1 reg_mul1(
 	.clk(clk),
@@ -399,13 +408,24 @@ always @(posedge clk or posedge rst) begin
 		write_opsum_cnt <= `OFMAP_INDEX_BIT'b0;
 	end
 	else if(depthwise)begin
-		if(state_mul2 == WRITE_OPSUM)begin
-			if(opsum_ready)begin
-				write_opsum_cnt <= write_opsum_cnt + `OFMAP_INDEX_BIT'b1;
+		if(output_inverse)begin
+			if(state_mul2 == WRITE_OPSUM)begin
+				if(opsum_ready)begin
+					write_opsum_cnt <= write_opsum_cnt - `OFMAP_INDEX_BIT'b1;
+				end
 			end
-		end
-		else begin
-			write_opsum_cnt <= `OFMAP_INDEX_BIT'd0;
+			else begin
+				write_opsum_cnt <= p_minus_1;
+			end
+		end else begin
+			if(state_mul2 == WRITE_OPSUM)begin
+				if(opsum_ready)begin
+					write_opsum_cnt <= write_opsum_cnt + `OFMAP_INDEX_BIT'b1;
+				end
+			end
+			else begin
+				write_opsum_cnt <= 0;
+			end
 		end
 	end else begin
 		if(state_mul2 == WRITE_OPSUM)begin
@@ -414,7 +434,7 @@ always @(posedge clk or posedge rst) begin
 			end
 		end
 		else begin
-			write_opsum_cnt <= `OFMAP_INDEX_BIT'd3;
+			write_opsum_cnt <= p_minus_1;
 		end
 	end
 end
