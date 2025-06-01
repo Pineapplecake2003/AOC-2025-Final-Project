@@ -16,7 +16,7 @@
 #define OUT_CHANNEL     p*t
 
 int main(){
-    // 輸入 feature map、卷積核和偏置（ipsum）定義
+    // 輸入 feature map、卷積核和偏置
     int8_t ifmap[IN_CHANNEL][IN_HEIGHT][IN_WIDTH];
     int8_t depthwise_filter[IN_CHANNEL][KERNEL_SIZE_H][KERNEL_SIZE_W];
     int32_t depthwise_result[IN_CHANNEL][OUT_HEIGHT][OUT_WIDTH];
