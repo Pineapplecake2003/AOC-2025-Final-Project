@@ -21,7 +21,7 @@ integer i;
 
 // i_config
 reg [`CONFIG_SIZE-1:0] i_config_reg;
-reg  mode;
+reg  U_minus1;
 reg  [2:0] p; // output channel
 reg  [4:0] F; // output column
 reg  [2:0] q; // input channel
@@ -31,7 +31,7 @@ reg depthwise;
 always@(*) begin
 	depthwise = i_config_reg[12];
 	filter_rs = i_config_reg[11:10] + 2'b1;
-	mode = i_config_reg[9];
+	U_minus1 = i_config_reg[9];
 	p = {1'b0, i_config_reg[8:7]} + 3'b1;
 	F = i_config_reg[6:2];
 	q = {1'b0, i_config_reg[1:0]} + 3'b1;
@@ -72,7 +72,7 @@ reg [`OFMAP_INDEX_BIT - 1:0]  conv_result_cnt;
 
 // used for pop out ifmap element
 wire [3:0] shift;
-assign shift = (q >= 1 && q <= 4) ? {1'b0, q} : 4'd12;
+assign shift = ({1'b0, q} << U_minus1);
 
 //split filter & ifmap 
 reg [`FILTER_SIZE - 1:0] split_filter[0:3];
@@ -161,7 +161,7 @@ always @(posedge clk or posedge rst) begin
 					//reset psum_cnt
 					psum_spad_cnt <= `OFMAP_INDEX_BIT'b0;
 					// ifmap pointer decrease by q
-					ifmap_spad_cnt <= ifmap_spad_cnt - {1'b0, q};
+					ifmap_spad_cnt <= ifmap_spad_cnt - ({1'b0, q} << U_minus1);
 				end
 			end
 			default: begin
@@ -239,11 +239,11 @@ always @(posedge clk or posedge rst) begin
 			WRITE_OPSUM:begin
 			if(next_state == READ_IFMAP)begin
 				// pop out the oldest ifmap
-				// TODO stride == 2
-				for (i = 0; i < 12; i++) 
-					ifmap_spad[i] <= (i[2:0] + shift < 12) ? 
-						ifmap_spad[i[2:0] + shift] : 
-						`IFMAP_SIZE'b0;
+				for (i = 0; i < `IFMAP_SPAD_LEN; i = i + 1) begin
+					ifmap_spad[i] <= (shift + i[3:0] >= `IFMAP_SPAD_LEN)?
+						`IFMAP_SIZE'b0:
+						ifmap_spad[shift + i[3:0]];
+				end
 			end
 			end
 			default: begin
