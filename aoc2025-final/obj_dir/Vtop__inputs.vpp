@@ -1,0 +1,179 @@
+// Dump of all post-preprocessor input
+// Blank lines and `line directives have been removed
+//
+// Information:
+//   Version: Verilator 5.030 2024-10-27 rev v5.030
+//   Arguments: --cc --exe -I./include -I./Controller --build --trace --trace-max-array 1024 --debug -CFLAGS -DTOP_TEST=0 ./src/Controller/top.sv ./testbench/tb.cpp
+//   Build jobs: 1
+//   Verilate jobs: 1
+
+`begin_keywords "1800-2023"
+module GLB #(
+    parameter DATA_WIDTH = 8,
+    parameter DEPTH = 64,                
+    parameter ADDR_WIDTH = 32            
+)(
+    input  logic                    clk,
+    input  logic                    rst,
+    input  logic                    we,    
+    input  logic [ADDR_WIDTH-1:0]   r_addr,  
+    input  logic [ADDR_WIDTH-1:0]   w_addr,  
+    input  logic [DATA_WIDTH*4-1:0] din,   
+    output logic [DATA_WIDTH*4-1:0] dout   
+);
+    logic [DATA_WIDTH-1:0] mem [0 : (DEPTH * 1024) - 1];
+    always_ff @(posedge clk or posedge rst) begin
+        if (rst) begin
+            dout <= 0;
+        end 
+        else begin
+            if (we) begin
+                mem[w_addr    ] <= din[7:0];
+                mem[w_addr + 1] <= din[15:8];
+                mem[w_addr + 2] <= din[23:16];
+                mem[w_addr + 3] <= din[31:24];
+            end
+            dout <= {
+                mem[r_addr + 3],
+                mem[r_addr + 2],
+                mem[r_addr + 1],
+                mem[r_addr    ]
+            };
+        end
+    end
+endmodule
+module DMA #(
+    parameter ADDR_WIDTH = 32,
+    parameter DATA_WIDTH = 32
+)(
+    input  logic                  clk,
+    input  logic                  rst,
+    input  logic                  start,             
+    input  logic [ADDR_WIDTH-1:0] src_addr,          
+    input  logic [ADDR_WIDTH-1:0] dst_addr,          
+    input  logic [15:0]           length,            
+    output logic                  done,
+    output logic                  notify_host,       
+    output logic [ADDR_WIDTH-1:0] mem_read_addr,
+    input  logic [DATA_WIDTH-1:0] mem_read_data,
+    output logic [15:0]           mem_length,
+    output logic [ADDR_WIDTH-1:0] mem_write_addr,
+    output logic                  mem_write_en,
+    output logic [DATA_WIDTH-1:0] mem_write_data
+);
+    typedef enum logic [2:0] {
+        IDLE,
+        NOTIFY,
+        READ,
+        WRITE,
+        DONE
+    } state_t;
+    state_t cs, ns;
+    logic [15:0] counter, len;
+    logic [ADDR_WIDTH-1:0] read_ptr, write_ptr;
+    assign notify_host = (cs == NOTIFY)? 1 : 0;
+    assign done = (cs == DONE)? 1 : 0;
+    assign mem_length = len;
+    assign mem_write_en = (cs == WRITE)? 1 : 0;
+    assign mem_write_addr = write_ptr;
+    assign mem_read_addr = read_ptr;
+    assign mem_write_data = mem_read_data;
+    always_ff @(posedge clk or posedge rst) begin
+        if (rst) begin
+            cs              <= IDLE;
+            counter         <= 0;
+            read_ptr        <= 0;
+            write_ptr       <= 0;
+            len             <= 0;
+        end 
+        else begin
+            cs <= ns;
+            case (cs)
+                IDLE: begin
+                    counter         <= 0;
+                    read_ptr        <= src_addr;
+                    write_ptr       <= dst_addr;
+                    len             <= length;
+                end
+                WRITE: begin
+                    counter         <= counter + 1;
+                    read_ptr        <= read_ptr + 4;
+                    write_ptr       <= write_ptr + 4;
+                end
+                default: begin
+                    counter         <= counter;
+                    read_ptr        <= read_ptr;
+                    write_ptr       <= write_ptr;
+                    len             <= len;
+                end
+            endcase
+        end
+    end
+    always_comb begin
+        case (cs)
+            IDLE:       ns = (start)? NOTIFY : IDLE;
+            NOTIFY:     ns = READ;
+            READ:       ns = WRITE;
+            WRITE:      ns = (counter == len - 1)? DONE : READ;
+            DONE:       ns = IDLE;
+            default:    ns = IDLE;
+        endcase
+    end
+endmodule
+module top #(
+    parameter ADDR_WIDTH = 32,
+    parameter DATA_WIDTH = 32,
+    parameter GLB_DATA_WIDTH = 8,
+    parameter GLB_DEPTH = 64,                
+    parameter GLB_ADDR_WIDTH = 32            
+)(
+    input  logic                      clk,
+    input  logic                      rst,
+    input  logic                      start,
+    input  logic [ADDR_WIDTH-1:0]     src_addr,
+    input  logic [ADDR_WIDTH-1:0]     dst_addr,
+    input  logic [15:0]               length,
+    output logic                      done,
+    output logic                      notify_host,
+    output logic [ADDR_WIDTH-1:0]     mem_read_addr,
+    input  logic [DATA_WIDTH-1:0]     mem_read_data,
+    output logic [15:0]               mem_length,
+    input  logic [ADDR_WIDTH-1:0]     glb_r_addr,
+    output logic [DATA_WIDTH-1:0]     glb_dout
+);
+    logic [ADDR_WIDTH-1:0] dma_write_addr;
+    logic                  dma_write_en;
+    logic [DATA_WIDTH-1:0] dma_write_data;
+    DMA #(
+        .ADDR_WIDTH(ADDR_WIDTH),
+        .DATA_WIDTH(DATA_WIDTH)
+    ) dma_inst (
+        .clk(clk),
+        .rst(rst),
+        .start(start),
+        .src_addr(src_addr),
+        .dst_addr(dst_addr),
+        .length(length),
+        .done(done),
+        .notify_host(notify_host),
+        .mem_read_addr(mem_read_addr),
+        .mem_read_data(mem_read_data),
+        .mem_length(mem_length),
+        .mem_write_addr(dma_write_addr),
+        .mem_write_en(dma_write_en),
+        .mem_write_data(dma_write_data)
+    );
+    GLB #(
+        .DATA_WIDTH(GLB_DATA_WIDTH),
+        .DEPTH(GLB_DEPTH),
+        .ADDR_WIDTH(GLB_ADDR_WIDTH)
+    ) glb_inst (
+        .clk(clk),
+        .rst(rst),
+        .we(dma_write_en),
+        .r_addr(glb_r_addr),
+        .w_addr(dma_write_addr),  
+        .din(dma_write_data),   
+        .dout(glb_dout)
+    );
+endmodule

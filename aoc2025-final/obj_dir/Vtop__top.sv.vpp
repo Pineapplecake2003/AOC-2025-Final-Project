@@ -1,0 +1,243 @@
+`begin_keywords "1800-2023"
+`line 1 "src/Controller/top.sv" 1
+ 
+`line 1 "src/Controller/top.sv" 0
+`line 1 "src/Controller/GLB.sv" 1
+module GLB #(
+    parameter DATA_WIDTH = 8,
+    parameter DEPTH = 64,                
+    parameter ADDR_WIDTH = 32            
+)(
+    input  logic                    clk,
+    input  logic                    rst,
+    input  logic                    we,    
+    input  logic [ADDR_WIDTH-1:0]   r_addr,  
+    input  logic [ADDR_WIDTH-1:0]   w_addr,  
+    input  logic [DATA_WIDTH*4-1:0] din,   
+    output logic [DATA_WIDTH*4-1:0] dout   
+);
+
+`line 15 "src/Controller/GLB.sv" 0
+     
+    logic [DATA_WIDTH-1:0] mem [0 : (DEPTH * 1024) - 1];
+
+`line 18 "src/Controller/GLB.sv" 0
+    always_ff @(posedge clk or posedge rst) begin
+        if (rst) begin
+            dout <= 0;
+        end 
+        else begin
+            if (we) begin
+                mem[w_addr    ] <= din[7:0];
+                mem[w_addr + 1] <= din[15:8];
+                mem[w_addr + 2] <= din[23:16];
+                mem[w_addr + 3] <= din[31:24];
+            end
+            dout <= {
+                mem[r_addr + 3],
+                mem[r_addr + 2],
+                mem[r_addr + 1],
+                mem[r_addr    ]
+            };
+        end
+    end
+
+`line 38 "src/Controller/GLB.sv" 0
+endmodule
+
+`line 40 "src/Controller/GLB.sv" 0
+`line 1 "src/Controller/top.sv" 2
+
+`line 2 "src/Controller/top.sv" 0
+ 
+`line 2 "src/Controller/top.sv" 0
+`line 1 "src/Controller/DMA.sv" 1
+module DMA #(
+`line 2 "src/Controller/DMA.sv" 0
+    parameter ADDR_WIDTH = 32,
+    parameter DATA_WIDTH = 32
+)(
+    input  logic                  clk,
+    input  logic                  rst,
+
+`line 8 "src/Controller/DMA.sv" 0
+     
+    input  logic                  start,             
+    input  logic [ADDR_WIDTH-1:0] src_addr,          
+    input  logic [ADDR_WIDTH-1:0] dst_addr,          
+    input  logic [15:0]           length,            
+    output logic                  done,
+
+`line 15 "src/Controller/DMA.sv" 0
+     
+    output logic                  notify_host,       
+    output logic [ADDR_WIDTH-1:0] mem_read_addr,
+    input  logic [DATA_WIDTH-1:0] mem_read_data,
+    output logic [15:0]           mem_length,
+     
+    output logic [ADDR_WIDTH-1:0] mem_write_addr,
+    output logic                  mem_write_en,
+    output logic [DATA_WIDTH-1:0] mem_write_data
+);
+
+`line 26 "src/Controller/DMA.sv" 0
+    typedef enum logic [2:0] {
+        IDLE,
+        NOTIFY,
+        READ,
+        WRITE,
+        DONE
+    } state_t;
+
+`line 34 "src/Controller/DMA.sv" 0
+    state_t cs, ns;
+
+`line 36 "src/Controller/DMA.sv" 0
+    logic [15:0] counter, len;
+    logic [ADDR_WIDTH-1:0] read_ptr, write_ptr;
+
+`line 39 "src/Controller/DMA.sv" 0
+    assign notify_host = (cs == NOTIFY)? 1 : 0;
+    assign done = (cs == DONE)? 1 : 0;
+    assign mem_length = len;
+
+`line 43 "src/Controller/DMA.sv" 0
+    assign mem_write_en = (cs == WRITE)? 1 : 0;
+    assign mem_write_addr = write_ptr;
+    assign mem_read_addr = read_ptr;
+    assign mem_write_data = mem_read_data;
+
+`line 48 "src/Controller/DMA.sv" 0
+     
+    always_ff @(posedge clk or posedge rst) begin
+        if (rst) begin
+            cs              <= IDLE;
+            counter         <= 0;
+            read_ptr        <= 0;
+            write_ptr       <= 0;
+            len             <= 0;
+        end 
+        else begin
+            cs <= ns;
+            case (cs)
+                IDLE: begin
+                    counter         <= 0;
+                    read_ptr        <= src_addr;
+                    write_ptr       <= dst_addr;
+                    len             <= length;
+                end
+                WRITE: begin
+                    counter         <= counter + 1;
+                    read_ptr        <= read_ptr + 4;
+                    write_ptr       <= write_ptr + 4;
+                end
+                default: begin
+                    counter         <= counter;
+                    read_ptr        <= read_ptr;
+                    write_ptr       <= write_ptr;
+                    len             <= len;
+                end
+            endcase
+        end
+    end
+
+`line 81 "src/Controller/DMA.sv" 0
+     
+    always_comb begin
+        case (cs)
+            IDLE:       ns = (start)? NOTIFY : IDLE;
+            NOTIFY:     ns = READ;
+            READ:       ns = WRITE;
+            WRITE:      ns = (counter == len - 1)? DONE : READ;
+            DONE:       ns = IDLE;
+            default:    ns = IDLE;
+        endcase
+    end
+
+`line 93 "src/Controller/DMA.sv" 0
+endmodule
+
+`line 95 "src/Controller/DMA.sv" 0
+`line 2 "src/Controller/top.sv" 2
+
+
+`line 4 "src/Controller/top.sv" 0
+module top #(
+    parameter ADDR_WIDTH = 32,
+    parameter DATA_WIDTH = 32,
+
+`line 8 "src/Controller/top.sv" 0
+    parameter GLB_DATA_WIDTH = 8,
+    parameter GLB_DEPTH = 64,                
+    parameter GLB_ADDR_WIDTH = 32            
+)(
+     
+    input  logic                      clk,
+    input  logic                      rst,
+    input  logic                      start,
+    input  logic [ADDR_WIDTH-1:0]     src_addr,
+    input  logic [ADDR_WIDTH-1:0]     dst_addr,
+    input  logic [15:0]               length,
+    output logic                      done,
+
+`line 21 "src/Controller/top.sv" 0
+     
+    output logic                      notify_host,
+    output logic [ADDR_WIDTH-1:0]     mem_read_addr,
+    input  logic [DATA_WIDTH-1:0]     mem_read_data,
+    output logic [15:0]               mem_length,
+
+`line 27 "src/Controller/top.sv" 0
+     
+    input  logic [ADDR_WIDTH-1:0]     glb_r_addr,
+    output logic [DATA_WIDTH-1:0]     glb_dout
+);
+
+`line 32 "src/Controller/top.sv" 0
+     
+    logic [ADDR_WIDTH-1:0] dma_write_addr;
+    logic                  dma_write_en;
+    logic [DATA_WIDTH-1:0] dma_write_data;
+
+`line 37 "src/Controller/top.sv" 0
+     
+    DMA #(
+        .ADDR_WIDTH(ADDR_WIDTH),
+        .DATA_WIDTH(DATA_WIDTH)
+    ) dma_inst (
+        .clk(clk),
+        .rst(rst),
+        .start(start),
+        .src_addr(src_addr),
+        .dst_addr(dst_addr),
+        .length(length),
+        .done(done),
+        .notify_host(notify_host),
+        .mem_read_addr(mem_read_addr),
+        .mem_read_data(mem_read_data),
+        .mem_length(mem_length),
+        .mem_write_addr(dma_write_addr),
+        .mem_write_en(dma_write_en),
+        .mem_write_data(dma_write_data)
+    );
+
+`line 58 "src/Controller/top.sv" 0
+     
+    GLB #(
+        .DATA_WIDTH(GLB_DATA_WIDTH),
+        .DEPTH(GLB_DEPTH),
+        .ADDR_WIDTH(GLB_ADDR_WIDTH)
+    ) glb_inst (
+        .clk(clk),
+        .rst(rst),
+        .we(dma_write_en),
+        .r_addr(glb_r_addr),
+        .w_addr(dma_write_addr),  
+        .din(dma_write_data),   
+        .dout(glb_dout)
+    );
+
+`line 73 "src/Controller/top.sv" 0
+endmodule
+
+`line 75 "src/Controller/top.sv" 0

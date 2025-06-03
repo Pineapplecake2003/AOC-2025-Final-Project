@@ -1,0 +1,594 @@
+Verilator Tree Dump (format 0x3900) from <e3640> to <e3822>
+     NETLIST 0x555557046100 <e1> {a0aa}  $root [1ps/1ps]
+    1: MODULE 0x5555570de5a0 <e3790#> {d4ai}  top  L2 [1ps]
+    1:2: VAR 0x5555570de6c0 <e3648#> {d5ap} @dt=0x55555708d8c0@(G/swu32/6)  ADDR_WIDTH [VSTATIC]  GPARAM
+    1:2:3: CONST 0x5555570e14a0 <e1939> {d5bc} @dt=0x55555708d8c0@(G/swu32/6)  ?32?sh20
+    1:2: VAR 0x5555570de7e0 <e3656#> {d6ap} @dt=0x55555708d8c0@(G/swu32/6)  DATA_WIDTH [VSTATIC]  GPARAM
+    1:2:3: CONST 0x5555570e1590 <e1950> {d6bc} @dt=0x55555708d8c0@(G/swu32/6)  ?32?sh20
+    1:2: VAR 0x5555570de900 <e3664#> {d8ap} @dt=0x55555708d5c0@(G/swu32/4)  GLB_DATA_WIDTH [VSTATIC]  GPARAM
+    1:2:3: CONST 0x5555570e1680 <e1962> {d8bg} @dt=0x55555708d5c0@(G/swu32/4)  ?32?sh8
+    1:2: VAR 0x5555570dea20 <e3672#> {d9ap} @dt=0x55555708d740@(G/swu32/7)  GLB_DEPTH [VSTATIC]  GPARAM
+    1:2:3: CONST 0x5555570e1770 <e1974> {d9bb} @dt=0x55555708d740@(G/swu32/7)  ?32?sh40
+    1:2: VAR 0x5555570deb40 <e3680#> {d10ap} @dt=0x55555708d8c0@(G/swu32/6)  GLB_ADDR_WIDTH [VSTATIC]  GPARAM
+    1:2:3: CONST 0x5555570e1860 <e1986> {d10bg} @dt=0x55555708d8c0@(G/swu32/6)  ?32?sh20
+    1:2: VAR 0x5555570dec60 <e2714> {d13bn} @dt=0@  clk INPUT PORT
+    1:2:1: BASICDTYPE 0x5555570ee600 <e1992> {d13am} @dt=this@(w1)  logic kwd=logic
+    1:2: VAR 0x5555570ded80 <e2719> {d14bn} @dt=0@  rst INPUT PORT
+    1:2:1: BASICDTYPE 0x5555570ee780 <e2000> {d14am} @dt=this@(w1)  logic kwd=logic
+    1:2: VAR 0x5555570deea0 <e2724> {d15bn} @dt=0@  start INPUT PORT
+    1:2:1: BASICDTYPE 0x5555570ee900 <e2009> {d15am} @dt=this@(w1)  logic kwd=logic
+    1:2: VAR 0x5555570defc0 <e2729> {d16bn} @dt=0@  src_addr INPUT PORT
+    1:2:1: BASICDTYPE 0x5555570eec00 <e2038> {d16am} @dt=this@(w1)  logic kwd=logic
+    1:2:1:1: RANGE 0x5555570ea460 <e2035> {d16as}
+    1:2:1:1:1: SUB 0x5555570e4c60 <e2033> {d16bd} @dt=0@
+    1:2:1:1:1:1: VARREF 0x555557124270 <e3243> {d16at} @dt=0@  ADDR_WIDTH [RV] <- VAR 0x5555570de6c0 <e3648#> {d5ap} @dt=0x55555708d8c0@(G/swu32/6)  ADDR_WIDTH [VSTATIC]  GPARAM
+    1:2:1:1:1:2: CONST 0x5555570e1b30 <e2025> {d16be} @dt=0x55555707e3c0@(G/swu32/1)  ?32?sh1
+    1:2:1:1:2: CONST 0x5555570e1c20 <e2034> {d16bg} @dt=0x55555707e3c0@(G/swu32/1)  ?32?sh0
+    1:2: VAR 0x5555570df0e0 <e2734> {d17bn} @dt=0@  dst_addr INPUT PORT
+    1:2:1: BASICDTYPE 0x5555570eef00 <e2072> {d17am} @dt=this@(w1)  logic kwd=logic
+    1:2:1:1: RANGE 0x5555570ea5a0 <e2069> {d17as}
+    1:2:1:1:1: SUB 0x5555570e4dc0 <e2067> {d17bd} @dt=0@
+    1:2:1:1:1:1: VARREF 0x555557124340 <e3246> {d17at} @dt=0@  ADDR_WIDTH [RV] <- VAR 0x5555570de6c0 <e3648#> {d5ap} @dt=0x55555708d8c0@(G/swu32/6)  ADDR_WIDTH [VSTATIC]  GPARAM
+    1:2:1:1:1:2: CONST 0x5555570e1ef0 <e2059> {d17be} @dt=0x55555707e3c0@(G/swu32/1)  ?32?sh1
+    1:2:1:1:2: CONST 0x5555570f2000 <e2068> {d17bg} @dt=0x55555707e3c0@(G/swu32/1)  ?32?sh0
+    1:2: VAR 0x5555570df200 <e2739> {d18bn} @dt=0@  length INPUT PORT
+    1:2:1: BASICDTYPE 0x5555570ef200 <e2102> {d18am} @dt=this@(w1)  logic kwd=logic
+    1:2:1:1: RANGE 0x5555570ea6e0 <e2099> {d18as}
+    1:2:1:1:1: CONST 0x5555570f22d0 <e2097> {d18at} @dt=0x55555708d5c0@(G/swu32/4)  ?32?shf
+    1:2:1:1:2: CONST 0x5555570f23c0 <e2098> {d18aw} @dt=0x55555707e3c0@(G/swu32/1)  ?32?sh0
+    1:2: VAR 0x5555570df320 <e2744> {d19bn} @dt=0@  done OUTPUT PORT
+    1:2:1: BASICDTYPE 0x5555570ef380 <e2114> {d19am} @dt=this@(w1)  logic kwd=logic
+    1:2: VAR 0x5555570df440 <e2749> {d22bn} @dt=0@  notify_host OUTPUT PORT
+    1:2:1: BASICDTYPE 0x5555570ef500 <e2123> {d22am} @dt=this@(w1)  logic kwd=logic
+    1:2: VAR 0x5555570df560 <e2754> {d23bn} @dt=0@  mem_read_addr OUTPUT PORT
+    1:2:1: BASICDTYPE 0x5555570ef800 <e2152> {d23am} @dt=this@(w1)  logic kwd=logic
+    1:2:1:1: RANGE 0x5555570ea820 <e2149> {d23as}
+    1:2:1:1:1: SUB 0x5555570e4f20 <e2147> {d23bd} @dt=0@
+    1:2:1:1:1:1: VARREF 0x555557124410 <e3249> {d23at} @dt=0@  ADDR_WIDTH [RV] <- VAR 0x5555570de6c0 <e3648#> {d5ap} @dt=0x55555708d8c0@(G/swu32/6)  ADDR_WIDTH [VSTATIC]  GPARAM
+    1:2:1:1:1:2: CONST 0x5555570f2690 <e2139> {d23be} @dt=0x55555707e3c0@(G/swu32/1)  ?32?sh1
+    1:2:1:1:2: CONST 0x5555570f2780 <e2148> {d23bg} @dt=0x55555707e3c0@(G/swu32/1)  ?32?sh0
+    1:2: VAR 0x5555570df680 <e2759> {d24bn} @dt=0@  mem_read_data INPUT PORT
+    1:2:1: BASICDTYPE 0x5555570efb00 <e2186> {d24am} @dt=this@(w1)  logic kwd=logic
+    1:2:1:1: RANGE 0x5555570ea960 <e2183> {d24as}
+    1:2:1:1:1: SUB 0x5555570e5080 <e2181> {d24bd} @dt=0@
+    1:2:1:1:1:1: VARREF 0x5555571244e0 <e3252> {d24at} @dt=0@  DATA_WIDTH [RV] <- VAR 0x5555570de7e0 <e3656#> {d6ap} @dt=0x55555708d8c0@(G/swu32/6)  DATA_WIDTH [VSTATIC]  GPARAM
+    1:2:1:1:1:2: CONST 0x5555570f2a50 <e2173> {d24be} @dt=0x55555707e3c0@(G/swu32/1)  ?32?sh1
+    1:2:1:1:2: CONST 0x5555570f2b40 <e2182> {d24bg} @dt=0x55555707e3c0@(G/swu32/1)  ?32?sh0
+    1:2: VAR 0x5555570df7a0 <e2764> {d25bn} @dt=0@  mem_length OUTPUT PORT
+    1:2:1: BASICDTYPE 0x5555570efe00 <e2216> {d25am} @dt=this@(w1)  logic kwd=logic
+    1:2:1:1: RANGE 0x5555570eaaa0 <e2213> {d25as}
+    1:2:1:1:1: CONST 0x5555570f2e10 <e2211> {d25at} @dt=0x55555708d5c0@(G/swu32/4)  ?32?shf
+    1:2:1:1:2: CONST 0x5555570f2f00 <e2212> {d25aw} @dt=0x55555707e3c0@(G/swu32/1)  ?32?sh0
+    1:2: VAR 0x5555570df8c0 <e2769> {d28bn} @dt=0@  glb_r_addr INPUT PORT
+    1:2:1: BASICDTYPE 0x5555570f4180 <e2248> {d28am} @dt=this@(w1)  logic kwd=logic
+    1:2:1:1: RANGE 0x5555570eabe0 <e2245> {d28as}
+    1:2:1:1:1: SUB 0x5555570e51e0 <e2243> {d28bd} @dt=0@
+    1:2:1:1:1:1: VARREF 0x5555571245b0 <e3255> {d28at} @dt=0@  ADDR_WIDTH [RV] <- VAR 0x5555570de6c0 <e3648#> {d5ap} @dt=0x55555708d8c0@(G/swu32/6)  ADDR_WIDTH [VSTATIC]  GPARAM
+    1:2:1:1:1:2: CONST 0x5555570f31d0 <e2235> {d28be} @dt=0x55555707e3c0@(G/swu32/1)  ?32?sh1
+    1:2:1:1:2: CONST 0x5555570f32c0 <e2244> {d28bg} @dt=0x55555707e3c0@(G/swu32/1)  ?32?sh0
+    1:2: VAR 0x5555570df9e0 <e2774> {d29bn} @dt=0@  glb_dout OUTPUT PORT
+    1:2:1: BASICDTYPE 0x5555570f4480 <e2282> {d29am} @dt=this@(w1)  logic kwd=logic
+    1:2:1:1: RANGE 0x5555570ead20 <e2279> {d29as}
+    1:2:1:1:1: SUB 0x5555570e5340 <e2277> {d29bd} @dt=0@
+    1:2:1:1:1:1: VARREF 0x555557124680 <e3258> {d29at} @dt=0@  DATA_WIDTH [RV] <- VAR 0x5555570de7e0 <e3656#> {d6ap} @dt=0x55555708d8c0@(G/swu32/6)  DATA_WIDTH [VSTATIC]  GPARAM
+    1:2:1:1:1:2: CONST 0x5555570f3590 <e2269> {d29be} @dt=0x55555707e3c0@(G/swu32/1)  ?32?sh1
+    1:2:1:1:2: CONST 0x5555570f3680 <e2278> {d29bg} @dt=0x55555707e3c0@(G/swu32/1)  ?32?sh0
+    1:2: VAR 0x5555570dfb00 <e2479> {d33bc} @dt=0@  dma_write_addr [VSTATIC]  VAR
+    1:2:1: BASICDTYPE 0x5555570f4780 <e2315> {d33af} @dt=this@(w1)  logic kwd=logic
+    1:2:1:1: RANGE 0x5555570eae60 <e2313> {d33al}
+    1:2:1:1:1: SUB 0x5555570e54a0 <e2311> {d33aw} @dt=0@
+    1:2:1:1:1:1: VARREF 0x555557124750 <e3261> {d33am} @dt=0@  ADDR_WIDTH [RV] <- VAR 0x5555570de6c0 <e3648#> {d5ap} @dt=0x55555708d8c0@(G/swu32/6)  ADDR_WIDTH [VSTATIC]  GPARAM
+    1:2:1:1:1:2: CONST 0x5555570f3950 <e2303> {d33ax} @dt=0x55555707e3c0@(G/swu32/1)  ?32?sh1
+    1:2:1:1:2: CONST 0x5555570f3a40 <e2312> {d33az} @dt=0x55555707e3c0@(G/swu32/1)  ?32?sh0
+    1:2: VAR 0x5555570dfc20 <e2327> {d34bc} @dt=0@  dma_write_en [VSTATIC]  VAR
+    1:2:1: BASICDTYPE 0x5555570f4900 <e2326> {d34af} @dt=this@(w1)  logic kwd=logic
+    1:2: VAR 0x5555570dfd40 <e2354> {d35bc} @dt=0@  dma_write_data [VSTATIC]  VAR
+    1:2:1: BASICDTYPE 0x5555570f4c00 <e2353> {d35af} @dt=this@(w1)  logic kwd=logic
+    1:2:1:1: RANGE 0x5555570eafa0 <e2349> {d35al}
+    1:2:1:1:1: SUB 0x5555570e5600 <e2347> {d35aw} @dt=0@
+    1:2:1:1:1:1: VARREF 0x555557124820 <e3264> {d35am} @dt=0@  DATA_WIDTH [RV] <- VAR 0x5555570de7e0 <e3656#> {d6ap} @dt=0x55555708d8c0@(G/swu32/6)  DATA_WIDTH [VSTATIC]  GPARAM
+    1:2:1:1:1:2: CONST 0x5555570f3d10 <e2339> {d35ax} @dt=0x55555707e3c0@(G/swu32/1)  ?32?sh1
+    1:2:1:1:2: CONST 0x5555570f3e00 <e2348> {d35az} @dt=0x55555707e3c0@(G/swu32/1)  ?32?sh0
+    1:2: CELL 0x5555570dfe60 <e2430> {d41ah}  dma_inst -> MODULE 0x5555570c6b40 <e3794#> {f1ai}  DMA  L3 [1ps]
+    1:2:1: PIN 0x555557050b60 <e2370> {d42ak}  clk -> VAR 0x5555570c6ea0 <e2814> {f5bj} @dt=0@  clk INPUT PORT [.n]
+    1:2:1:1: VARREF 0x5555571248f0 <e3267> {d42ao} @dt=0@  clk [RV] <- VAR 0x5555570dec60 <e2714> {d13bn} @dt=0@  clk INPUT PORT
+    1:2:1: PIN 0x555557050c40 <e2375> {d43ak}  rst -> VAR 0x5555570c6fc0 <e2819> {f6bj} @dt=0@  rst INPUT PORT [.n]
+    1:2:1:1: VARREF 0x5555571249c0 <e3270> {d43ao} @dt=0@  rst [RV] <- VAR 0x5555570ded80 <e2719> {d14bn} @dt=0@  rst INPUT PORT
+    1:2:1: PIN 0x555557050d20 <e2379> {d44ak}  start -> VAR 0x5555570c70e0 <e2824> {f9bj} @dt=0@  start INPUT PORT [.n]
+    1:2:1:1: VARREF 0x555557124a90 <e3273> {d44aq} @dt=0@  start [RV] <- VAR 0x5555570deea0 <e2724> {d15bn} @dt=0@  start INPUT PORT
+    1:2:1: PIN 0x555557050e00 <e2383> {d45ak}  src_addr -> VAR 0x5555570c7200 <e2829> {f10bj} @dt=0@  src_addr INPUT PORT [.n]
+    1:2:1:1: VARREF 0x555557124b60 <e3276> {d45at} @dt=0@  src_addr [RV] <- VAR 0x5555570defc0 <e2729> {d16bn} @dt=0@  src_addr INPUT PORT
+    1:2:1: PIN 0x555557050ee0 <e2387> {d46ak}  dst_addr -> VAR 0x5555570c7320 <e2834> {f11bj} @dt=0@  dst_addr INPUT PORT [.n]
+    1:2:1:1: VARREF 0x555557124c30 <e3279> {d46at} @dt=0@  dst_addr [RV] <- VAR 0x5555570df0e0 <e2734> {d17bn} @dt=0@  dst_addr INPUT PORT
+    1:2:1: PIN 0x555557050fc0 <e2391> {d47ak}  length -> VAR 0x5555570c7440 <e2839> {f12bj} @dt=0@  length INPUT PORT [.n]
+    1:2:1:1: VARREF 0x555557124d00 <e3282> {d47ar} @dt=0@  length [RV] <- VAR 0x5555570df200 <e2739> {d18bn} @dt=0@  length INPUT PORT
+    1:2:1: PIN 0x5555570510a0 <e2395> {d48ak}  done -> VAR 0x5555570c7560 <e2844> {f13bj} @dt=0@  done OUTPUT PORT [.n]
+    1:2:1:1: VARREF 0x555557124dd0 <e3285> {d48ap} @dt=0@  done [LV] => VAR 0x5555570df320 <e2744> {d19bn} @dt=0@  done OUTPUT PORT
+    1:2:1: PIN 0x555557051180 <e2399> {d49ak}  notify_host -> VAR 0x5555570c7680 <e2849> {f16bj} @dt=0@  notify_host OUTPUT PORT [.n]
+    1:2:1:1: VARREF 0x555557124ea0 <e3288> {d49aw} @dt=0@  notify_host [LV] => VAR 0x5555570df440 <e2749> {d22bn} @dt=0@  notify_host OUTPUT PORT
+    1:2:1: PIN 0x555557051260 <e2403> {d50ak}  mem_read_addr -> VAR 0x5555570c77a0 <e2854> {f17bj} @dt=0@  mem_read_addr OUTPUT PORT [.n]
+    1:2:1:1: VARREF 0x555557124f70 <e3291> {d50ay} @dt=0@  mem_read_addr [LV] => VAR 0x5555570df560 <e2754> {d23bn} @dt=0@  mem_read_addr OUTPUT PORT
+    1:2:1: PIN 0x555557051340 <e2407> {d51ak}  mem_read_data -> VAR 0x5555570c78c0 <e2859> {f18bj} @dt=0@  mem_read_data INPUT PORT [.n]
+    1:2:1:1: VARREF 0x555557125040 <e3294> {d51ay} @dt=0@  mem_read_data [RV] <- VAR 0x5555570df680 <e2759> {d24bn} @dt=0@  mem_read_data INPUT PORT
+    1:2:1: PIN 0x555557051420 <e2411> {d52ak}  mem_length -> VAR 0x5555570c79e0 <e2864> {f19bj} @dt=0@  mem_length OUTPUT PORT [.n]
+    1:2:1:1: VARREF 0x555557125110 <e3297> {d52av} @dt=0@  mem_length [LV] => VAR 0x5555570df7a0 <e2764> {d25bn} @dt=0@  mem_length OUTPUT PORT
+    1:2:1: PIN 0x555557051500 <e2415> {d53ak}  mem_write_addr -> VAR 0x5555570c7b00 <e2869> {f21bj} @dt=0@  mem_write_addr OUTPUT PORT [.n]
+    1:2:1:1: VARREF 0x5555571251e0 <e3300> {d53az} @dt=0@  dma_write_addr [LV] => VAR 0x5555570dfb00 <e2479> {d33bc} @dt=0@  dma_write_addr [VSTATIC]  VAR
+    1:2:1: PIN 0x5555570515e0 <e2419> {d54ak}  mem_write_en -> VAR 0x5555570c7c20 <e2874> {f22bj} @dt=0@  mem_write_en OUTPUT PORT [.n]
+    1:2:1:1: VARREF 0x5555571252b0 <e3303> {d54ax} @dt=0@  dma_write_en [LV] => VAR 0x5555570dfc20 <e2327> {d34bc} @dt=0@  dma_write_en [VSTATIC]  VAR
+    1:2:1: PIN 0x5555570516c0 <e2423> {d55ak}  mem_write_data -> VAR 0x5555570c7d40 <e2879> {f23bj} @dt=0@  mem_write_data OUTPUT PORT [.n]
+    1:2:1:1: VARREF 0x555557125380 <e3306> {d55az} @dt=0@  dma_write_data [LV] => VAR 0x5555570dfd40 <e2354> {d35bc} @dt=0@  dma_write_data [VSTATIC]  VAR
+    1:2: CELL 0x5555570fc000 <e2477> {d63ah}  glb_inst -> MODULE 0x55555704fd40 <e3793#> {e1ai}  GLB  L3 [1ps]
+    1:2:1: PIN 0x555557051c00 <e2443> {d64ak}  clk -> VAR 0x5555570c6240 <e2779> {e6bl} @dt=0@  clk INPUT PORT [.n]
+    1:2:1:1: VARREF 0x5555571255f0 <e3315> {d64ao} @dt=0@  clk [RV] <- VAR 0x5555570dec60 <e2714> {d13bn} @dt=0@  clk INPUT PORT
+    1:2:1: PIN 0x555557051ce0 <e2448> {d65ak}  rst -> VAR 0x5555570c6360 <e2784> {e7bl} @dt=0@  rst INPUT PORT [.n]
+    1:2:1:1: VARREF 0x5555571256c0 <e3318> {d65ao} @dt=0@  rst [RV] <- VAR 0x5555570ded80 <e2719> {d14bn} @dt=0@  rst INPUT PORT
+    1:2:1: PIN 0x555557051dc0 <e2452> {d66ak}  we -> VAR 0x5555570c6480 <e2789> {e8bl} @dt=0@  we INPUT PORT [.n]
+    1:2:1:1: VARREF 0x555557125790 <e3321> {d66an} @dt=0@  dma_write_en [RV] <- VAR 0x5555570dfc20 <e2327> {d34bc} @dt=0@  dma_write_en [VSTATIC]  VAR
+    1:2:1: PIN 0x555557051ea0 <e2456> {d67ak}  r_addr -> VAR 0x5555570c65a0 <e2794> {e9bl} @dt=0@  r_addr INPUT PORT [.n]
+    1:2:1:1: VARREF 0x555557125860 <e3324> {d67ar} @dt=0@  glb_r_addr [RV] <- VAR 0x5555570df8c0 <e2769> {d28bn} @dt=0@  glb_r_addr INPUT PORT
+    1:2:1: PIN 0x5555570fa000 <e2460> {d68ak}  w_addr -> VAR 0x5555570c66c0 <e2799> {e10bl} @dt=0@  w_addr INPUT PORT [.n]
+    1:2:1:1: VARREF 0x555557125930 <e3327> {d68ar} @dt=0@  dma_write_addr [RV] <- VAR 0x5555570dfb00 <e2479> {d33bc} @dt=0@  dma_write_addr [VSTATIC]  VAR
+    1:2:1: PIN 0x5555570fa0e0 <e2464> {d69ak}  din -> VAR 0x5555570c67e0 <e2804> {e11bl} @dt=0@  din INPUT PORT [.n]
+    1:2:1:1: VARREF 0x555557125a00 <e3330> {d69ao} @dt=0@  dma_write_data [RV] <- VAR 0x5555570dfd40 <e2354> {d35bc} @dt=0@  dma_write_data [VSTATIC]  VAR
+    1:2:1: PIN 0x5555570fa1c0 <e2468> {d70ak}  dout -> VAR 0x5555570c6900 <e2809> {e12bl} @dt=0@  dout OUTPUT PORT [.n]
+    1:2:1:1: VARREF 0x555557125ad0 <e3333> {d70ap} @dt=0@  glb_dout [LV] => VAR 0x5555570df9e0 <e2774> {d29bn} @dt=0@  glb_dout OUTPUT PORT
+    1: MODULE 0x55555704fd40 <e3793#> {e1ai}  GLB  L3 [1ps]
+    1:2: VAR 0x55555704fe60 <e3773#> {e2ap} @dt=0x55555708d5c0@(G/swu32/4)  DATA_WIDTH [VSTATIC]  GPARAM
+    1:2:3: CONST 0x5555570aaa50 <e610> {e2bc} @dt=0x55555708d5c0@(G/swu32/4)  ?32?sh8
+    1:2: VAR 0x5555570c6000 <e3781#> {e3ap} @dt=0x55555708d740@(G/swu32/7)  DEPTH [VSTATIC]  GPARAM
+    1:2:3: CONST 0x5555570aab40 <e620> {e3ax} @dt=0x55555708d740@(G/swu32/7)  ?32?sh40
+    1:2: VAR 0x5555570c6120 <e3789#> {e4ap} @dt=0x55555708d8c0@(G/swu32/6)  ADDR_WIDTH [VSTATIC]  GPARAM
+    1:2:3: CONST 0x5555570aac30 <e631> {e4bc} @dt=0x55555708d8c0@(G/swu32/6)  ?32?sh20
+    1:2: VAR 0x5555570c6240 <e2779> {e6bl} @dt=0@  clk INPUT PORT
+    1:2:1: BASICDTYPE 0x55555708db00 <e637> {e6am} @dt=this@(w1)  logic kwd=logic
+    1:2: VAR 0x5555570c6360 <e2784> {e7bl} @dt=0@  rst INPUT PORT
+    1:2:1: BASICDTYPE 0x55555708dc80 <e645> {e7am} @dt=this@(w1)  logic kwd=logic
+    1:2: VAR 0x5555570c6480 <e2789> {e8bl} @dt=0@  we INPUT PORT
+    1:2:1: BASICDTYPE 0x55555708de00 <e654> {e8am} @dt=this@(w1)  logic kwd=logic
+    1:2: VAR 0x5555570c65a0 <e2794> {e9bl} @dt=0@  r_addr INPUT PORT
+    1:2:1: BASICDTYPE 0x5555570c8180 <e683> {e9am} @dt=this@(w1)  logic kwd=logic
+    1:2:1:1: RANGE 0x555557083180 <e680> {e9as}
+    1:2:1:1:1: SUB 0x5555570a74a0 <e678> {e9bd} @dt=0@
+    1:2:1:1:1:1: VARREF 0x5555571204e0 <e3135> {e9at} @dt=0@  ADDR_WIDTH [RV] <- VAR 0x5555570c6120 <e3789#> {e4ap} @dt=0x55555708d8c0@(G/swu32/6)  ADDR_WIDTH [VSTATIC]  GPARAM
+    1:2:1:1:1:2: CONST 0x5555570aaf00 <e670> {e9be} @dt=0x55555707e3c0@(G/swu32/1)  ?32?sh1
+    1:2:1:1:2: CONST 0x5555570aaff0 <e679> {e9bg} @dt=0x55555707e3c0@(G/swu32/1)  ?32?sh0
+    1:2: VAR 0x5555570c66c0 <e2799> {e10bl} @dt=0@  w_addr INPUT PORT
+    1:2:1: BASICDTYPE 0x5555570c8480 <e717> {e10am} @dt=this@(w1)  logic kwd=logic
+    1:2:1:1: RANGE 0x5555570832c0 <e714> {e10as}
+    1:2:1:1:1: SUB 0x5555570a7600 <e712> {e10bd} @dt=0@
+    1:2:1:1:1:1: VARREF 0x5555571205b0 <e3138> {e10at} @dt=0@  ADDR_WIDTH [RV] <- VAR 0x5555570c6120 <e3789#> {e4ap} @dt=0x55555708d8c0@(G/swu32/6)  ADDR_WIDTH [VSTATIC]  GPARAM
+    1:2:1:1:1:2: CONST 0x5555570ab2c0 <e704> {e10be} @dt=0x55555707e3c0@(G/swu32/1)  ?32?sh1
+    1:2:1:1:2: CONST 0x5555570ab3b0 <e713> {e10bg} @dt=0x55555707e3c0@(G/swu32/1)  ?32?sh0
+    1:2: VAR 0x5555570c67e0 <e2804> {e11bl} @dt=0@  din INPUT PORT
+    1:2:1: BASICDTYPE 0x5555570c8840 <e760> {e11am} @dt=this@(w1)  logic kwd=logic
+    1:2:1:1: RANGE 0x555557083400 <e757> {e11as}
+    1:2:1:1:1: SUB 0x5555570a7810 <e755> {e11bf} @dt=0@
+    1:2:1:1:1:1: MUL 0x5555570a78c0 <e746> {e11bd} @dt=0@
+    1:2:1:1:1:1:1: VARREF 0x555557120680 <e3141> {e11at} @dt=0@  DATA_WIDTH [RV] <- VAR 0x55555704fe60 <e3773#> {e2ap} @dt=0x55555708d5c0@(G/swu32/4)  DATA_WIDTH [VSTATIC]  GPARAM
+    1:2:1:1:1:1:2: CONST 0x5555570ab770 <e738> {e11be} @dt=0x55555708c900@(G/swu32/3)  ?32?sh4
+    1:2:1:1:1:2: CONST 0x5555570ab860 <e747> {e11bg} @dt=0x55555707e3c0@(G/swu32/1)  ?32?sh1
+    1:2:1:1:2: CONST 0x5555570ab950 <e756> {e11bi} @dt=0x55555707e3c0@(G/swu32/1)  ?32?sh0
+    1:2: VAR 0x5555570c6900 <e2809> {e12bl} @dt=0@  dout OUTPUT PORT
+    1:2:1: BASICDTYPE 0x5555570c8c00 <e805> {e12am} @dt=this@(w1)  logic kwd=logic
+    1:2:1:1: RANGE 0x555557083540 <e802> {e12as}
+    1:2:1:1:1: SUB 0x5555570a7ad0 <e800> {e12bf} @dt=0@
+    1:2:1:1:1:1: MUL 0x5555570a7b80 <e791> {e12bd} @dt=0@
+    1:2:1:1:1:1:1: VARREF 0x555557120750 <e3144> {e12at} @dt=0@  DATA_WIDTH [RV] <- VAR 0x55555704fe60 <e3773#> {e2ap} @dt=0x55555708d5c0@(G/swu32/4)  DATA_WIDTH [VSTATIC]  GPARAM
+    1:2:1:1:1:1:2: CONST 0x5555570abd10 <e783> {e12be} @dt=0x55555708c900@(G/swu32/3)  ?32?sh4
+    1:2:1:1:1:2: CONST 0x5555570abe00 <e792> {e12bg} @dt=0x55555707e3c0@(G/swu32/1)  ?32?sh1
+    1:2:1:1:2: CONST 0x5555570abef0 <e801> {e12bi} @dt=0x55555707e3c0@(G/swu32/1)  ?32?sh0
+    1:2: VAR 0x5555570c6a20 <e1106> {e16bc} @dt=0@  mem [VSTATIC]  VAR
+    1:2:1: UNPACKARRAYDTYPE 0x5555570c9200 <e870> {e16bg} @dt=0@ [0:0]
+    1:2:1:1: BASICDTYPE 0x5555570c9140 <e867> {e16af} @dt=this@(w1)  logic kwd=logic
+    1:2:1:1:1: RANGE 0x555557083720 <e838> {e16al}
+    1:2:1:1:1:1: SUB 0x5555570a7e40 <e836> {e16aw} @dt=0@
+    1:2:1:1:1:1:1: VARREF 0x555557120820 <e3147> {e16am} @dt=0@  DATA_WIDTH [RV] <- VAR 0x55555704fe60 <e3773#> {e2ap} @dt=0x55555708d5c0@(G/swu32/4)  DATA_WIDTH [VSTATIC]  GPARAM
+    1:2:1:1:1:1:2: CONST 0x5555570cc4b0 <e828> {e16ax} @dt=0x55555707e3c0@(G/swu32/1)  ?32?sh1
+    1:2:1:1:1:2: CONST 0x5555570cc5a0 <e837> {e16az} @dt=0x55555707e3c0@(G/swu32/1)  ?32?sh0
+    1:2:1:2: RANGE 0x555557083680 <e868> {e16bg}
+    1:2:1:2:1: CONST 0x5555570cc1e0 <e864> {e16bh} @dt=0x55555707e3c0@(G/swu32/1)  ?32?sh0
+    1:2:1:2:2: SUB 0x5555570a7d90 <e865> {e16ca} @dt=0@
+    1:2:1:2:2:1: MUL 0x5555570a7ce0 <e861> {e16bs} @dt=0@
+    1:2:1:2:2:1:1: VARREF 0x5555571208f0 <e3150> {e16bm} @dt=0@  DEPTH [RV] <- VAR 0x5555570c6000 <e3781#> {e3ap} @dt=0x55555708d740@(G/swu32/7)  DEPTH [VSTATIC]  GPARAM
+    1:2:1:2:2:1:2: CONST 0x5555570cc2d0 <e853> {e16bu} @dt=0x5555570c8fc0@(G/swu32/11)  ?32?sh400
+    1:2:1:2:2:2: CONST 0x5555570cc3c0 <e862> {e16cc} @dt=0x55555707e3c0@(G/swu32/1)  ?32?sh1
+    1:2: ALWAYS 0x5555570cf1e0 <e1104> {e18af} [always_ff]
+    1:2:1: SENTREE 0x5555570ce0b0 <e2696> {e18ap}
+    1:2:1:1: SENITEM 0x5555570a7ef0 <e872> {e18ar} [POS]
+    1:2:1:1:1: VARREF 0x5555571209c0 <e3153> {e18az} @dt=0@  clk [RV] <- VAR 0x5555570c6240 <e2779> {e6bl} @dt=0@  clk INPUT PORT
+    1:2:1:1: SENITEM 0x5555570ce000 <e877> {e18bg} [POS]
+    1:2:1:1:1: VARREF 0x555557120a90 <e3156> {e18bo} @dt=0@  rst [RV] <- VAR 0x5555570c6360 <e2784> {e7bl} @dt=0@  rst INPUT PORT
+    1:2:2: BEGIN 0x5555570cad00 <e2698> {e18bt} [UNNAMED]
+    1:2:2:2: IF 0x5555570cf130 <e1099> {e19aj}
+    1:2:2:2:1: VARREF 0x555557120b60 <e3159> {e19an} @dt=0@  rst [RV] <- VAR 0x5555570c6360 <e2784> {e7bl} @dt=0@  rst INPUT PORT
+    1:2:2:2:2: BEGIN 0x5555570caea0 <e881> {e19as} [UNNAMED]
+    1:2:2:2:2:2: ASSIGNDLY 0x5555570837c0 <e889> {e20as} @dt=0@
+    1:2:2:2:2:2:1: CONST 0x5555570cc690 <e890> {e20av} @dt=0x55555707e3c0@(G/swu32/1)  ?32?sh0
+    1:2:2:2:2:2:2: VARREF 0x555557120c30 <e3162> {e20an} @dt=0@  dout [LV] => VAR 0x5555570c6900 <e2809> {e12bl} @dt=0@  dout OUTPUT PORT
+    1:2:2:2:3: BEGIN 0x5555570cb040 <e892> {e22ao} [UNNAMED]
+    1:2:2:2:3:2: IF 0x5555570ce8f0 <e1024> {e23an}
+    1:2:2:2:3:2:1: VARREF 0x555557120d00 <e3165> {e23ar} @dt=0@  we [RV] <- VAR 0x5555570c6480 <e2789> {e8bl} @dt=0@  we INPUT PORT
+    1:2:2:2:3:2:2: BEGIN 0x5555570cb1e0 <e894> {e23av} [UNNAMED]
+    1:2:2:2:3:2:2:2: ASSIGNDLY 0x555557083860 <e917> {e24bh} @dt=0@
+    1:2:2:2:3:2:2:2:1: SELEXTRACT 0x5555570ce210 <e918> {e24bn} @dt=0@
+    1:2:2:2:3:2:2:2:1:1: VARREF 0x555557120dd0 <e3168> {e24bk} @dt=0@  din [RV] <- VAR 0x5555570c67e0 <e2804> {e11bl} @dt=0@  din INPUT PORT
+    1:2:2:2:3:2:2:2:1:2: CONST 0x5555570cc780 <e915> {e24bo} @dt=0x55555708c900@(G/swu32/3)  ?32?sh7
+    1:2:2:2:3:2:2:2:1:3: CONST 0x5555570cc870 <e916> {e24bq} @dt=0x55555707e3c0@(G/swu32/1)  ?32?sh0
+    1:2:2:2:3:2:2:2:1:4: ATTROF 0x5555571226e0 <e3801#> {e24bn} @dt=0@ [VAR_BASE]
+    1:2:2:2:3:2:2:2:1:4:1: VARREF 0x555557125e10 <e3800#> {e24bk} @dt=0@  din [RV] <- VAR 0x5555570c67e0 <e2804> {e11bl} @dt=0@  din INPUT PORT
+    1:2:2:2:3:2:2:2:2: SELBIT 0x5555570ce160 <e919> {e24au} @dt=0@
+    1:2:2:2:3:2:2:2:2:1: VARREF 0x555557120f70 <e3174> {e24ar} @dt=0@  mem [LV] => VAR 0x5555570c6a20 <e1106> {e16bc} @dt=0@  mem [VSTATIC]  VAR
+    1:2:2:2:3:2:2:2:2:2: VARREF 0x555557121040 <e3177> {e24av} @dt=0@  w_addr [RV] <- VAR 0x5555570c66c0 <e2799> {e10bl} @dt=0@  w_addr INPUT PORT
+    1:2:2:2:3:2:2:2: ASSIGNDLY 0x555557083900 <e954> {e25bh} @dt=0@
+    1:2:2:2:3:2:2:2:1: SELEXTRACT 0x5555570ce420 <e952> {e25bn} @dt=0@
+    1:2:2:2:3:2:2:2:1:1: VARREF 0x555557121110 <e3180> {e25bk} @dt=0@  din [RV] <- VAR 0x5555570c67e0 <e2804> {e11bl} @dt=0@  din INPUT PORT
+    1:2:2:2:3:2:2:2:1:2: CONST 0x5555570cca50 <e949> {e25bo} @dt=0x55555708d5c0@(G/swu32/4)  ?32?shf
+    1:2:2:2:3:2:2:2:1:3: CONST 0x5555570ccb40 <e950> {e25br} @dt=0x55555708d5c0@(G/swu32/4)  ?32?sh8
+    1:2:2:2:3:2:2:2:1:4: ATTROF 0x555557122790 <e3808#> {e25bn} @dt=0@ [VAR_BASE]
+    1:2:2:2:3:2:2:2:1:4:1: VARREF 0x555557125ee0 <e3807#> {e25bk} @dt=0@  din [RV] <- VAR 0x5555570c67e0 <e2804> {e11bl} @dt=0@  din INPUT PORT
+    1:2:2:2:3:2:2:2:2: SELBIT 0x5555570ce370 <e953> {e25au} @dt=0@
+    1:2:2:2:3:2:2:2:2:1: VARREF 0x5555571212b0 <e3186> {e25ar} @dt=0@  mem [LV] => VAR 0x5555570c6a20 <e1106> {e16bc} @dt=0@  mem [VSTATIC]  VAR
+    1:2:2:2:3:2:2:2:2:2: ADD 0x5555570ce2c0 <e933> {e25bc} @dt=0@
+    1:2:2:2:3:2:2:2:2:2:1: VARREF 0x555557121380 <e3189> {e25av} @dt=0@  w_addr [RV] <- VAR 0x5555570c66c0 <e2799> {e10bl} @dt=0@  w_addr INPUT PORT
+    1:2:2:2:3:2:2:2:2:2:2: CONST 0x5555570cc960 <e930> {e25be} @dt=0x55555707e3c0@(G/swu32/1)  ?32?sh1
+    1:2:2:2:3:2:2:2: ASSIGNDLY 0x5555570839a0 <e988> {e26bh} @dt=0@
+    1:2:2:2:3:2:2:2:1: SELEXTRACT 0x5555570ce630 <e986> {e26bn} @dt=0@
+    1:2:2:2:3:2:2:2:1:1: VARREF 0x555557121450 <e3192> {e26bk} @dt=0@  din [RV] <- VAR 0x5555570c67e0 <e2804> {e11bl} @dt=0@  din INPUT PORT
+    1:2:2:2:3:2:2:2:1:2: CONST 0x5555570ccd20 <e983> {e26bo} @dt=0x5555570c9800@(G/swu32/5)  ?32?sh17
+    1:2:2:2:3:2:2:2:1:3: CONST 0x5555570cce10 <e984> {e26br} @dt=0x5555570c9800@(G/swu32/5)  ?32?sh10
+    1:2:2:2:3:2:2:2:1:4: ATTROF 0x555557122840 <e3815#> {e26bn} @dt=0@ [VAR_BASE]
+    1:2:2:2:3:2:2:2:1:4:1: VARREF 0x55555713c000 <e3814#> {e26bk} @dt=0@  din [RV] <- VAR 0x5555570c67e0 <e2804> {e11bl} @dt=0@  din INPUT PORT
+    1:2:2:2:3:2:2:2:2: SELBIT 0x5555570ce580 <e987> {e26au} @dt=0@
+    1:2:2:2:3:2:2:2:2:1: VARREF 0x5555571215f0 <e3198> {e26ar} @dt=0@  mem [LV] => VAR 0x5555570c6a20 <e1106> {e16bc} @dt=0@  mem [VSTATIC]  VAR
+    1:2:2:2:3:2:2:2:2:2: ADD 0x5555570ce4d0 <e968> {e26bc} @dt=0@
+    1:2:2:2:3:2:2:2:2:2:1: VARREF 0x5555571216c0 <e3201> {e26av} @dt=0@  w_addr [RV] <- VAR 0x5555570c66c0 <e2799> {e10bl} @dt=0@  w_addr INPUT PORT
+    1:2:2:2:3:2:2:2:2:2:2: CONST 0x5555570ccc30 <e965> {e26be} @dt=0x55555708c600@(G/swu32/2)  ?32?sh2
+    1:2:2:2:3:2:2:2: ASSIGNDLY 0x555557083a40 <e1023> {e27bh} @dt=0@
+    1:2:2:2:3:2:2:2:1: SELEXTRACT 0x5555570ce840 <e1021> {e27bn} @dt=0@
+    1:2:2:2:3:2:2:2:1:1: VARREF 0x555557121790 <e3204> {e27bk} @dt=0@  din [RV] <- VAR 0x5555570c67e0 <e2804> {e11bl} @dt=0@  din INPUT PORT
+    1:2:2:2:3:2:2:2:1:2: CONST 0x5555570ccff0 <e1018> {e27bo} @dt=0x5555570c9800@(G/swu32/5)  ?32?sh1f
+    1:2:2:2:3:2:2:2:1:3: CONST 0x5555570cd0e0 <e1019> {e27br} @dt=0x5555570c9800@(G/swu32/5)  ?32?sh18
+    1:2:2:2:3:2:2:2:1:4: ATTROF 0x5555571228f0 <e3822#> {e27bn} @dt=0@ [VAR_BASE]
+    1:2:2:2:3:2:2:2:1:4:1: VARREF 0x55555713c0d0 <e3821#> {e27bk} @dt=0@  din [RV] <- VAR 0x5555570c67e0 <e2804> {e11bl} @dt=0@  din INPUT PORT
+    1:2:2:2:3:2:2:2:2: SELBIT 0x5555570ce790 <e1022> {e27au} @dt=0@
+    1:2:2:2:3:2:2:2:2:1: VARREF 0x555557121930 <e3210> {e27ar} @dt=0@  mem [LV] => VAR 0x5555570c6a20 <e1106> {e16bc} @dt=0@  mem [VSTATIC]  VAR
+    1:2:2:2:3:2:2:2:2:2: ADD 0x5555570ce6e0 <e1002> {e27bc} @dt=0@
+    1:2:2:2:3:2:2:2:2:2:1: VARREF 0x555557121a00 <e3213> {e27av} @dt=0@  w_addr [RV] <- VAR 0x5555570c66c0 <e2799> {e10bl} @dt=0@  w_addr INPUT PORT
+    1:2:2:2:3:2:2:2:2:2:2: CONST 0x5555570ccf00 <e999> {e27be} @dt=0x55555708c600@(G/swu32/2)  ?32?sh3
+    1:2:2:2:3:2: ASSIGNDLY 0x555557083ae0 <e1098> {e29as} @dt=0@
+    1:2:2:2:3:2:1: REPLICATE 0x5555570cf080 <e1096> {e29av} @dt=0x5555570c9ec0@(G/w0)
+    1:2:2:2:3:2:1:1: CONCAT 0x5555570cefd0 <e1089> {e32bg} @dt=0@
+    1:2:2:2:3:2:1:1:1: CONCAT 0x5555570cee70 <e1081> {e31bg} @dt=0@
+    1:2:2:2:3:2:1:1:1:1: CONCAT 0x5555570cec60 <e1073> {e30bg} @dt=0@
+    1:2:2:2:3:2:1:1:1:1:1: SELBIT 0x5555570cea50 <e1056> {e30au} @dt=0@
+    1:2:2:2:3:2:1:1:1:1:1:1: VARREF 0x555557121ad0 <e3216> {e30ar} @dt=0@  mem [RV] <- VAR 0x5555570c6a20 <e1106> {e16bc} @dt=0@  mem [VSTATIC]  VAR
+    1:2:2:2:3:2:1:1:1:1:1:2: ADD 0x5555570ce9a0 <e1040> {e30bc} @dt=0@
+    1:2:2:2:3:2:1:1:1:1:1:2:1: VARREF 0x555557121ba0 <e3219> {e30av} @dt=0@  r_addr [RV] <- VAR 0x5555570c65a0 <e2794> {e9bl} @dt=0@  r_addr INPUT PORT
+    1:2:2:2:3:2:1:1:1:1:1:2:2: CONST 0x5555570cd1d0 <e1037> {e30be} @dt=0x55555708c600@(G/swu32/2)  ?32?sh3
+    1:2:2:2:3:2:1:1:1:1:2: SELBIT 0x5555570cebb0 <e1057> {e31au} @dt=0@
+    1:2:2:2:3:2:1:1:1:1:2:1: VARREF 0x555557121c70 <e3222> {e31ar} @dt=0@  mem [RV] <- VAR 0x5555570c6a20 <e1106> {e16bc} @dt=0@  mem [VSTATIC]  VAR
+    1:2:2:2:3:2:1:1:1:1:2:2: ADD 0x5555570ceb00 <e1054> {e31bc} @dt=0@
+    1:2:2:2:3:2:1:1:1:1:2:2:1: VARREF 0x555557121d40 <e3225> {e31av} @dt=0@  r_addr [RV] <- VAR 0x5555570c65a0 <e2794> {e9bl} @dt=0@  r_addr INPUT PORT
+    1:2:2:2:3:2:1:1:1:1:2:2:2: CONST 0x5555570cd2c0 <e1051> {e31be} @dt=0x55555708c600@(G/swu32/2)  ?32?sh2
+    1:2:2:2:3:2:1:1:1:2: SELBIT 0x5555570cedc0 <e1074> {e32au} @dt=0@
+    1:2:2:2:3:2:1:1:1:2:1: VARREF 0x555557121e10 <e3228> {e32ar} @dt=0@  mem [RV] <- VAR 0x5555570c6a20 <e1106> {e16bc} @dt=0@  mem [VSTATIC]  VAR
+    1:2:2:2:3:2:1:1:1:2:2: ADD 0x5555570ced10 <e1071> {e32bc} @dt=0@
+    1:2:2:2:3:2:1:1:1:2:2:1: VARREF 0x555557121ee0 <e3231> {e32av} @dt=0@  r_addr [RV] <- VAR 0x5555570c65a0 <e2794> {e9bl} @dt=0@  r_addr INPUT PORT
+    1:2:2:2:3:2:1:1:1:2:2:2: CONST 0x5555570cd3b0 <e1068> {e32be} @dt=0x55555707e3c0@(G/swu32/1)  ?32?sh1
+    1:2:2:2:3:2:1:1:2: SELBIT 0x5555570cef20 <e1082> {e33au} @dt=0@
+    1:2:2:2:3:2:1:1:2:1: VARREF 0x555557124000 <e3234> {e33ar} @dt=0@  mem [RV] <- VAR 0x5555570c6a20 <e1106> {e16bc} @dt=0@  mem [VSTATIC]  VAR
+    1:2:2:2:3:2:1:1:2:2: VARREF 0x5555571240d0 <e3237> {e33av} @dt=0@  r_addr [RV] <- VAR 0x5555570c65a0 <e2794> {e9bl} @dt=0@  r_addr INPUT PORT
+    1:2:2:2:3:2:1:2: CONST 0x5555570cd4a0 <e1090> {e29av} @dt=0x5555570c9e00@(G/w32)  32'h1
+    1:2:2:2:3:2:2: VARREF 0x5555571241a0 <e3240> {e29an} @dt=0@  dout [LV] => VAR 0x5555570c6900 <e2809> {e12bl} @dt=0@  dout OUTPUT PORT
+    1: MODULE 0x5555570c6b40 <e3794#> {f1ai}  DMA  L3 [1ps]
+    1:2: VAR 0x5555570c6c60 <e3757#> {f2ap} @dt=0x55555708d8c0@(G/swu32/6)  ADDR_WIDTH [VSTATIC]  GPARAM
+    1:2:3: CONST 0x5555570cd590 <e1126> {f2bc} @dt=0x55555708d8c0@(G/swu32/6)  ?32?sh20
+    1:2: VAR 0x5555570c6d80 <e3765#> {f3ap} @dt=0x55555708d8c0@(G/swu32/6)  DATA_WIDTH [VSTATIC]  GPARAM
+    1:2:3: CONST 0x5555570cd680 <e1137> {f3bc} @dt=0x55555708d8c0@(G/swu32/6)  ?32?sh20
+    1:2: VAR 0x5555570c6ea0 <e2814> {f5bj} @dt=0@  clk INPUT PORT
+    1:2:1: BASICDTYPE 0x5555570d43c0 <e1143> {f5am} @dt=this@(w1)  logic kwd=logic
+    1:2: VAR 0x5555570c6fc0 <e2819> {f6bj} @dt=0@  rst INPUT PORT
+    1:2:1: BASICDTYPE 0x5555570d4540 <e1151> {f6am} @dt=this@(w1)  logic kwd=logic
+    1:2: VAR 0x5555570c70e0 <e2824> {f9bj} @dt=0@  start INPUT PORT
+    1:2:1: BASICDTYPE 0x5555570d46c0 <e1160> {f9am} @dt=this@(w1)  logic kwd=logic
+    1:2: VAR 0x5555570c7200 <e2829> {f10bj} @dt=0@  src_addr INPUT PORT
+    1:2:1: BASICDTYPE 0x5555570d49c0 <e1189> {f10am} @dt=this@(w1)  logic kwd=logic
+    1:2:1:1: RANGE 0x555557083cc0 <e1186> {f10as}
+    1:2:1:1:1: SUB 0x5555570cf340 <e1184> {f10bd} @dt=0@
+    1:2:1:1:1:1: VARREF 0x5555570f9040 <e2886> {f10at} @dt=0@  ADDR_WIDTH [RV] <- VAR 0x5555570c6c60 <e3757#> {f2ap} @dt=0x55555708d8c0@(G/swu32/6)  ADDR_WIDTH [VSTATIC]  GPARAM
+    1:2:1:1:1:2: CONST 0x5555570cd950 <e1176> {f10be} @dt=0x55555707e3c0@(G/swu32/1)  ?32?sh1
+    1:2:1:1:2: CONST 0x5555570cda40 <e1185> {f10bg} @dt=0x55555707e3c0@(G/swu32/1)  ?32?sh0
+    1:2: VAR 0x5555570c7320 <e2834> {f11bj} @dt=0@  dst_addr INPUT PORT
+    1:2:1: BASICDTYPE 0x5555570d4cc0 <e1223> {f11am} @dt=this@(w1)  logic kwd=logic
+    1:2:1:1: RANGE 0x555557083e00 <e1220> {f11as}
+    1:2:1:1:1: SUB 0x5555570cf4a0 <e1218> {f11bd} @dt=0@
+    1:2:1:1:1:1: VARREF 0x5555570f9110 <e2889> {f11at} @dt=0@  ADDR_WIDTH [RV] <- VAR 0x5555570c6c60 <e3757#> {f2ap} @dt=0x55555708d8c0@(G/swu32/6)  ADDR_WIDTH [VSTATIC]  GPARAM
+    1:2:1:1:1:2: CONST 0x5555570cdd10 <e1210> {f11be} @dt=0x55555707e3c0@(G/swu32/1)  ?32?sh1
+    1:2:1:1:2: CONST 0x5555570cde00 <e1219> {f11bg} @dt=0x55555707e3c0@(G/swu32/1)  ?32?sh0
+    1:2: VAR 0x5555570c7440 <e2839> {f12bj} @dt=0@  length INPUT PORT
+    1:2:1: BASICDTYPE 0x5555570d4fc0 <e1253> {f12am} @dt=this@(w1)  logic kwd=logic
+    1:2:1:1: RANGE 0x555557083f40 <e1250> {f12as}
+    1:2:1:1:1: CONST 0x5555570d60f0 <e1248> {f12at} @dt=0x55555708d5c0@(G/swu32/4)  ?32?shf
+    1:2:1:1:2: CONST 0x5555570d61e0 <e1249> {f12aw} @dt=0x55555707e3c0@(G/swu32/1)  ?32?sh0
+    1:2: VAR 0x5555570c7560 <e2844> {f13bj} @dt=0@  done OUTPUT PORT
+    1:2:1: BASICDTYPE 0x5555570d5140 <e1265> {f13am} @dt=this@(w1)  logic kwd=logic
+    1:2: VAR 0x5555570c7680 <e2849> {f16bj} @dt=0@  notify_host OUTPUT PORT
+    1:2:1: BASICDTYPE 0x5555570d52c0 <e1274> {f16am} @dt=this@(w1)  logic kwd=logic
+    1:2: VAR 0x5555570c77a0 <e2854> {f17bj} @dt=0@  mem_read_addr OUTPUT PORT
+    1:2:1: BASICDTYPE 0x5555570d55c0 <e1303> {f17am} @dt=this@(w1)  logic kwd=logic
+    1:2:1:1: RANGE 0x5555570da0a0 <e1300> {f17as}
+    1:2:1:1:1: SUB 0x5555570cf600 <e1298> {f17bd} @dt=0@
+    1:2:1:1:1:1: VARREF 0x5555570f91e0 <e2892> {f17at} @dt=0@  ADDR_WIDTH [RV] <- VAR 0x5555570c6c60 <e3757#> {f2ap} @dt=0x55555708d8c0@(G/swu32/6)  ADDR_WIDTH [VSTATIC]  GPARAM
+    1:2:1:1:1:2: CONST 0x5555570d64b0 <e1290> {f17be} @dt=0x55555707e3c0@(G/swu32/1)  ?32?sh1
+    1:2:1:1:2: CONST 0x5555570d65a0 <e1299> {f17bg} @dt=0x55555707e3c0@(G/swu32/1)  ?32?sh0
+    1:2: VAR 0x5555570c78c0 <e2859> {f18bj} @dt=0@  mem_read_data INPUT PORT
+    1:2:1: BASICDTYPE 0x5555570d58c0 <e1337> {f18am} @dt=this@(w1)  logic kwd=logic
+    1:2:1:1: RANGE 0x5555570da1e0 <e1334> {f18as}
+    1:2:1:1:1: SUB 0x5555570cf760 <e1332> {f18bd} @dt=0@
+    1:2:1:1:1:1: VARREF 0x5555570f92b0 <e2895> {f18at} @dt=0@  DATA_WIDTH [RV] <- VAR 0x5555570c6d80 <e3765#> {f3ap} @dt=0x55555708d8c0@(G/swu32/6)  DATA_WIDTH [VSTATIC]  GPARAM
+    1:2:1:1:1:2: CONST 0x5555570d6870 <e1324> {f18be} @dt=0x55555707e3c0@(G/swu32/1)  ?32?sh1
+    1:2:1:1:2: CONST 0x5555570d6960 <e1333> {f18bg} @dt=0x55555707e3c0@(G/swu32/1)  ?32?sh0
+    1:2: VAR 0x5555570c79e0 <e2864> {f19bj} @dt=0@  mem_length OUTPUT PORT
+    1:2:1: BASICDTYPE 0x5555570d5bc0 <e1367> {f19am} @dt=this@(w1)  logic kwd=logic
+    1:2:1:1: RANGE 0x5555570da320 <e1364> {f19as}
+    1:2:1:1:1: CONST 0x5555570d6c30 <e1362> {f19at} @dt=0x55555708d5c0@(G/swu32/4)  ?32?shf
+    1:2:1:1:2: CONST 0x5555570d6d20 <e1363> {f19aw} @dt=0x55555707e3c0@(G/swu32/1)  ?32?sh0
+    1:2: VAR 0x5555570c7b00 <e2869> {f21bj} @dt=0@  mem_write_addr OUTPUT PORT
+    1:2:1: BASICDTYPE 0x5555570d5ec0 <e1399> {f21am} @dt=this@(w1)  logic kwd=logic
+    1:2:1:1: RANGE 0x5555570da460 <e1396> {f21as}
+    1:2:1:1:1: SUB 0x5555570cf8c0 <e1394> {f21bd} @dt=0@
+    1:2:1:1:1:1: VARREF 0x5555570f9380 <e2898> {f21at} @dt=0@  ADDR_WIDTH [RV] <- VAR 0x5555570c6c60 <e3757#> {f2ap} @dt=0x55555708d8c0@(G/swu32/6)  ADDR_WIDTH [VSTATIC]  GPARAM
+    1:2:1:1:1:2: CONST 0x5555570d6ff0 <e1386> {f21be} @dt=0x55555707e3c0@(G/swu32/1)  ?32?sh1
+    1:2:1:1:2: CONST 0x5555570d70e0 <e1395> {f21bg} @dt=0x55555707e3c0@(G/swu32/1)  ?32?sh0
+    1:2: VAR 0x5555570c7c20 <e2874> {f22bj} @dt=0@  mem_write_en OUTPUT PORT
+    1:2:1: BASICDTYPE 0x5555570dc0c0 <e1413> {f22am} @dt=this@(w1)  logic kwd=logic
+    1:2: VAR 0x5555570c7d40 <e2879> {f23bj} @dt=0@  mem_write_data OUTPUT PORT
+    1:2:1: BASICDTYPE 0x5555570dc3c0 <e1442> {f23am} @dt=this@(w1)  logic kwd=logic
+    1:2:1:1: RANGE 0x5555570da5a0 <e1439> {f23as}
+    1:2:1:1:1: SUB 0x5555570cfa20 <e1437> {f23bd} @dt=0@
+    1:2:1:1:1:1: VARREF 0x5555570f9450 <e2901> {f23at} @dt=0@  DATA_WIDTH [RV] <- VAR 0x5555570c6d80 <e3765#> {f3ap} @dt=0x55555708d8c0@(G/swu32/6)  DATA_WIDTH [VSTATIC]  GPARAM
+    1:2:1:1:1:2: CONST 0x5555570d73b0 <e1429> {f23be} @dt=0x55555707e3c0@(G/swu32/1)  ?32?sh1
+    1:2:1:1:2: CONST 0x5555570d74a0 <e1438> {f23bg} @dt=0x55555707e3c0@(G/swu32/1)  ?32?sh0
+    1:2: TYPEDEF 0x5555570d7770 <e1919> {f32ah} @dt=0@  state_t -> ENUMDTYPE 0x555557059540 <e2704> {f26an} @dt=0@  DMA.state_t enum
+    1:2:1: ENUMDTYPE 0x555557059540 <e2704> {f26an} @dt=0@  DMA.state_t enum
+    1:2:1:1: BASICDTYPE 0x5555570dc480 <e1480> {f26as} @dt=this@(w1)  logic kwd=logic
+    1:2:1:1:1: RANGE 0x5555570da640 <e1469> {f26ay}
+    1:2:1:1:1:1: CONST 0x5555570d7590 <e1467> {f26az} @dt=0x55555708c600@(G/swu32/2)  ?32?sh2
+    1:2:1:1:1:2: CONST 0x5555570d7680 <e1468> {f26bb} @dt=0x55555707e3c0@(G/swu32/1)  ?32?sh0
+    1:2:1:2: ENUMITEM 0x5555570dc6c0 <e1470> {f27aj} @dt=0@  IDLE
+    1:2:1:2: ENUMITEM 0x5555570dc780 <e1472> {f28aj} @dt=0@  NOTIFY
+    1:2:1:2: ENUMITEM 0x5555570dc840 <e1474> {f29aj} @dt=0@  READ
+    1:2:1:2: ENUMITEM 0x5555570dc900 <e1476> {f30aj} @dt=0@  WRITE
+    1:2:1:2: ENUMITEM 0x5555570dc9c0 <e1478> {f31aj} @dt=0@  DONE
+    1:2: VAR 0x5555570c7e60 <e1491> {f34an} @dt=0@  cs [VSTATIC]  VAR
+    1:2:1: REFDTYPE 0x5555570d7950 <e1487> {f34af} @dt=0@  state_t -> typedef=0x5555570d7770 -> ENUMDTYPE 0x555557059540 <e2704> {f26an} @dt=0@  DMA.state_t enum
+    1:2: VAR 0x5555570de000 <e1490> {f34ar} @dt=0@  ns [VSTATIC]  VAR
+    1:2:1: REFDTYPE 0x5555570d7a40 <e1489> {f34af} @dt=0@  state_t -> typedef=0x5555570d7770 -> ENUMDTYPE 0x555557059540 <e2704> {f26an} @dt=0@  DMA.state_t enum
+    1:2: VAR 0x5555570de120 <e1517> {f36as} @dt=0@  counter [VSTATIC]  VAR
+    1:2:1: BASICDTYPE 0x5555570dccc0 <e1513> {f36af} @dt=this@(w1)  logic kwd=logic
+    1:2:1:1: RANGE 0x5555570da780 <e1509> {f36al}
+    1:2:1:1:1: CONST 0x5555570d7d10 <e1507> {f36am} @dt=0x55555708d5c0@(G/swu32/4)  ?32?shf
+    1:2:1:1:2: CONST 0x5555570d7e00 <e1508> {f36ap} @dt=0x55555707e3c0@(G/swu32/1)  ?32?sh0
+    1:2: VAR 0x5555570de240 <e1516> {f36bb} @dt=0@  len [VSTATIC]  VAR
+    1:2:1: BASICDTYPE 0x5555570dcd80 <e1515> {f36af} @dt=this@(w1)  logic kwd=logic
+    1:2:1:1: RANGE 0x5555570da820 <e1509> {f36al}
+    1:2:1:1:1: CONST 0x5555570d7ef0 <e1507> {f36am} @dt=0x55555708d5c0@(G/swu32/4)  ?32?shf
+    1:2:1:1:2: CONST 0x5555570e0000 <e1508> {f36ap} @dt=0x55555707e3c0@(G/swu32/1)  ?32?sh0
+    1:2: VAR 0x5555570de360 <e1550> {f37bc} @dt=0@  read_ptr [VSTATIC]  VAR
+    1:2:1: BASICDTYPE 0x5555570dd080 <e1546> {f37af} @dt=this@(w1)  logic kwd=logic
+    1:2:1:1: RANGE 0x5555570da960 <e1539> {f37al}
+    1:2:1:1:1: SUB 0x5555570cfb80 <e1537> {f37aw} @dt=0@
+    1:2:1:1:1:1: VARREF 0x5555570f9520 <e2904> {f37am} @dt=0@  ADDR_WIDTH [RV] <- VAR 0x5555570c6c60 <e3757#> {f2ap} @dt=0x55555708d8c0@(G/swu32/6)  ADDR_WIDTH [VSTATIC]  GPARAM
+    1:2:1:1:1:2: CONST 0x5555570e02d0 <e1529> {f37ax} @dt=0x55555707e3c0@(G/swu32/1)  ?32?sh1
+    1:2:1:1:2: CONST 0x5555570e03c0 <e1538> {f37az} @dt=0x55555707e3c0@(G/swu32/1)  ?32?sh0
+    1:2: VAR 0x5555570de480 <e1549> {f37bm} @dt=0@  write_ptr [VSTATIC]  VAR
+    1:2:1: BASICDTYPE 0x5555570dd140 <e1548> {f37af} @dt=this@(w1)  logic kwd=logic
+    1:2:1:1: RANGE 0x5555570daa00 <e1539> {f37al}
+    1:2:1:1:1: SUB 0x5555570cfc30 <e1537> {f37aw} @dt=0@
+    1:2:1:1:1:1: VARREF 0x5555570f95f0 <e2907> {f37am} @dt=0@  ADDR_WIDTH [RV] <- VAR 0x5555570c6c60 <e3757#> {f2ap} @dt=0x55555708d8c0@(G/swu32/6)  ADDR_WIDTH [VSTATIC]  GPARAM
+    1:2:1:1:1:2: CONST 0x5555570e04b0 <e1529> {f37ax} @dt=0x55555707e3c0@(G/swu32/1)  ?32?sh1
+    1:2:1:1:2: CONST 0x5555570e05a0 <e1538> {f37az} @dt=0x55555707e3c0@(G/swu32/1)  ?32?sh0
+    1:2: ASSIGNW 0x5555570daaa0 <e1578> {f39ay} @dt=0@
+    1:2:1: COND 0x5555570cfd90 <e1576> {f39bo} @dt=0x55555707e3c0@(G/swu32/1)
+    1:2:1:1: EQ 0x5555570cfce0 <e1571> {f39be} @dt=0x55555707e840@(G/w1)
+    1:2:1:1:1: VARREF 0x5555570f96c0 <e2910> {f39bb} @dt=0@  cs [RV] <- VAR 0x5555570c7e60 <e1491> {f34an} @dt=0@  cs [VSTATIC]  VAR
+    1:2:1:1:2: ENUMITEMREF 0x5555570e56b0 <e2913> {f39bh} @dt=0@  NOTIFY -> ENUMITEM 0x5555570dc780 <e1472> {f28aj} @dt=0@  NOTIFY
+    1:2:1:2: CONST 0x5555570e0690 <e1572> {f39bq} @dt=0x55555707e3c0@(G/swu32/1)  ?32?sh1
+    1:2:1:3: CONST 0x5555570e0780 <e1573> {f39bu} @dt=0x55555707e3c0@(G/swu32/1)  ?32?sh0
+    1:2:2: VARREF 0x5555570f9790 <e2916> {f39am} @dt=0@  notify_host [LV] => VAR 0x5555570c7680 <e2849> {f16bj} @dt=0@  notify_host OUTPUT PORT
+    1:2: ASSIGNW 0x5555570dab40 <e1606> {f40ar} @dt=0@
+    1:2:1: COND 0x5555570cfef0 <e1604> {f40bf} @dt=0x55555707e3c0@(G/swu32/1)
+    1:2:1:1: EQ 0x5555570cfe40 <e1599> {f40ax} @dt=0x55555707e840@(G/w1)
+    1:2:1:1:1: VARREF 0x5555570f9860 <e2919> {f40au} @dt=0@  cs [RV] <- VAR 0x5555570c7e60 <e1491> {f34an} @dt=0@  cs [VSTATIC]  VAR
+    1:2:1:1:2: ENUMITEMREF 0x5555570e5760 <e2922> {f40ba} @dt=0@  DONE -> ENUMITEM 0x5555570dc9c0 <e1478> {f31aj} @dt=0@  DONE
+    1:2:1:2: CONST 0x5555570e0870 <e1600> {f40bh} @dt=0x55555707e3c0@(G/swu32/1)  ?32?sh1
+    1:2:1:3: CONST 0x5555570e0960 <e1601> {f40bl} @dt=0x55555707e3c0@(G/swu32/1)  ?32?sh0
+    1:2:2: VARREF 0x5555570f9930 <e2925> {f40am} @dt=0@  done [LV] => VAR 0x5555570c7560 <e2844> {f13bj} @dt=0@  done OUTPUT PORT
+    1:2: ASSIGNW 0x5555570dabe0 <e1612> {f41ax} @dt=0@
+    1:2:1: VARREF 0x5555570f9a00 <e2928> {f41az} @dt=0@  len [RV] <- VAR 0x5555570de240 <e1516> {f36bb} @dt=0@  len [VSTATIC]  VAR
+    1:2:2: VARREF 0x5555570f9ad0 <e2931> {f41am} @dt=0@  mem_length [LV] => VAR 0x5555570c79e0 <e2864> {f19bj} @dt=0@  mem_length OUTPUT PORT
+    1:2: ASSIGNW 0x5555570dac80 <e1640> {f43az} @dt=0@
+    1:2:1: COND 0x5555570e40b0 <e1638> {f43bo} @dt=0x55555707e3c0@(G/swu32/1)
+    1:2:1:1: EQ 0x5555570e4000 <e1633> {f43bf} @dt=0x55555707e840@(G/w1)
+    1:2:1:1:1: VARREF 0x5555570f9ba0 <e2934> {f43bc} @dt=0@  cs [RV] <- VAR 0x5555570c7e60 <e1491> {f34an} @dt=0@  cs [VSTATIC]  VAR
+    1:2:1:1:2: ENUMITEMREF 0x5555570e5810 <e2937> {f43bi} @dt=0@  WRITE -> ENUMITEM 0x5555570dc900 <e1476> {f30aj} @dt=0@  WRITE
+    1:2:1:2: CONST 0x5555570e0a50 <e1634> {f43bq} @dt=0x55555707e3c0@(G/swu32/1)  ?32?sh1
+    1:2:1:3: CONST 0x5555570e0b40 <e1635> {f43bu} @dt=0x55555707e3c0@(G/swu32/1)  ?32?sh0
+    1:2:2: VARREF 0x5555570f9c70 <e2940> {f43am} @dt=0@  mem_write_en [LV] => VAR 0x5555570c7c20 <e2874> {f22bj} @dt=0@  mem_write_en OUTPUT PORT
+    1:2: ASSIGNW 0x5555570dad20 <e1646> {f44bb} @dt=0@
+    1:2:1: VARREF 0x5555570f9d40 <e2943> {f44bd} @dt=0@  write_ptr [RV] <- VAR 0x5555570de480 <e1549> {f37bm} @dt=0@  write_ptr [VSTATIC]  VAR
+    1:2:2: VARREF 0x5555570f9e10 <e2946> {f44am} @dt=0@  mem_write_addr [LV] => VAR 0x5555570c7b00 <e2869> {f21bj} @dt=0@  mem_write_addr OUTPUT PORT
+    1:2: ASSIGNW 0x5555570dadc0 <e1652> {f45ba} @dt=0@
+    1:2:1: VARREF 0x5555570f9ee0 <e2949> {f45bc} @dt=0@  read_ptr [RV] <- VAR 0x5555570de360 <e1550> {f37bc} @dt=0@  read_ptr [VSTATIC]  VAR
+    1:2:2: VARREF 0x55555711e000 <e2952> {f45am} @dt=0@  mem_read_addr [LV] => VAR 0x5555570c77a0 <e2854> {f17bj} @dt=0@  mem_read_addr OUTPUT PORT
+    1:2: ASSIGNW 0x5555570dae60 <e1658> {f46bb} @dt=0@
+    1:2:1: VARREF 0x55555711e0d0 <e2955> {f46bd} @dt=0@  mem_read_data [RV] <- VAR 0x5555570c78c0 <e2859> {f18bj} @dt=0@  mem_read_data INPUT PORT
+    1:2:2: VARREF 0x55555711e1a0 <e2958> {f46am} @dt=0@  mem_write_data [LV] => VAR 0x5555570c7d40 <e2879> {f23bj} @dt=0@  mem_write_data OUTPUT PORT
+    1:2: ALWAYS 0x5555570e46e0 <e1839> {f49af} [always_ff]
+    1:2:1: SENTREE 0x5555570e42c0 <e2708> {f49ap}
+    1:2:1:1: SENITEM 0x5555570e4160 <e1660> {f49ar} [POS]
+    1:2:1:1:1: VARREF 0x55555711e270 <e2961> {f49az} @dt=0@  clk [RV] <- VAR 0x5555570c6ea0 <e2814> {f5bj} @dt=0@  clk INPUT PORT
+    1:2:1:1: SENITEM 0x5555570e4210 <e1665> {f49bg} [POS]
+    1:2:1:1:1: VARREF 0x55555711e340 <e2964> {f49bo} @dt=0@  rst [RV] <- VAR 0x5555570c6fc0 <e2819> {f6bj} @dt=0@  rst INPUT PORT
+    1:2:2: BEGIN 0x5555570e2b60 <e2710> {f49bt} [UNNAMED]
+    1:2:2:2: IF 0x5555570e4630 <e1834> {f50aj}
+    1:2:2:2:1: VARREF 0x55555711e410 <e2967> {f50an} @dt=0@  rst [RV] <- VAR 0x5555570c6fc0 <e2819> {f6bj} @dt=0@  rst INPUT PORT
+    1:2:2:2:2: BEGIN 0x5555570e2d00 <e1669> {f50as} [UNNAMED]
+    1:2:2:2:2:2: ASSIGNDLY 0x5555570daf00 <e1672> {f51bd} @dt=0@
+    1:2:2:2:2:2:1: ENUMITEMREF 0x5555570e58c0 <e2970> {f51bg} @dt=0@  IDLE -> ENUMITEM 0x5555570dc6c0 <e1470> {f27aj} @dt=0@  IDLE
+    1:2:2:2:2:2:2: VARREF 0x55555711e4e0 <e2973> {f51an} @dt=0@  cs [LV] => VAR 0x5555570c7e60 <e1491> {f34an} @dt=0@  cs [VSTATIC]  VAR
+    1:2:2:2:2:2: ASSIGNDLY 0x5555570dafa0 <e1685> {f52bd} @dt=0@
+    1:2:2:2:2:2:1: CONST 0x5555570e0c30 <e1683> {f52bg} @dt=0x55555707e3c0@(G/swu32/1)  ?32?sh0
+    1:2:2:2:2:2:2: VARREF 0x55555711e5b0 <e2976> {f52an} @dt=0@  counter [LV] => VAR 0x5555570de120 <e1517> {f36as} @dt=0@  counter [VSTATIC]  VAR
+    1:2:2:2:2:2: ASSIGNDLY 0x5555570db040 <e1696> {f53bd} @dt=0@
+    1:2:2:2:2:2:1: CONST 0x5555570e0d20 <e1694> {f53bg} @dt=0x55555707e3c0@(G/swu32/1)  ?32?sh0
+    1:2:2:2:2:2:2: VARREF 0x55555711e680 <e2979> {f53an} @dt=0@  read_ptr [LV] => VAR 0x5555570de360 <e1550> {f37bc} @dt=0@  read_ptr [VSTATIC]  VAR
+    1:2:2:2:2:2: ASSIGNDLY 0x5555570db0e0 <e1707> {f54bd} @dt=0@
+    1:2:2:2:2:2:1: CONST 0x5555570e0e10 <e1705> {f54bg} @dt=0x55555707e3c0@(G/swu32/1)  ?32?sh0
+    1:2:2:2:2:2:2: VARREF 0x55555711e750 <e2982> {f54an} @dt=0@  write_ptr [LV] => VAR 0x5555570de480 <e1549> {f37bm} @dt=0@  write_ptr [VSTATIC]  VAR
+    1:2:2:2:2:2: ASSIGNDLY 0x5555570db180 <e1718> {f55bd} @dt=0@
+    1:2:2:2:2:2:1: CONST 0x5555570e0f00 <e1716> {f55bg} @dt=0x55555707e3c0@(G/swu32/1)  ?32?sh0
+    1:2:2:2:2:2:2: VARREF 0x55555711e820 <e2985> {f55an} @dt=0@  len [LV] => VAR 0x5555570de240 <e1516> {f36bb} @dt=0@  len [VSTATIC]  VAR
+    1:2:2:2:3: BEGIN 0x5555570e32b0 <e1719> {f57ao} [UNNAMED]
+    1:2:2:2:3:2: ASSIGNDLY 0x5555570db220 <e1722> {f58aq} @dt=0@
+    1:2:2:2:3:2:1: VARREF 0x55555711e8f0 <e2988> {f58at} @dt=0@  ns [RV] <- VAR 0x5555570de000 <e1490> {f34ar} @dt=0@  ns [VSTATIC]  VAR
+    1:2:2:2:3:2:2: VARREF 0x55555711e9c0 <e2991> {f58an} @dt=0@  cs [LV] => VAR 0x5555570c7e60 <e1491> {f34an} @dt=0@  cs [VSTATIC]  VAR
+    1:2:2:2:3:2: CASE 0x5555570e4370 <e1833> {f59an}
+    1:2:2:2:3:2:1: VARREF 0x55555711ea90 <e2994> {f59at} @dt=0@  cs [RV] <- VAR 0x5555570c7e60 <e1491> {f34an} @dt=0@  cs [VSTATIC]  VAR
+    1:2:2:2:3:2:2: CASEITEM 0x5555570db540 <e1758> {f60av}
+    1:2:2:2:3:2:2:1: ENUMITEMREF 0x5555570e5970 <e2997> {f60ar} @dt=0@  IDLE -> ENUMITEM 0x5555570dc6c0 <e1470> {f27aj} @dt=0@  IDLE
+    1:2:2:2:3:2:2:2: BEGIN 0x5555570e36c0 <e1729> {f60ax} [UNNAMED]
+    1:2:2:2:3:2:2:2:2: ASSIGNDLY 0x5555570db2c0 <e1737> {f61bl} @dt=0@
+    1:2:2:2:3:2:2:2:2:1: CONST 0x5555570e0ff0 <e1738> {f61bo} @dt=0x55555707e3c0@(G/swu32/1)  ?32?sh0
+    1:2:2:2:3:2:2:2:2:2: VARREF 0x55555711eb60 <e3000> {f61av} @dt=0@  counter [LV] => VAR 0x5555570de120 <e1517> {f36as} @dt=0@  counter [VSTATIC]  VAR
+    1:2:2:2:3:2:2:2:2: ASSIGNDLY 0x5555570db360 <e1745> {f62bl} @dt=0@
+    1:2:2:2:3:2:2:2:2:1: VARREF 0x55555711ec30 <e3003> {f62bo} @dt=0@  src_addr [RV] <- VAR 0x5555570c7200 <e2829> {f10bj} @dt=0@  src_addr INPUT PORT
+    1:2:2:2:3:2:2:2:2:2: VARREF 0x55555711ed00 <e3006> {f62av} @dt=0@  read_ptr [LV] => VAR 0x5555570de360 <e1550> {f37bc} @dt=0@  read_ptr [VSTATIC]  VAR
+    1:2:2:2:3:2:2:2:2: ASSIGNDLY 0x5555570db400 <e1751> {f63bl} @dt=0@
+    1:2:2:2:3:2:2:2:2:1: VARREF 0x55555711edd0 <e3009> {f63bo} @dt=0@  dst_addr [RV] <- VAR 0x5555570c7320 <e2834> {f11bj} @dt=0@  dst_addr INPUT PORT
+    1:2:2:2:3:2:2:2:2:2: VARREF 0x55555711eea0 <e3012> {f63av} @dt=0@  write_ptr [LV] => VAR 0x5555570de480 <e1549> {f37bm} @dt=0@  write_ptr [VSTATIC]  VAR
+    1:2:2:2:3:2:2:2:2: ASSIGNDLY 0x5555570db4a0 <e1757> {f64bl} @dt=0@
+    1:2:2:2:3:2:2:2:2:1: VARREF 0x55555711ef70 <e3015> {f64bo} @dt=0@  length [RV] <- VAR 0x5555570c7440 <e2839> {f12bj} @dt=0@  length INPUT PORT
+    1:2:2:2:3:2:2:2:2:2: VARREF 0x55555711f040 <e3018> {f64av} @dt=0@  len [LV] => VAR 0x5555570de240 <e1516> {f36bb} @dt=0@  len [VSTATIC]  VAR
+    1:2:2:2:3:2:2: CASEITEM 0x5555570db7c0 <e1806> {f66aw}
+    1:2:2:2:3:2:2:1: ENUMITEMREF 0x5555570e5a20 <e3021> {f66ar} @dt=0@  WRITE -> ENUMITEM 0x5555570dc900 <e1476> {f30aj} @dt=0@  WRITE
+    1:2:2:2:3:2:2:2: BEGIN 0x5555570e3e10 <e1760> {f66ay} [UNNAMED]
+    1:2:2:2:3:2:2:2:2: ASSIGNDLY 0x5555570db5e0 <e1772> {f67bl} @dt=0@
+    1:2:2:2:3:2:2:2:2:1: ADD 0x5555570e4420 <e1773> {f67bw} @dt=0@
+    1:2:2:2:3:2:2:2:2:1:1: VARREF 0x55555711f110 <e3024> {f67bo} @dt=0@  counter [RV] <- VAR 0x5555570de120 <e1517> {f36as} @dt=0@  counter [VSTATIC]  VAR
+    1:2:2:2:3:2:2:2:2:1:2: CONST 0x5555570e10e0 <e1771> {f67by} @dt=0x55555707e3c0@(G/swu32/1)  ?32?sh1
+    1:2:2:2:3:2:2:2:2:2: VARREF 0x55555711f1e0 <e3027> {f67av} @dt=0@  counter [LV] => VAR 0x5555570de120 <e1517> {f36as} @dt=0@  counter [VSTATIC]  VAR
+    1:2:2:2:3:2:2:2:2: ASSIGNDLY 0x5555570db680 <e1789> {f68bl} @dt=0@
+    1:2:2:2:3:2:2:2:2:1: ADD 0x5555570e44d0 <e1787> {f68bx} @dt=0@
+    1:2:2:2:3:2:2:2:2:1:1: VARREF 0x55555711f2b0 <e3030> {f68bo} @dt=0@  read_ptr [RV] <- VAR 0x5555570de360 <e1550> {f37bc} @dt=0@  read_ptr [VSTATIC]  VAR
+    1:2:2:2:3:2:2:2:2:1:2: CONST 0x5555570e11d0 <e1785> {f68bz} @dt=0x55555708c900@(G/swu32/3)  ?32?sh4
+    1:2:2:2:3:2:2:2:2:2: VARREF 0x55555711f380 <e3033> {f68av} @dt=0@  read_ptr [LV] => VAR 0x5555570de360 <e1550> {f37bc} @dt=0@  read_ptr [VSTATIC]  VAR
+    1:2:2:2:3:2:2:2:2: ASSIGNDLY 0x5555570db720 <e1804> {f69bl} @dt=0@
+    1:2:2:2:3:2:2:2:2:1: ADD 0x5555570e4580 <e1802> {f69by} @dt=0@
+    1:2:2:2:3:2:2:2:2:1:1: VARREF 0x55555711f450 <e3036> {f69bo} @dt=0@  write_ptr [RV] <- VAR 0x5555570de480 <e1549> {f37bm} @dt=0@  write_ptr [VSTATIC]  VAR
+    1:2:2:2:3:2:2:2:2:1:2: CONST 0x5555570e12c0 <e1800> {f69ca} @dt=0x55555708c900@(G/swu32/3)  ?32?sh4
+    1:2:2:2:3:2:2:2:2:2: VARREF 0x55555711f520 <e3039> {f69av} @dt=0@  write_ptr [LV] => VAR 0x5555570de480 <e1549> {f37bm} @dt=0@  write_ptr [VSTATIC]  VAR
+    1:2:2:2:3:2:2: CASEITEM 0x5555570dbae0 <e1832> {f71ar}
+    1:2:2:2:3:2:2:2: BEGIN 0x5555570e8410 <e1807> {f71ba} [UNNAMED]
+    1:2:2:2:3:2:2:2:2: ASSIGNDLY 0x5555570db860 <e1810> {f72bl} @dt=0@
+    1:2:2:2:3:2:2:2:2:1: VARREF 0x55555711f5f0 <e3042> {f72bo} @dt=0@  counter [RV] <- VAR 0x5555570de120 <e1517> {f36as} @dt=0@  counter [VSTATIC]  VAR
+    1:2:2:2:3:2:2:2:2:2: VARREF 0x55555711f6c0 <e3045> {f72av} @dt=0@  counter [LV] => VAR 0x5555570de120 <e1517> {f36as} @dt=0@  counter [VSTATIC]  VAR
+    1:2:2:2:3:2:2:2:2: ASSIGNDLY 0x5555570db900 <e1818> {f73bl} @dt=0@
+    1:2:2:2:3:2:2:2:2:1: VARREF 0x55555711f790 <e3048> {f73bo} @dt=0@  read_ptr [RV] <- VAR 0x5555570de360 <e1550> {f37bc} @dt=0@  read_ptr [VSTATIC]  VAR
+    1:2:2:2:3:2:2:2:2:2: VARREF 0x55555711f860 <e3051> {f73av} @dt=0@  read_ptr [LV] => VAR 0x5555570de360 <e1550> {f37bc} @dt=0@  read_ptr [VSTATIC]  VAR
+    1:2:2:2:3:2:2:2:2: ASSIGNDLY 0x5555570db9a0 <e1824> {f74bl} @dt=0@
+    1:2:2:2:3:2:2:2:2:1: VARREF 0x55555711f930 <e3054> {f74bo} @dt=0@  write_ptr [RV] <- VAR 0x5555570de480 <e1549> {f37bm} @dt=0@  write_ptr [VSTATIC]  VAR
+    1:2:2:2:3:2:2:2:2:2: VARREF 0x55555711fa00 <e3057> {f74av} @dt=0@  write_ptr [LV] => VAR 0x5555570de480 <e1549> {f37bm} @dt=0@  write_ptr [VSTATIC]  VAR
+    1:2:2:2:3:2:2:2:2: ASSIGNDLY 0x5555570dba40 <e1830> {f75bl} @dt=0@
+    1:2:2:2:3:2:2:2:2:1: VARREF 0x55555711fad0 <e3060> {f75bo} @dt=0@  len [RV] <- VAR 0x5555570de240 <e1516> {f36bb} @dt=0@  len [VSTATIC]  VAR
+    1:2:2:2:3:2:2:2:2:2: VARREF 0x55555711fba0 <e3063> {f75av} @dt=0@  len [LV] => VAR 0x5555570de240 <e1516> {f36bb} @dt=0@  len [VSTATIC]  VAR
+    1:2: ALWAYS 0x5555570e4b00 <e1917> {f82af} [always_comb]
+    1:2:2: BEGIN 0x5555570e8b60 <e1840> {f82ar} [UNNAMED]
+    1:2:2:2: CASE 0x5555570e4790 <e1842> {f83aj}
+    1:2:2:2:1: VARREF 0x55555711fc70 <e3066> {f83ap} @dt=0@  cs [RV] <- VAR 0x5555570c7e60 <e1491> {f34an} @dt=0@  cs [VSTATIC]  VAR
+    1:2:2:2:2: CASEITEM 0x5555570dbcc0 <e1856> {f84ar}
+    1:2:2:2:2:1: ENUMITEMREF 0x5555570e5ad0 <e3069> {f84an} @dt=0@  IDLE -> ENUMITEM 0x5555570dc6c0 <e1470> {f27aj} @dt=0@  IDLE
+    1:2:2:2:2:2: ASSIGN 0x5555570dbc20 <e1853> {f84bc} @dt=0@
+    1:2:2:2:2:2:1: COND 0x5555570e4840 <e1854> {f84bl} @dt=0@
+    1:2:2:2:2:2:1:1: VARREF 0x55555711fd40 <e3072> {f84bf} @dt=0@  start [RV] <- VAR 0x5555570c70e0 <e2824> {f9bj} @dt=0@  start INPUT PORT
+    1:2:2:2:2:2:1:2: ENUMITEMREF 0x5555570e5b80 <e3075> {f84bn} @dt=0@  NOTIFY -> ENUMITEM 0x5555570dc780 <e1472> {f28aj} @dt=0@  NOTIFY
+    1:2:2:2:2:2:1:3: ENUMITEMREF 0x5555570e5c30 <e3078> {f84bw} @dt=0@  IDLE -> ENUMITEM 0x5555570dc6c0 <e1470> {f27aj} @dt=0@  IDLE
+    1:2:2:2:2:2:2: VARREF 0x55555711fe10 <e3081> {f84az} @dt=0@  ns [LV] => VAR 0x5555570de000 <e1490> {f34ar} @dt=0@  ns [VSTATIC]  VAR
+    1:2:2:2:2: CASEITEM 0x5555570dbe00 <e1864> {f85at}
+    1:2:2:2:2:1: ENUMITEMREF 0x5555570e5ce0 <e3084> {f85an} @dt=0@  NOTIFY -> ENUMITEM 0x5555570dc780 <e1472> {f28aj} @dt=0@  NOTIFY
+    1:2:2:2:2:2: ASSIGN 0x5555570dbd60 <e1860> {f85bc} @dt=0@
+    1:2:2:2:2:2:1: ENUMITEMREF 0x5555570e5d90 <e3087> {f85be} @dt=0@  READ -> ENUMITEM 0x5555570dc840 <e1474> {f29aj} @dt=0@  READ
+    1:2:2:2:2:2:2: VARREF 0x55555711fee0 <e3090> {f85az} @dt=0@  ns [LV] => VAR 0x5555570de000 <e1490> {f34ar} @dt=0@  ns [VSTATIC]  VAR
+    1:2:2:2:2: CASEITEM 0x5555570dbf40 <e1872> {f86ar}
+    1:2:2:2:2:1: ENUMITEMREF 0x5555570e5e40 <e3093> {f86an} @dt=0@  READ -> ENUMITEM 0x5555570dc840 <e1474> {f29aj} @dt=0@  READ
+    1:2:2:2:2:2: ASSIGN 0x5555570dbea0 <e1868> {f86bc} @dt=0@
+    1:2:2:2:2:2:1: ENUMITEMREF 0x5555570e5ef0 <e3096> {f86be} @dt=0@  WRITE -> ENUMITEM 0x5555570dc900 <e1476> {f30aj} @dt=0@  WRITE
+    1:2:2:2:2:2:2: VARREF 0x555557120000 <e3099> {f86az} @dt=0@  ns [LV] => VAR 0x5555570de000 <e1490> {f34ar} @dt=0@  ns [VSTATIC]  VAR
+    1:2:2:2:2: CASEITEM 0x5555570ea0a0 <e1900> {f87as}
+    1:2:2:2:2:1: ENUMITEMREF 0x555557122000 <e3102> {f87an} @dt=0@  WRITE -> ENUMITEM 0x5555570dc900 <e1476> {f30aj} @dt=0@  WRITE
+    1:2:2:2:2:2: ASSIGN 0x5555570ea000 <e1896> {f87bc} @dt=0@
+    1:2:2:2:2:2:1: COND 0x5555570e4a50 <e1897> {f87by} @dt=0@
+    1:2:2:2:2:2:1:1: EQ 0x5555570e49a0 <e1893> {f87bn} @dt=0x55555707e840@(G/w1)
+    1:2:2:2:2:2:1:1:1: VARREF 0x5555571200d0 <e3105> {f87bf} @dt=0@  counter [RV] <- VAR 0x5555570de120 <e1517> {f36as} @dt=0@  counter [VSTATIC]  VAR
+    1:2:2:2:2:2:1:1:2: SUB 0x5555570e48f0 <e1888> {f87bu} @dt=0@
+    1:2:2:2:2:2:1:1:2:1: VARREF 0x5555571201a0 <e3108> {f87bq} @dt=0@  len [RV] <- VAR 0x5555570de240 <e1516> {f36bb} @dt=0@  len [VSTATIC]  VAR
+    1:2:2:2:2:2:1:1:2:2: CONST 0x5555570e13b0 <e1885> {f87bw} @dt=0x55555707e3c0@(G/swu32/1)  ?32?sh1
+    1:2:2:2:2:2:1:2: ENUMITEMREF 0x5555571220b0 <e3111> {f87ca} @dt=0@  DONE -> ENUMITEM 0x5555570dc9c0 <e1478> {f31aj} @dt=0@  DONE
+    1:2:2:2:2:2:1:3: ENUMITEMREF 0x555557122160 <e3114> {f87ch} @dt=0@  READ -> ENUMITEM 0x5555570dc840 <e1474> {f29aj} @dt=0@  READ
+    1:2:2:2:2:2:2: VARREF 0x555557120270 <e3117> {f87az} @dt=0@  ns [LV] => VAR 0x5555570de000 <e1490> {f34ar} @dt=0@  ns [VSTATIC]  VAR
+    1:2:2:2:2: CASEITEM 0x5555570ea1e0 <e1908> {f88ar}
+    1:2:2:2:2:1: ENUMITEMREF 0x555557122210 <e3120> {f88an} @dt=0@  DONE -> ENUMITEM 0x5555570dc9c0 <e1478> {f31aj} @dt=0@  DONE
+    1:2:2:2:2:2: ASSIGN 0x5555570ea140 <e1904> {f88bc} @dt=0@
+    1:2:2:2:2:2:1: ENUMITEMREF 0x5555571222c0 <e3123> {f88be} @dt=0@  IDLE -> ENUMITEM 0x5555570dc6c0 <e1470> {f27aj} @dt=0@  IDLE
+    1:2:2:2:2:2:2: VARREF 0x555557120340 <e3126> {f88az} @dt=0@  ns [LV] => VAR 0x5555570de000 <e1490> {f34ar} @dt=0@  ns [VSTATIC]  VAR
+    1:2:2:2:2: CASEITEM 0x5555570ea320 <e1915> {f89an}
+    1:2:2:2:2:2: ASSIGN 0x5555570ea280 <e1911> {f89bc} @dt=0@
+    1:2:2:2:2:2:1: ENUMITEMREF 0x555557122370 <e3129> {f89be} @dt=0@  IDLE -> ENUMITEM 0x5555570dc6c0 <e1470> {f27aj} @dt=0@  IDLE
+    1:2:2:2:2:2:2: VARREF 0x555557120410 <e3132> {f89az} @dt=0@  ns [LV] => VAR 0x5555570de000 <e1490> {f34ar} @dt=0@  ns [VSTATIC]  VAR
+    3: TYPETABLE 0x555557048400 <e2> {a0aa}
+		 integer  -> BASICDTYPE 0x55555707e240 <e26> {c31bb} @dt=this@(G/sw32)  integer [GENERIC] kwd=integer range=[31:0]
+		   logic  -> BASICDTYPE 0x55555707e840 <e104> {c50aw} @dt=this@(G/w1)  logic [GENERIC] kwd=logic
+		  string  -> BASICDTYPE 0x55555708cc00 <e510> {c162ak} @dt=this@(G/str)  string [GENERIC] kwd=string
+		detailed  ->  BASICDTYPE 0x5555570c9ec0 <e1093> {e29av} @dt=this@(G/w0)  logic [GENERIC] kwd=logic
+		detailed  ->  BASICDTYPE 0x55555707e840 <e104> {c50aw} @dt=this@(G/w1)  logic [GENERIC] kwd=logic
+		detailed  ->  BASICDTYPE 0x55555707e3c0 <e47> {c33bg} @dt=this@(G/swu32/1)  logic [GENERIC] kwd=logic range=[31:0]
+		detailed  ->  BASICDTYPE 0x55555708c600 <e434> {c125aw} @dt=this@(G/swu32/2)  logic [GENERIC] kwd=logic range=[31:0]
+		detailed  ->  BASICDTYPE 0x55555708c900 <e451> {c127aw} @dt=this@(G/swu32/3)  logic [GENERIC] kwd=logic range=[31:0]
+		detailed  ->  BASICDTYPE 0x55555708d5c0 <e604> {e2bc} @dt=this@(G/swu32/4)  logic [GENERIC] kwd=logic range=[31:0]
+		detailed  ->  BASICDTYPE 0x5555570c9800 <e973> {e26bo} @dt=this@(G/swu32/5)  logic [GENERIC] kwd=logic range=[31:0]
+		detailed  ->  BASICDTYPE 0x55555708d8c0 <e625> {e4bc} @dt=this@(G/swu32/6)  logic [GENERIC] kwd=logic range=[31:0]
+		detailed  ->  BASICDTYPE 0x55555708d740 <e614> {e3ax} @dt=this@(G/swu32/7)  logic [GENERIC] kwd=logic range=[31:0]
+		detailed  ->  BASICDTYPE 0x5555570c8fc0 <e849> {e16bu} @dt=this@(G/swu32/11)  logic [GENERIC] kwd=logic range=[31:0]
+		detailed  ->  BASICDTYPE 0x5555570c9e00 <e1086> {e29av} @dt=this@(G/w32)  logic [GENERIC] kwd=logic range=[31:0]
+		detailed  ->  BASICDTYPE 0x55555707e240 <e26> {c31bb} @dt=this@(G/sw32)  integer [GENERIC] kwd=integer range=[31:0]
+		detailed  ->  BASICDTYPE 0x55555708cc00 <e510> {c162ak} @dt=this@(G/str)  string [GENERIC] kwd=string
+		detailed  ->  BASICDTYPE 0x55555708cb40 <e504> {c162ar} @dt=this@(G/w296)  logic [GENERIC] kwd=logic range=[295:0]
+    3:1: BASICDTYPE 0x55555707e240 <e26> {c31bb} @dt=this@(G/sw32)  integer [GENERIC] kwd=integer range=[31:0]
+    3:1: BASICDTYPE 0x55555707e3c0 <e47> {c33bg} @dt=this@(G/swu32/1)  logic [GENERIC] kwd=logic range=[31:0]
+    3:1: BASICDTYPE 0x55555707e840 <e104> {c50aw} @dt=this@(G/w1)  logic [GENERIC] kwd=logic
+    3:1: VOIDDTYPE 0x5555570a66e0 <e127> {c51av} @dt=this@(w0)void
+    3:1: BASICDTYPE 0x55555708c600 <e434> {c125aw} @dt=this@(G/swu32/2)  logic [GENERIC] kwd=logic range=[31:0]
+    3:1: BASICDTYPE 0x55555708c900 <e451> {c127aw} @dt=this@(G/swu32/3)  logic [GENERIC] kwd=logic range=[31:0]
+    3:1: BASICDTYPE 0x55555708cb40 <e504> {c162ar} @dt=this@(G/w296)  logic [GENERIC] kwd=logic range=[295:0]
+    3:1: BASICDTYPE 0x55555708cc00 <e510> {c162ak} @dt=this@(G/str)  string [GENERIC] kwd=string
+    3:1: BASICDTYPE 0x55555708d5c0 <e604> {e2bc} @dt=this@(G/swu32/4)  logic [GENERIC] kwd=logic range=[31:0]
+    3:1: BASICDTYPE 0x55555708d740 <e614> {e3ax} @dt=this@(G/swu32/7)  logic [GENERIC] kwd=logic range=[31:0]
+    3:1: BASICDTYPE 0x55555708d8c0 <e625> {e4bc} @dt=this@(G/swu32/6)  logic [GENERIC] kwd=logic range=[31:0]
+    3:1: BASICDTYPE 0x5555570c8fc0 <e849> {e16bu} @dt=this@(G/swu32/11)  logic [GENERIC] kwd=logic range=[31:0]
+    3:1: BASICDTYPE 0x5555570c9800 <e973> {e26bo} @dt=this@(G/swu32/5)  logic [GENERIC] kwd=logic range=[31:0]
+    3:1: BASICDTYPE 0x5555570c9e00 <e1086> {e29av} @dt=this@(G/w32)  logic [GENERIC] kwd=logic range=[31:0]
+    3:1: BASICDTYPE 0x5555570c9ec0 <e1093> {e29av} @dt=this@(G/w0)  logic [GENERIC] kwd=logic
+    3:1: BASICDTYPE 0x5555570dde00 <e3642#> {d5ap} @dt=this@(nw1)  LOGIC_IMPLICIT kwd=LOGIC_IMPLICIT
+    3:1: BASICDTYPE 0x5555570ee000 <e3650#> {d6ap} @dt=this@(nw1)  LOGIC_IMPLICIT kwd=LOGIC_IMPLICIT
+    3:1: BASICDTYPE 0x5555570ee180 <e3658#> {d8ap} @dt=this@(nw1)  LOGIC_IMPLICIT kwd=LOGIC_IMPLICIT
+    3:1: BASICDTYPE 0x5555570ee300 <e3666#> {d9ap} @dt=this@(nw1)  LOGIC_IMPLICIT kwd=LOGIC_IMPLICIT
+    3:1: BASICDTYPE 0x5555570ee480 <e3674#> {d10ap} @dt=this@(nw1)  LOGIC_IMPLICIT kwd=LOGIC_IMPLICIT
+    3:1: BASICDTYPE 0x5555570d40c0 <e3751#> {f2ap} @dt=this@(nw1)  LOGIC_IMPLICIT kwd=LOGIC_IMPLICIT
+    3:1: BASICDTYPE 0x5555570d4240 <e3759#> {f3ap} @dt=this@(nw1)  LOGIC_IMPLICIT kwd=LOGIC_IMPLICIT
+    3:1: BASICDTYPE 0x55555708d680 <e3767#> {e2ap} @dt=this@(nw1)  LOGIC_IMPLICIT kwd=LOGIC_IMPLICIT
+    3:1: BASICDTYPE 0x55555708d800 <e3775#> {e3ap} @dt=this@(nw1)  LOGIC_IMPLICIT kwd=LOGIC_IMPLICIT
+    3:1: BASICDTYPE 0x55555708d980 <e3783#> {e4ap} @dt=this@(nw1)  LOGIC_IMPLICIT kwd=LOGIC_IMPLICIT
+    3: CONSTPOOL 0x55555704c000 <e7> {a0aa}
+    3:1: MODULE 0x55555704e000 <e6> {a0aa}  @CONST-POOL@  L0 [NONE]
+    3:1:2: SCOPE 0x555557050000 <e5> {a0aa}  @CONST-POOL@ [abovep=0] [cellp=0] [modp=0x55555704e000]
