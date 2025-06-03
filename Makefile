@@ -80,7 +80,7 @@ pe_all: pe0 pe1 pe2 pe3 pe4 pe5 pe6
 array_all: \
     array0 array1 array2 array3 array4 \
 	array5 array7 array8 array9 array10 \
-	array11 array12 array13 array14 array15
+	array11 array12 array13 array14 array15 array16
 ppu_all: ppu0 ppu1 ppu2
 super_all:super0 super1 super2 super3 super7 super8 super9 super10
 

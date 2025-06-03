@@ -1,0 +1,2 @@
+layer,glb_usage,glb_read,glb_write,glb_access,dram_read,dram_write,dram_access,macs,latency,energy_per_layer,power_per_layer,m,n,e,p,q,r,t,Latency
+vgg8.conv0,4456,1334032,177152,1511184,1070184,1024,1071208,10240,2094652,229.89758299999997,21950.909554427177,1024,1,1,4,4,6,3,2094652

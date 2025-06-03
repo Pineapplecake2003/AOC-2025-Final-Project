@@ -26,7 +26,37 @@ def parse_network(model_path: str, model_format: str) -> list[ShapeParam | None]
         qconfig=CustomQConfig.POWER2.value,
         fuse_modules=True,
     )
-    _layers = []
+    layers_for_evaluate = [
+        Conv2DShapeParam(N=1, H=32, W=32, R=3, S=3, E=32, F=32, C=3, M=32, U=1, P=1),  # conv1
+        # DepthwiseSeparableConv 1
+        Conv2DShapeParam(N=1, H=32, W=32, R=3, S=3, E=32, F=32, C=32, M=64, U=1, P=1),  # dw1 depthwise
+        # Conv2DShapeParam(N=1, H=32, W=32, R=1, S=1, E=32, F=32, C=32, M=64, U=1, P=0),  # dw1 pointwise
+        # DepthwiseSeparableConv 2
+        Conv2DShapeParam(N=1, H=32, W=32, R=3, S=3, E=16, F=16, C=64, M=128, U=2, P=1),  # dw2 depthwise
+        # Conv2DShapeParam(N=1, H=16, W=16, R=1, S=1, E=16, F=16, C=64, M=128, U=1, P=0),  # dw2 pointwise
+        # DepthwiseSeparableConv 3
+        Conv2DShapeParam(N=1, H=16, W=16, R=3, S=3, E=16, F=16, C=128, M=128, U=1, P=1),  # dw3 depthwise
+        # Conv2DShapeParam(N=1, H=16, W=16, R=1, S=1, E=16, F=16, C=128, M=128, U=1, P=0),  # dw3 pointwise
+        # DepthwiseSeparableConv 4
+        Conv2DShapeParam(N=1, H=16, W=16, R=3, S=3, E=8, F=8, C=128, M=256, U=2, P=1),   # dw4 depthwise
+        # Conv2DShapeParam(N=1, H=8, W=8, R=1, S=1, E=8, F=8, C=128, M=256, U=1, P=0),    # dw4 pointwise
+        # DepthwiseSeparableConv 5
+        Conv2DShapeParam(N=1, H=8, W=8, R=3, S=3, E=8, F=8, C=256, M=256, U=1, P=1),    # dw5 depthwise
+        # Conv2DShapeParam(N=1, H=8, W=8, R=1, S=1, E=8, F=8, C=256, M=256, U=1, P=0),    # dw5 pointwise
+        # DepthwiseSeparableConv 6
+        Conv2DShapeParam(N=1, H=8, W=8, R=3, S=3, E=4, F=4, C=256, M=512, U=2, P=1),    # dw6 depthwise
+        # Conv2DShapeParam(N=1, H=4, W=4, R=1, S=1, E=4, F=4, C=256, M=512, U=1, P=0),    # dw6 pointwise
+        # DepthwiseSeparableConv 7
+        Conv2DShapeParam(N=1, H=4, W=4, R=3, S=3, E=4, F=4, C=512, M=512, U=1, P=1),    # dw7 depthwise
+        # Conv2DShapeParam(N=1, H=4, W=4, R=1, S=1, E=4, F=4, C=512, M=512, U=1, P=0),    # dw7 pointwise
+        # DepthwiseSeparableConv 8
+        Conv2DShapeParam(N=1, H=4, W=4, R=3, S=3, E=2, F=2, C=512, M=1024, U=2, P=1),    # dw8 depthwise
+        # Conv2DShapeParam(N=1, H=2, W=2, R=1, S=1, E=2, F=2, C=512, M=1024, U=1, P=0),   # dw8 pointwise
+        # AdaptiveAvgPool2d(1) 影響輸出，但不作為獨立層
+        Conv2DShapeParam(N=1, H=1, W=1, R=1, S=1, E=1, F=1, C=1024, M=10, U=1, P=0),    # use conv to do linear
+        # LinearShapeParam(N=1, in_features=1024, out_features=10),  # fc
+    ]
+    """
     match model_format:
         case "torch":
             _layers = parse_pytorch(model)
@@ -34,11 +64,11 @@ def parse_network(model_path: str, model_format: str) -> list[ShapeParam | None]
             _layers = parse_onnx(model)
         case _:
             raise ValueError(f"Unsupported model format: {model_format}")
-
+    """
     # Pair Conv2d with MaxPool2d or None
     layers = []
     maxpool = None
-    for layer in _layers:
+    for layer in layers_for_evaluate:
         if isinstance(layer, Conv2DShapeParam):
             layers.append((layer, maxpool))
             maxpool = None

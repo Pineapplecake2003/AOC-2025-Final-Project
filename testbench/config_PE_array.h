@@ -404,8 +404,37 @@ const int FILTER_RS = 3;
 const unsigned long long PE_EN = (1ULL << (PE_ARRAY_H * PE_ARRAY_W)) - 1;
 const int DEPTHWISE = 1;
 const int PE_CONFIG = (DEPTHWISE << 12) + ((FILTER_RS - 1) << 10) + ((p - 1) << 7) + ((OFMAP_COL - 1) << 2) + (q - 1);
-
 #elif (TBA == 13)
+const string DATA_SRC = "./testbench/PE_array_test_data/depthwise_separable_tb6_format/";
+const string CONFIG_SRC = "./testbench/PE_array_test_data/depthwise_separable_tb6_format/";
+const string IFMAP_CONFIG_XID_FILE = CONFIG_SRC + "ifmap_config_chain_XID_tb6.txt";
+const string IFMAP_CONFIG_YID_FILE = CONFIG_SRC + "ifmap_config_chain_YID_tb6.txt";
+const string FILTER_CONFIG_XID_FILE = CONFIG_SRC + "filter_config_chain_XID_tb6.txt";
+const string FILTER_CONFIG_YID_FILE = CONFIG_SRC + "filter_config_chain_YID_tb6.txt";
+const string IPSUM_CONFIG_XID_FILE = CONFIG_SRC + "ipsum_config_chain_XID_tb6.txt";
+const string IPSUM_CONFIG_YID_FILE = CONFIG_SRC + "ipsum_config_chain_YID_tb6.txt";
+const string OPSUM_CONFIG_XID_FILE = CONFIG_SRC + "opsum_config_chain_XID_tb6.txt";
+const string OPSUM_CONFIG_YID_FILE = CONFIG_SRC + "opsum_config_chain_YID_tb6.txt";
+const string IFMAP_FILE = DATA_SRC + "ifmap.txt";
+const string FILTER_FILE = DATA_SRC + "filter.txt";
+const string IPSUM_FILE = DATA_SRC + "pointwise_ipsum.txt";
+const string OPSUM_FILE = DATA_SRC + "opsum.txt";
+const int FILT_ROW = 3;
+const int FILT_COL = 3;
+const int p = 4;
+const int q = 4;
+const int r = 2;
+const int t = 4;
+const int e = 2;
+const int IFMAP_COL = 18;
+const int OFMAP_COL = IFMAP_COL - FILT_ROW + 1;
+const int LN_CONFIG = 31;
+const int FILTER_RS = 3;
+const unsigned long long PE_EN = (1ULL << (PE_ARRAY_H * PE_ARRAY_W)) - 1;
+const int DEPTHWISE = 1;
+const int PE_CONFIG = (DEPTHWISE << 12) + ((FILTER_RS - 1) << 10) + ((p - 1) << 7) + ((OFMAP_COL - 1) << 2) + (q - 1);
+
+#elif (TBA == 14)
 const string DATA_SRC = "./testbench/PE_array_test_data/depthwise_separable_p_leq_4/";
 const string CONFIG_SRC = "./testbench/PE_array_test_data/depthwise_separable_p_leq_4/";
 const string IFMAP_CONFIG_XID_FILE = CONFIG_SRC + "ifmap_config_chain_XID_tb5.txt";
@@ -435,7 +464,7 @@ const unsigned long long PE_EN = (1ULL << (PE_ARRAY_H * PE_ARRAY_W)) - 1;
 const int DEPTHWISE = 1;
 const int PE_CONFIG = (DEPTHWISE << 12) + ((FILTER_RS - 1) << 10) + ((p - 1) << 7) + ((OFMAP_COL - 1) << 2) + (q - 1);
 
-#elif (TBA == 14)
+#elif (TBA == 15)
 const string DATA_SRC = "./testbench/PE_array_test_data/linear_tb1/";
 const string CONFIG_SRC = "./testbench/PE_array_test_data/linear_tb1/";
 const string IFMAP_CONFIG_XID_FILE = CONFIG_SRC + "ifmap_config_chain_XID_linear.txt";
@@ -465,7 +494,7 @@ const unsigned long long PE_EN = (1ULL << (PE_ARRAY_H * PE_ARRAY_W)) - 1;
 const int DEPTHWISE = 0;
 const int PE_CONFIG = (DEPTHWISE << 12) + ((FILTER_RS - 1) << 10) + ((p - 1) << 7) + ((OFMAP_COL - 1) << 2) + (q - 1);
 
-#elif (TBA == 15)
+#elif (TBA == 16)
 const string DATA_SRC = "./testbench/PE_array_test_data/linear_tb2/";
 const string CONFIG_SRC = "./testbench/PE_array_test_data/linear_tb2/";
 const string IFMAP_CONFIG_XID_FILE = CONFIG_SRC + "ifmap_config_chain_XID_linear.txt";

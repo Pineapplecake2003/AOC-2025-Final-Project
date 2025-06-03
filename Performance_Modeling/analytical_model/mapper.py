@@ -66,8 +66,8 @@ class EyerissMapper:
         
         # 定義權重
         weight_latency = 0  # % latency
-        weight_glb_access = 0.5    # 20% glb_access
-        weight_dram_access = 0.5
+        weight_glb_access = 0.3
+        weight_dram_access = 0.7
         weight_glb_usage = 0
         
         # 用 1 / (weight和)
@@ -114,8 +114,12 @@ class EyerissMapper:
     def validate(self, mapping) -> bool:
         m, n, e, p, q, r, t = mapping
 
-        # pq 約束條件：確保 p * q 不超過濾波器暫存器大小的限制
-        if p * q > self.hardware.filter_spad_size // self.analyzer.conv_shape.S:
+        # filter_spad_size limitations
+        if self.analyzer.conv_shape.S * q + p * q > self.hardware.filter_spad_size:
+            return False
+
+        # psum_spad_size limitations
+        if q + p > self.hardware.psum_spad_size // 4:
             return False
 
         # e 約束條件：e 必須與 PE 陣列寬度相關或等於輸出高度
@@ -172,7 +176,7 @@ class EyerissMapper:
         pe_array_w_list = [8]
         ifmap_spad_size_list = [12]
         filter_spad_size_list = [48]
-        psum_spad_size_list = [16]
+        psum_spad_size_list = [32]
         glb_size_list = [64 * 2**10]
         bus_bw_list = [4]
         noc_bw_list = [4]

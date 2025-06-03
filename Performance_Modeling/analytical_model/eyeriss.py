@@ -153,7 +153,8 @@ class EyerissAnalyzer:
 
         # filter usage
         # 公式：filter_usage = (p × t) × (q × r) × R × S × 1 byte
-        filter_usage = (mapping.p * mapping.t) * (mapping.q * mapping.r) * conv.R * conv.S * DATA_SIZE
+        filter_usage = (mapping.q * mapping.r) * conv.R * conv.S * DATA_SIZE \
+                     + (mapping.p * mapping.t) * (mapping.q * mapping.r) * DATA_SIZE
 
         # bias usage
         # 公式：bias_usage = (p × t) × 4 bytes
@@ -205,19 +206,30 @@ class EyerissAnalyzer:
             ifmap_read = num_ifmap_tiles * tile_size_ifmap
 
             # (2) Filter DRAM Reads
-            tile_size_filter = (
-                (mapping.p * mapping.t) *
+            tile_size_filter_depth = (
                 (mapping.q * mapping.r) *
                 conv.R * conv.S * DATA_SIZE
             )
-            num_filter_tiles = (
+            tile_size_filter_point = (
+                (mapping.p * mapping.t) *
+                (mapping.q * mapping.r) *
+                DATA_SIZE
+            )
+            num_filter_tiles_depth = (
+                math.ceil(conv.M / (mapping.m)) *
+                math.ceil(conv.N / mapping.n) *
+                math.ceil(conv.E / mapping.e) *
+                math.ceil(conv.C / (mapping.q * mapping.r))
+            )
+            num_filter_tiles_point = (
                 math.ceil(conv.M / (mapping.m)) *
                 math.ceil(mapping.m/ (mapping.p * mapping.t)) *
                 math.ceil(conv.N / mapping.n) *
                 math.ceil(conv.E / mapping.e) *
                 math.ceil(conv.C / (mapping.q * mapping.r))
             )
-            filter_read = num_filter_tiles * tile_size_filter
+            filter_read = num_filter_tiles_depth * tile_size_filter_depth \
+                        + num_filter_tiles_point * tile_size_filter_point   
 
             # (3) Bias DRAM Reads
             tile_size_bias = (mapping.p * mapping.t) * 4  # 32-bit => 4 bytes
@@ -303,22 +315,30 @@ class EyerissAnalyzer:
         # -----------------------------------------------------------------
         # (2) Filter GLB Reads
         # -----------------------------------------------------------------
-        tile_size_filter = (
-            (mapping.p * mapping.t)
-            * (mapping.q * mapping.r)
-            * conv.R
-            * conv.S
-            # 每個 element 1 byte
+        tile_size_filter_depth = (
+            (mapping.q * mapping.r) *
+            conv.R * conv.S * DATA_SIZE
         )
-        num_filter_tiles = (
-            math.ceil(conv.M / mapping.m)
-            * math.ceil(mapping.m / (mapping.p * mapping.t))
-            * math.ceil(conv.N / mapping.n)
-            * math.ceil(conv.E / mapping.e)
-            * math.ceil(conv.C / (mapping.q*mapping.r))
+        tile_size_filter_point = (
+            (mapping.p * mapping.t) *
+            (mapping.q * mapping.r) *
+            DATA_SIZE
         )
-
-        filter_read = tile_size_filter * num_filter_tiles
+        num_filter_tiles_depth = (
+            math.ceil(conv.M / (mapping.m)) *
+            math.ceil(conv.N / mapping.n) *
+            math.ceil(conv.E / mapping.e) *
+            math.ceil(conv.C / (mapping.q * mapping.r))
+        )
+        num_filter_tiles_point = (
+            math.ceil(conv.M / (mapping.m)) *
+            math.ceil(mapping.m/ (mapping.p * mapping.t)) *
+            math.ceil(conv.N / mapping.n) *
+            math.ceil(conv.E / mapping.e) *
+            math.ceil(conv.C / (mapping.q * mapping.r))
+        )
+        filter_read = num_filter_tiles_depth * tile_size_filter_depth \
+                        + num_filter_tiles_point * tile_size_filter_point   
         # -----------------------------------------------------------------
         # (3) Bias GLB Reads
         # -----------------------------------------------------------------
@@ -422,6 +442,7 @@ class EyerissAnalyzer:
 
     @property
     def macs_per_layer(self) -> int:
+        '''
         return (
             self.conv_shape.N
             * self.conv_shape.M
@@ -430,6 +451,18 @@ class EyerissAnalyzer:
             * self.conv_shape.C
             * self.conv_shape.R
             * self.conv_shape.S
+        )        
+        '''
+        return (
+            (self.conv_shape.M
+            * self.conv_shape.E
+            * self.conv_shape.F
+            * self.conv_shape.R
+            * self.conv_shape.S)
+            + (self.conv_shape.M
+            * self.conv_shape.C  
+            * self.conv_shape.E
+            * self.conv_shape.F)
         )
 
     @property

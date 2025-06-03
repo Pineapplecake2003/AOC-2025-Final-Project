@@ -11,7 +11,7 @@ sys.path.append(str(project_root))
 
 from layer_info import ShapeParam, Conv2DShapeParam, LinearShapeParam, MaxPool2DShapeParam
 from network_parser import torch2onnx
-#import torch2onnx
+# import torch2onnx
 from lib.models.mobilenet_v1 import MobileNetV1, DepthwiseSeparableConv
 
 def parse_pytorch(model: nn.Module, input_shape=(1, 3, 32, 32)) -> list[ShapeParam]:
@@ -46,7 +46,8 @@ def parse_pytorch(model: nn.Module, input_shape=(1, 3, 32, 32)) -> list[ShapePar
             N = inp_shape[0]
             in_features = module.in_features
             out_features = module.out_features
-            layers.append(LinearShapeParam(N=N, in_features=in_features, out_features=out_features))
+            layers.append(Conv2DShapeParam(N=N, H=1, W=1, R=1, S=1, E=1, F=1, C=in_features, M=out_features, U=1, P=0))
+            # layers.append(LinearShapeParam(N=N, in_features=in_features, out_features=out_features))
 
     # Register hooks for relevant modules
     hooks = []
@@ -138,7 +139,8 @@ def parse_onnx(model: onnx.ModelProto) -> list[ShapeParam]:
             transB = next((a.i for a in node.attribute if a.name == "transB"), 0)
             in_features = weight_shape[0] if transB == 0 else weight_shape[1]
             out_features = weight_shape[1] if transB == 0 else weight_shape[0]
-            layers.append(LinearShapeParam(N=N, in_features=in_features, out_features=out_features))
+            layers.append(Conv2DShapeParam(N=N, H=1, W=1, R=1, S=1, E=1, F=1, C=in_features, M=out_features, U=1, P=0))
+            # layers.append(LinearShapeParam(N=N, in_features=in_features, out_features=out_features))
 
     return layers
 
@@ -190,7 +192,8 @@ def run_tests() -> None:
         Conv2DShapeParam(N=1, H=4, W=4, R=3, S=3, E=2, F=2, C=512, M=512, U=2, P=1),    # dw8 depthwise
         Conv2DShapeParam(N=1, H=2, W=2, R=1, S=1, E=2, F=2, C=512, M=1024, U=1, P=0),   # dw8 pointwise
         # AdaptiveAvgPool2d(1) 影響輸出，但不作為獨立層
-        LinearShapeParam(N=1, in_features=1024, out_features=10),  # fc
+        Conv2DShapeParam(N=1, H=1, W=1, R=1, S=1, E=1, F=1, C=1024, M=10, U=1, P=0),    # use conv to do linear
+        # LinearShapeParam(N=1, in_features=1024, out_features=10),  # fc
     ]
 
     model = MobileNetV1()
@@ -214,6 +217,8 @@ def run_tests() -> None:
     else:
         print("Wrong!")
         compare_layers(answer, layers_onnx)
+
+    print(answer)
 
 if __name__ == "__main__":
     run_tests()
