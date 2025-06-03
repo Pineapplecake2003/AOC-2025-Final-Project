@@ -3,7 +3,6 @@ module piPEline (
 	input clk,
 	input rst,
 	input PE_en,
-	input output_inverse,
 	input [`CONFIG_SIZE-1:0] i_config,
 	input [`DATA_BITS-1:0] ifmap,
 	input [`DATA_BITS-1:0] filter,
@@ -139,9 +138,9 @@ always @(*) begin
 				end
 			end
 		end
-		WRITE_OPSUM:
+		WRITE_OPSUM:begin
 			if(depthwise)begin
-				if((psum_spad_cnt == 0) && opsum_ready)begin
+				if(state_mul2 == WRITE_OPSUM && opsum_ready && write_opsum_cnt == q_minus_1)begin
 					if (output_col_cnt == F) begin
 						next_state = IDLE;
 					end
@@ -154,7 +153,7 @@ always @(*) begin
 				end
 			end
 			else begin
-				if((psum_spad_cnt == 0) && opsum_ready)begin
+				if(state_mul2 == WRITE_OPSUM && opsum_ready && write_opsum_cnt == p_minus_1)begin
 					if (output_col_cnt == F) begin
 						next_state = IDLE;
 					end
@@ -165,7 +164,8 @@ always @(*) begin
 				else begin
 					next_state = WRITE_OPSUM;
 				end
-			end 
+			end
+		end
 		default: begin
 			next_state = IDLE;
 		end
@@ -193,10 +193,12 @@ always @(posedge clk or posedge rst) begin
 			filter_spad[i] <= `FILTER_SIZE'b0;
 		end
 	end else if(state_read_spad == READ_FILTER && filter_valid)begin
-		{filter_spad[3], filter_spad[2], filter_spad[1], filter_spad[0]} <= filter;
-		for (i = 4; i <`FILTER_SPAD_LEN; i = i + 1) begin
-			filter_spad[i] <= filter_spad[i-4];
-		end
+		{
+			filter_spad[filter_spad_cnt + 6'd3], 
+			filter_spad[filter_spad_cnt + 6'd2], 
+			filter_spad[filter_spad_cnt + 6'd1],
+			filter_spad[filter_spad_cnt]
+		} <= filter;
 	end
 end
 
@@ -207,9 +209,15 @@ always @(posedge clk or posedge rst) begin
 			ifmap_spad[i] <= `IFMAP_SIZE'b0;
 		end
 	end else if(state_read_spad == READ_IFMAP && ifmap_valid)begin
-		{ifmap_spad[3], ifmap_spad[2], ifmap_spad[1], ifmap_spad[0]} <= ifmap ^ 32'h80808080;
-		for (i = 4; i <`IFMAP_SPAD_LEN; i = i + 1) begin
-			ifmap_spad[i] <= ifmap_spad[i-4];
+		{
+			ifmap_spad[ifmap_spad_cnt + 4'd3], 
+			ifmap_spad[ifmap_spad_cnt + 4'd2], 
+			ifmap_spad[ifmap_spad_cnt + 4'd1],
+			ifmap_spad[ifmap_spad_cnt]
+		} <= ifmap ^ 32'h80808080;
+	end else if(state_read_spad == WRITE_OPSUM && next_state == READ_IFMAP)begin
+		for (i = 0; i < `IFMAP_SPAD_LEN - 4; i = i + 1) begin
+			ifmap_spad[i] <= ifmap_spad[i + 4];
 		end
 	end
 end
@@ -222,10 +230,7 @@ always @(posedge clk or posedge rst) begin
 		end
 	end else if(state_read_spad == READ_IPSUM)begin
 		if(ipsum_valid)begin
-			psum_spad[0] <= ipsum;
-			for (i = 1; i < `OFMAP_SPAD_LEN; i = i + 1) begin
-				psum_spad[i] <= psum_spad[i-1];
-			end
+			psum_spad[psum_spad_cnt] <= ipsum;
 		end
 	end else if(state_mul2 == CONV)begin
 		psum_spad[psum_spad_cnt_mul2] <= psum_spad[psum_spad_cnt_mul2] + {{16{product_result[15]}}, product_result};
@@ -260,10 +265,7 @@ always @(posedge clk or posedge rst) begin
 			READ_IPSUM:begin
 				if(next_state == CONV)begin
 					psum_spad_cnt <= 0;
-					if(depthwise)
-						filter_spad_cnt <= ({4'b0,  p_minus_1} << 6'd2) * {4'b0, filter_rs};
-					else
-						filter_spad_cnt <= 6'b0;
+					filter_spad_cnt <= 6'b0;
 				end else if(ipsum_valid)begin
 					psum_spad_cnt <= psum_spad_cnt + `OFMAP_INDEX_BIT'b1;
 				end else begin
@@ -273,8 +275,8 @@ always @(posedge clk or posedge rst) begin
 			CONV:begin
 				if(depthwise)begin
 					if(next_state == WRITE_OPSUM)
-						psum_spad_cnt <= p_minus_1;
-					else if(psum_spad_cnt == p_minus_1)
+						psum_spad_cnt <= q_minus_1;
+					else if(psum_spad_cnt == q_minus_1)
 						psum_spad_cnt <= 0;
 					else
 						psum_spad_cnt <=  psum_spad_cnt + `OFMAP_INDEX_BIT'b1;
@@ -313,10 +315,8 @@ always @(posedge clk or posedge rst) begin
 					if(next_state == READ_IFMAP)begin
 						psum_spad_cnt <= 0;
 						filter_spad_cnt <= 0;
-						ifmap_spad_cnt <= {2'b0, (filter_rs - 2'b1)} * 4;
-					end else if(opsum_ready)begin
-						psum_spad_cnt <= psum_spad_cnt - `OFMAP_INDEX_BIT'b1;
-					end
+						ifmap_spad_cnt <= {2'b0, (filter_rs - 2'b1)} << 2;
+					end 
 				end
 			end
 		endcase
@@ -408,33 +408,22 @@ always @(posedge clk or posedge rst) begin
 		write_opsum_cnt <= `OFMAP_INDEX_BIT'b0;
 	end
 	else if(depthwise)begin
-		if(output_inverse)begin
-			if(state_mul2 == WRITE_OPSUM)begin
-				if(opsum_ready)begin
-					write_opsum_cnt <= write_opsum_cnt - `OFMAP_INDEX_BIT'b1;
-				end
+		if(state_mul2 == WRITE_OPSUM)begin
+			if(opsum_ready)begin
+				write_opsum_cnt <= write_opsum_cnt + `OFMAP_INDEX_BIT'b1;
 			end
-			else begin
-				write_opsum_cnt <= p_minus_1;
-			end
-		end else begin
-			if(state_mul2 == WRITE_OPSUM)begin
-				if(opsum_ready)begin
-					write_opsum_cnt <= write_opsum_cnt + `OFMAP_INDEX_BIT'b1;
-				end
-			end
-			else begin
-				write_opsum_cnt <= 0;
-			end
+		end
+		else begin
+			write_opsum_cnt <= 0;
 		end
 	end else begin
 		if(state_mul2 == WRITE_OPSUM)begin
 			if(opsum_ready)begin
-				write_opsum_cnt <= write_opsum_cnt - `OFMAP_INDEX_BIT'b1;
+				write_opsum_cnt <= write_opsum_cnt + `OFMAP_INDEX_BIT'b1;
 			end
 		end
 		else begin
-			write_opsum_cnt <= p_minus_1;
+			write_opsum_cnt <= 0;
 		end
 	end
 end

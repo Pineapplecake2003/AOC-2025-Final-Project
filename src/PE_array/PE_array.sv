@@ -150,7 +150,6 @@ generate
         .clk(clk),
         .rst(rst),
         .PE_en(PE_en[i_pe]),
-        .output_inverse((i_pe >> 3 == 5 || i_pe >> 3 == 2)),
         .i_config(PE_config),
 
         .ifmap(to_PE_ifmap),
