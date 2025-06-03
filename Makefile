@@ -3,6 +3,7 @@ SRC2 = $(wildcard ./src/PE_array/PE_array.sv)
 SRC3 = $(wildcard ./src/PPU/PPU.sv)
 SRC4 = $(wildcard ./src/PE_array/SUPER.sv)
 SRC5 = $(wildcard ./src/PE_array/piPEline.sv)
+SRC6 = $(wildcard ./src/PE_array/SUPER_pipeline.sv)
 
 ifeq ($(VERILATOR_ROOT),)
 VERILATOR = verilator
@@ -74,6 +75,14 @@ ifneq ($(PIPELINE),)
     VERILATOR_INPUT = $(SRC5) ./testbench/tb_piPEline.cpp
     TARGET = VpiPEline
     POST_PROCESS = @chmod 666 ./testbench/tb_piPEline.cpp
+else
+ifneq ($(SUPER_PIPELINE),)
+    VERILATOR_FLAGS += -CFLAGS "-DTB_SUPER=$(SUPER_PIPELINE)"
+    LOG_FILE = logs/terminal_text_super_pipeline$(SUPER_PIPELINE).log
+    VERILATOR_INPUT = $(SRC6) ./testbench/tb_SUPER_pipeline.cpp
+    TARGET = VSUPER_pipeline
+    POST_PROCESS = @chmod 666 ./testbench/tb_SUPER_pipeline.cpp
+endif
 endif
 endif
 endif
@@ -83,7 +92,7 @@ endif
 ######################################################################
 default: all
 
-.PHONY: all pe_all array_all ppu_all super_all pipeline_all
+.PHONY: all pe_all array_all ppu_all super_all pipeline_all super_pipeline_all
 
 pe_all: pe0 pe1 pe2 pe3 pe4 pe5 pe6
 pipeline_all: pipeline0 pipeline1 pipeline2 pipeline3 pipeline4 pipeline5 pipeline6
@@ -93,6 +102,10 @@ array_all: \
 	array11 array12 array13 array14 array15
 ppu_all: ppu0 ppu1 ppu2
 super_all:super0 super1 super2 super3 super7 super8 super9 super10
+
+super_pipeline_all: \
+super_pipeline0 super_pipeline1 super_pipeline2 \
+super_pipeline7 super_pipeline9 super_pipeline9 super_pipeline10
 
 all: pe_all array_all ppu_all super_all pipeline_all
 
@@ -119,7 +132,7 @@ run:
 ######################################################################
 # Specific Testbench Targets
 # Pass TB_select as a parameter to the simulation executable
-.PHONY: array% pe% super%
+.PHONY: array% pe% super% pipeline% super_pipeline%
 
 pe%:
 	mkdir -p wave
@@ -140,6 +153,10 @@ super%:
 pipeline%:
 	mkdir -p wave
 	make run PIPELINE=$*
+
+super_pipeline%:
+	mkdir -p wave
+	make run SUPER_PIPELINE=$*
 ######################################################################
 # Other targets
 
