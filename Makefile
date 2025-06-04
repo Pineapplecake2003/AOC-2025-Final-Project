@@ -149,6 +149,14 @@ gen_test_data_for_array:
 gen_test_data_for_pe:
 	g++ test_data_gen.cpp
 	./a.out > data.log
+
+gen_glb_mirror%:
+	g++ GLB_mirror_gen.cpp -DTBA=$*
+	./a.out
+
+# clean *.hex
 maintainer-copy::
 clean mostlyclean distclean maintainer-clean::
 	-rm -rf obj_dir logs a.out *.txt *.log *.dmp *.vpd wave/*.vcd wave/*.fsdb coverage.dat core *.zip release
+# clean *.hex
+	find . -type f -name "*.hex" -delete 
