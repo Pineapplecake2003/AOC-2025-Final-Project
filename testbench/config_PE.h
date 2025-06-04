@@ -118,20 +118,4 @@ const int STRIDE = 2;
 const int FILTER_RS = 3;
 const int DEPTHWISE = 0;
 
-#elif (TB_PE == 8)
-// depthwise
-const string IFMAP_FILE = ".//testbench/PE_test_data/depthwise_seperable/ifmap.txt";
-const string FILT_FILE =  ".//testbench/PE_test_data/depthwise_seperable/filter.txt";
-const string IPSUM_FILE = ".//testbench/PE_test_data/depthwise_seperable/pointwise_ipsum.txt";
-const string OPSUM_FILE = ".//testbench/PE_test_data/depthwise_seperable/opsum.txt";
-const int IFMAP_COL = 6;
-const int OFMAP_COL = 5;
-const int FILT_COL = 3;
-const int I_CH = 4;
-const int OFMAP_CH = 4;
-const int STRIDE = 1;
-const int FILTER_RS = 3;
-const int DEPTHWISE = 1;
-#endif
-
 #endif  // CONFIG_H
