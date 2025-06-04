@@ -141,7 +141,7 @@ void transaction(VPE* dut, int& send_data_type, Index* index, const vector<vecto
     switch (send_data_type) {
         case SEND_CONFIG:
             set_signal(dut, dut->PE_en, 1);
-            set_signal(dut, dut->i_config, ((DEPTHWISE<<12)+((FILTER_RS - 1) << 10) + ((OFMAP_CH - 1) << 7) + ((OFMAP_COL - 1) << 2) + (I_CH - 1)));            send_data_type = SEND_FILT;
+            set_signal(dut, dut->i_config, ((DEPTHWISE<<12) + ((FILTER_RS - 1) << 10) + ((STRIDE - 1) << 9) + ((OFMAP_CH - 1) << 7) + ((OFMAP_COL - 1) << 2) + (I_CH - 1)));            send_data_type = SEND_FILT;
             break;
         case SEND_FILT:
             set_signal(dut, dut->PE_en, 0);
@@ -205,7 +205,10 @@ void transaction(VPE* dut, int& send_data_type, Index* index, const vector<vecto
             // hand shake
             if (dut->ifmap_valid && dut->ifmap_ready) {
                 if (index->count_ifmap_col < (FILT_COL - 1)) {
-                    index->count_ifmap_col++;
+                    if(STRIDE==2)
+                        index->count_ifmap_col += 2;
+                    else
+                        index->count_ifmap_col++;
                 } else {
                     send_data_type = SEND_IPSUM;
                 }

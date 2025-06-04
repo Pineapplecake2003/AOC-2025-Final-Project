@@ -18,6 +18,7 @@ const int OFMAP_COL = 32;
 const int FILT_COL = 3;
 const int I_CH = 3;
 const int OFMAP_CH = 4;
+const int STRIDE = 1;
 const int FILTER_RS = 3;
 const int DEPTHWISE = 0;
 #elif (TB_PE == 1)
@@ -30,6 +31,7 @@ const int OFMAP_COL = 32;
 const int FILT_COL = 3;
 const int I_CH = 3;
 const int OFMAP_CH = 4;
+const int STRIDE = 1;
 const int FILTER_RS = 3;
 const int DEPTHWISE = 0;
 #elif (TB_PE == 2)
@@ -42,6 +44,7 @@ const int OFMAP_COL = 16;
 const int FILT_COL = 3;
 const int I_CH = 4;
 const int OFMAP_CH = 4;
+const int STRIDE = 1;
 const int FILTER_RS = 3;
 const int DEPTHWISE = 0;
 #elif (TB_PE == 3)
@@ -55,6 +58,7 @@ const int OFMAP_COL = 32;
 const int FILT_COL = 1;
 const int I_CH = 4;
 const int OFMAP_CH = 4;
+const int STRIDE = 1;
 const int FILTER_RS = 1;
 const int DEPTHWISE = 0;
 #elif (TB_PE == 4)
@@ -68,6 +72,7 @@ const int OFMAP_COL = 16;
 const int FILT_COL = 3;
 const int I_CH = 4;
 const int OFMAP_CH = 4;
+const int STRIDE = 1;
 const int FILTER_RS = 3;
 const int DEPTHWISE = 1;
 #elif (TB_PE == 5)
@@ -81,6 +86,7 @@ const int OFMAP_COL = 16;
 const int FILT_COL = 3;
 const int I_CH = 3;
 const int OFMAP_CH = 3;
+const int STRIDE = 1;
 const int FILTER_RS = 3;
 const int DEPTHWISE = 1;
 #elif (TB_PE == 6)
@@ -94,10 +100,25 @@ const int OFMAP_COL = 32;
 const int FILT_COL = 3;
 const int I_CH = 3;
 const int OFMAP_CH = 3;
+const int STRIDE = 1;
 const int FILTER_RS = 3;
 const int DEPTHWISE = 1;
-
 #elif (TB_PE == 7)
+// depthwise
+const string IFMAP_FILE = "./testbench/PE_test_data/tb7/ifmap_tb7.txt";
+const string FILT_FILE = "./testbench/PE_test_data/tb7/filter_tb7.txt";
+const string IPSUM_FILE = "./testbench/PE_test_data/tb7/ipsum_tb7.txt";
+const string OPSUM_FILE = "./testbench/PE_test_data/tb7/ofmap_tb7.txt";
+const int IFMAP_COL = 33;
+const int OFMAP_COL = 16;
+const int FILT_COL = 3;
+const int I_CH = 3;
+const int OFMAP_CH = 3;
+const int STRIDE = 2;
+const int FILTER_RS = 3;
+const int DEPTHWISE = 0;
+
+#elif (TB_PE == 8)
 // depthwise
 const string IFMAP_FILE = ".//testbench/PE_test_data/depthwise_seperable/ifmap.txt";
 const string FILT_FILE =  ".//testbench/PE_test_data/depthwise_seperable/filter.txt";
@@ -108,6 +129,7 @@ const int OFMAP_COL = 5;
 const int FILT_COL = 3;
 const int I_CH = 4;
 const int OFMAP_CH = 4;
+const int STRIDE = 1;
 const int FILTER_RS = 3;
 const int DEPTHWISE = 1;
 #endif

@@ -76,7 +76,7 @@ default: all
 
 .PHONY: all pe_all array_all ppu_all super_all
 
-pe_all: pe0 pe1 pe2 pe3 pe4 pe5 pe6
+pe_all: pe0 pe1 pe2 pe3 pe4 pe5 pe6 pe7 pe8
 array_all: \
     array0 array1 array2 array3 array4 \
 	array5 array7 array8 array9 array10 \
@@ -147,16 +147,8 @@ gen_test_data_for_array:
 	./a.out > data.log
 
 gen_test_data_for_pe:
-	g++ test_data_gen.cpp -DWHOLE_IFMAP
+	g++ test_data_gen.cpp
 	./a.out > data.log
-
-gen_glb_mirror%:
-	g++ GLB_mirror_gen.cpp -DTBA=$*
-	./a.out
-
-# clean *.hex
 maintainer-copy::
 clean mostlyclean distclean maintainer-clean::
 	-rm -rf obj_dir logs a.out *.txt *.log *.dmp *.vpd wave/*.vcd wave/*.fsdb coverage.dat core *.zip release
-# clean *.hex
-	find . -type f -name "*.hex" -delete 
