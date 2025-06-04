@@ -160,7 +160,7 @@ always @(posedge clk or posedge rst) begin
 					conv_filter_cnt <= `FILTER_INDEX_BIT'b0;
 					//reset psum_cnt
 					psum_spad_cnt <= `OFMAP_INDEX_BIT'b0;
-					// ifmap pointer decrease by q
+					// ifmap pointer decreased by q
 					ifmap_spad_cnt <= ifmap_spad_cnt - ({1'b0, q} << U_minus1);
 				end
 			end
