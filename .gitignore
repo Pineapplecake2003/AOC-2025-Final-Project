@@ -8,3 +8,4 @@ test.*
 ./*.cpp
 ./*.txt
 __pycache__/
+*.hex
