@@ -8,24 +8,26 @@
 #include <iomanip>
 #include <iostream>
 #include <stdexcept>
-#define p 4
-#define q 4
-#define r 1
-#define t 2
-#define e 8
-#define U 1
-
-#define TB_LOCATION "./testbench/PE_array_test_data/depthwise_separable_tb0_format/"
-#define IFMAP_FILE  TB_LOCATION "ifmap.txt"
-#define FILTER_FILE TB_LOCATION "filter.txt"
-#define IPSUM_FILE  TB_LOCATION "pointwise_ipsum.txt"
-#define OPSUM_FILE  TB_LOCATION "opsum.txt"
-#define BIAS_FILE  TB_LOCATION "bias.txt"
-
-#define FILT_ROW 3
-#define FILT_COL 3
-#define IFMAP_COL 18
-#define OFMAP_COL IFMAP_COL - FILT_ROW + U
+#include "./testbench/config_PE_array.h"
+const string BIAS_FILE = DATA_SRC + "bias.txt";
+// #define p 4
+// #define q 4
+// #define r 1
+// #define t 2
+// #define e 8
+// #define U 1
+// 
+// #define TB_LOCATION "./testbench/PE_array_test_data/depthwise_separable_tb0_format/"
+// #define IFMAP_FILE  TB_LOCATION "ifmap.txt"
+// #define FILTER_FILE TB_LOCATION "filter.txt"
+// #define IPSUM_FILE  TB_LOCATION "pointwise_ipsum.txt"
+// #define OPSUM_FILE  TB_LOCATION "opsum.txt"
+// #define BIAS_FILE  TB_LOCATION "bias.txt"
+// 
+// #define FILT_ROW 3
+// #define FILT_COL 3
+// #define IFMAP_COL 18
+// #define OFMAP_COL IFMAP_COL - FILT_ROW + U
 
 // ifmap[row][col][in_channel]
 // filter[out_channel][row][col][in_channel]
@@ -118,7 +120,7 @@ int main(int argc, char const *argv[])
     vector<vector<vector<int32_t>>> opsum(e, vector<vector<int>>(OFMAP_COL, vector<int32_t>(p * t)));
     vector<vector<vector<int32_t>>> opsum_golden(e, vector<vector<int>>(OFMAP_COL, vector<int32_t>(p * t)));
     vector<int32_t> bias(p * t);
-    FILE* GLB_file = fopen("./GLB_mirror.hex", "w+");
+    FILE* GLB_file = fopen((DATA_SRC + "GLB_mirror.hex").c_str(), "w+");
     load_data(ifmap, filter, ipsum, opsum_golden, bias);
     int num_bytes = 0;
     // ifmap
