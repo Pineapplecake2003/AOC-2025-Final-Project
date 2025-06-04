@@ -543,3 +543,41 @@ always @(posedge clk or posedge rst) begin
 end
 
 endmodule
+
+
+module PipelineMul(
+	input clk,
+	input rst,
+	input [7:0] operand1,
+	input [31:0] operand2,
+	output [31:0] Mul_result
+);
+	genvar i;
+	wire MSB = operand1[7] ^ operand2[31];
+	wire [7:0] abs_operand1;
+	wire [31:0] abs_operand2;
+
+	assign abs_operand1 = (operand1 ^ {8{operand1[7]}}) + {7'b0, operand1[7]};
+	assign abs_operand2 = (operand2 ^ {32{operand2[31]}}) + {31'b0, operand2[31]};
+
+	// statge mul1
+	reg MSB_mul1;
+	reg [7:0] abs_operand1_mul1;
+	reg [31:0] abs_operand2_mul1;
+	always @(posedge clk or posedge rst) begin
+		if(rst)begin
+			MSB_mul1 <= 1'b0;
+			abs_operand1_mul1 <= 8'b0;
+			abs_operand2_mul1 <= 32'b0;
+		end else begin
+			MSB_mul1 <= MSB;
+			abs_operand1_mul1 <= abs_operand1;
+			abs_operand2_mul1 <= abs_operand2;
+		end
+	end
+	wire [7:0] partial_product [31:0];
+	for (i = 0; i < 32; i = i + 1) begin
+		assign partial_product[i] = abs_operand1_mul1 & {8{abs_operand2_mul1[i]}};
+	end
+
+endmodule
