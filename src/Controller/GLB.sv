@@ -8,18 +8,18 @@ module GLB #(
     /* read port */
     input  logic                    re,     // read enable
     input  logic [ADDR_WIDTH-1:0]   r_addr, // byte address
-    output logic [DATA_WIDTH*4-1:0] dout    // 32-bit read data
+    output logic [DATA_WIDTH*4-1:0] dout,    // 32-bit read data
     /* write port */
     // write first
     input  logic                    we,     // write enable
     input  logic [ADDR_WIDTH-1:0]   w_addr, // byte address
-    input  logic [DATA_WIDTH*4-1:0] din,    // 32-bit write data
+    input  logic [DATA_WIDTH*4-1:0] din    // 32-bit write data
 );
 
     // Byte-addressable memory: 64KiB = 65536 x 8-bit
     logic [DATA_WIDTH-1:0] mem [0 : (DEPTH * 1024) - 1];
 
-    always_ff @(posedge clk or posedge rst) begin
+    always @(posedge clk or posedge rst) begin
         if (rst) begin
             dout <= 0;
         end
