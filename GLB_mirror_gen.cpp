@@ -121,6 +121,7 @@ int main(int argc, char const *argv[])
     vector<vector<vector<int32_t>>> opsum_golden(e, vector<vector<int>>(OFMAP_COL, vector<int32_t>(p * t)));
     vector<int32_t> bias(p * t);
     FILE* GLB_file = fopen((DATA_SRC + "GLB_mirror.hex").c_str(), "w+");
+    FILE* opsum_file = fopen((DATA_SRC + "golden.hex").c_str(), "w+");
     load_data(ifmap, filter, ipsum, opsum_golden, bias);
     int num_bytes = 0;
     // ifmap
@@ -170,6 +171,18 @@ int main(int argc, char const *argv[])
                     fprintf(GLB_file,"\n");
                 }
                 num_bytes+=4;
+            }
+        }
+    }
+
+    // gloden file
+    for (int row = 0; row < e; row++) {
+        for (int col = 0; col < OFMAP_COL; col++) {
+            for (int oc = 0; oc < p * t; oc++) {
+                fprintf(opsum_file, "%08x", static_cast<uint32_t>(opsum_golden[row][col][oc]));
+                if(!(oc == p * t - 1 && col == OFMAP_COL - 1 && row == e - 1)){
+                    fprintf(opsum_file,"\n");
+                }
             }
         }
     }

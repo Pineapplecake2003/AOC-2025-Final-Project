@@ -30,6 +30,18 @@ reg  [4:0] F; // output column
 reg  [2:0] q; // input channel
 reg  [1:0] filter_rs;
 reg depthwise;
+
+reg [2:0] state;
+reg [2:0] next_state;
+parameter IDLE				= 3'd0;
+parameter READ_FILTER		= 3'd1;
+parameter READ_IFMAP		= 3'd2;
+parameter READ_IPSUM		= 3'd3;
+parameter READ_POINT_IPSUM	= 3'd4;
+parameter DEPTH_CONV		= 3'd5;
+parameter CONV				= 3'd6;
+parameter WRITE_OPSUM		= 3'd7;
+
 always@(*) begin
 	depthwise = i_config_reg[12];
 	filter_rs = i_config_reg[11:10] + 2'b1;
@@ -55,6 +67,49 @@ end
 wire signed [`DATA_BITS-1:0] MAC_result;
 reg  signed [`IFMAP_SIZE-1:0]MAC_operand1;
 reg  signed [`DATA_BITS-1:0]MAC_operand2;
+
+
+//spad
+reg signed [`IFMAP_SIZE - 1:0] ifmap_spad  [0:`IFMAP_SPAD_LEN - 1];
+reg signed [`FILTER_SIZE - 1:0]filter_spad [0:`FILTER_SPAD_LEN - 1];
+reg signed [`PSUM_SIZE - 1:0]	 psum_spad [0:8 - 1];
+
+// for debug
+// wire [7:0]debug_wire1 = ifmap_spad[conv_ifmap_cnt];
+// wire [7:0]debug_wire2 = filter_spad[conv_filter_cnt];
+// wire [7:0]debug_wire3 = split_ifmap[3];
+// wire [7:0]debug_wire4 = split_ifmap[3] ^ 128;
+// wire [31:0]debug_wire5 = filter_spad[conv_filter_cnt] * ifmap_spad[conv_ifmap_cnt];
+// wire [31:0]debug_wire6 =psum_spad[{1'b0, conv_result_cnt}];
+// for debug
+
+//spad counter
+reg [`IFMAP_INDEX_BIT - 1:0]  ifmap_spad_cnt;
+reg [`FILTER_INDEX_BIT - 1:0] filter_spad_cnt;
+reg [`OFMAP_INDEX_BIT - 1:0]  psum_spad_cnt;
+reg [`OFMAP_INDEX_BIT - 1:0]  point_psum_spad_cnt;
+wire [2:0] point_psum_spad_pointer;
+assign point_psum_spad_pointer = 3'd7-{1'b0 ,point_psum_spad_cnt};
+
+
+// conv counter
+reg [`IFMAP_INDEX_BIT - 1:0]  conv_ifmap_cnt;
+reg [`FILTER_INDEX_BIT - 1:0] conv_filter_cnt;
+reg [`OFMAP_INDEX_BIT - 1:0]  conv_result_cnt;
+
+//split filter & ifmap 
+reg [`FILTER_SIZE - 1:0] split_filter[0:3];
+reg [`IFMAP_SIZE - 1:0] split_ifmap[0:3];
+
+
+wire [3:0] shift;
+assign shift = ({1'b0, q} << U_minus1);
+
+always@(*) begin
+	{split_filter[3], split_filter[2], split_filter[1], split_filter[0]} = filter;
+	{split_ifmap[3], split_ifmap[2], split_ifmap[1], split_ifmap[0]} = ifmap;
+end
+
 assign MAC_result = MAC_operand1 * MAC_operand2;
 always @(*) begin
 	if(depthwise)begin
@@ -83,46 +138,6 @@ always @(*) begin
 	end
 end
 
-
-//spad
-reg signed [`IFMAP_SIZE - 1:0] ifmap_spad  [0:`IFMAP_SPAD_LEN - 1];
-reg signed [`FILTER_SIZE - 1:0]filter_spad [0:`FILTER_SPAD_LEN - 1];
-reg signed [`PSUM_SIZE - 1:0]	 psum_spad [0:8 - 1];
-
-// for debug
-wire [7:0]debug_wire1 = ifmap_spad[conv_ifmap_cnt];
-wire [7:0]debug_wire2 = filter_spad[conv_filter_cnt];
-wire [7:0]debug_wire3 = split_ifmap[3];
-wire [7:0]debug_wire4 = split_ifmap[3] ^ 128;
-wire [31:0]debug_wire5 = filter_spad[conv_filter_cnt] * ifmap_spad[conv_ifmap_cnt];
-wire [31:0]debug_wire6 =psum_spad[{1'b0, conv_result_cnt}];
-// for debug
-
-//spad counter
-reg [`IFMAP_INDEX_BIT - 1:0]  ifmap_spad_cnt;
-reg [`FILTER_INDEX_BIT - 1:0] filter_spad_cnt;
-reg [`OFMAP_INDEX_BIT - 1:0]  psum_spad_cnt;
-reg [`OFMAP_INDEX_BIT - 1:0]  point_psum_spad_cnt;
-wire [2:0] point_psum_spad_pointer;
-assign point_psum_spad_pointer = 3'd7-{1'b0 ,point_psum_spad_cnt};
-
-
-// conv counter
-reg [`IFMAP_INDEX_BIT - 1:0]  conv_ifmap_cnt;
-reg [`FILTER_INDEX_BIT - 1:0] conv_filter_cnt;
-reg [`OFMAP_INDEX_BIT - 1:0]  conv_result_cnt;
-
-//split filter & ifmap 
-reg [`FILTER_SIZE - 1:0] split_filter[0:3];
-reg [`IFMAP_SIZE - 1:0] split_ifmap[0:3];
-
-wire [3:0] shift;
-assign shift = ({1'b0, q} << U_minus1);
-
-always@(*) begin
-	{split_filter[3], split_filter[2], split_filter[1], split_filter[0]} = filter;
-	{split_ifmap[3], split_ifmap[2], split_ifmap[1], split_ifmap[0]} = ifmap;
-end
 // counters logic
 always @(posedge clk or posedge rst) begin
 	if(rst)begin
@@ -359,17 +374,6 @@ always @(posedge clk or posedge rst) begin
 end
 
 // FSM controller
-reg [2:0] state;
-reg [2:0] next_state;
-parameter IDLE				= 3'd0;
-parameter READ_FILTER		= 3'd1;
-parameter READ_IFMAP		= 3'd2;
-parameter READ_IPSUM		= 3'd3;
-parameter READ_POINT_IPSUM	= 3'd4;
-parameter DEPTH_CONV		= 3'd5;
-parameter CONV				= 3'd6;
-parameter WRITE_OPSUM		= 3'd7;
-
 always @(posedge clk or posedge rst) begin
 	if(rst)begin
 		state <= IDLE;

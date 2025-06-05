@@ -118,4 +118,6 @@ const int STRIDE = 2;
 const int FILTER_RS = 3;
 const int DEPTHWISE = 0;
 
+#endif
+
 #endif  // CONFIG_H

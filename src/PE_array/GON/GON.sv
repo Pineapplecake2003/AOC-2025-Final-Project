@@ -27,7 +27,11 @@ module GON (
 );
 
 logic [`YID_BITS - 1:0] YID_scan_out;
+logic [`NUMS_PE_ROW - 1:0] X_Bus_ready;
+logic [`NUMS_PE_ROW - 1:0] X_Bus_valid;
+logic [`DATA_BITS * `NUMS_PE_ROW - 1:0] X_Bus_data;
 
+logic [`XID_BITS * (`NUMS_PE_ROW + 1) - 1:0] XID_chain;
 GON_Bus #(`NUMS_PE_ROW, `YID_BITS) Y_Bus (
   .clk(clk),
   .rst(rst),
@@ -46,11 +50,6 @@ GON_Bus #(`NUMS_PE_ROW, `YID_BITS) Y_Bus (
   .ID_scan_out(YID_scan_out)
 );
 
-logic [`NUMS_PE_ROW - 1:0] X_Bus_ready;
-logic [`NUMS_PE_ROW - 1:0] X_Bus_valid;
-logic [`DATA_BITS * `NUMS_PE_ROW - 1:0] X_Bus_data;
-
-logic [`XID_BITS * (`NUMS_PE_ROW + 1) - 1:0] XID_chain;
 
 always_comb begin
   XID_chain[`XID_BITS-1:0] = XID_scan_in;

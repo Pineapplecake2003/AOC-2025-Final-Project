@@ -54,11 +54,20 @@ reg signed [`IFMAP_SIZE - 1:0] ifmap_spad  [0:`IFMAP_SPAD_LEN - 1];
 reg signed [`FILTER_SIZE - 1:0]filter_spad [0:`FILTER_SPAD_LEN - 1];
 reg signed [`PSUM_SIZE - 1:0]	 psum_spad [0:`OFMAP_SPAD_LEN - 1];
 
-wire [7:0]debug_wire1 = ifmap_spad[conv_ifmap_cnt];
-wire [7:0]debug_wire2 = filter_spad[conv_filter_cnt];
-wire [7:0]debug_wire3 = split_ifmap[3];
-wire [7:0]debug_wire4 = split_ifmap[3]^128;
-wire [31:0]debug_wire5 = filter_spad[conv_filter_cnt] * ifmap_spad[conv_ifmap_cnt];
+// wire [7:0]debug_wire1 = ifmap_spad[conv_ifmap_cnt];
+// wire [7:0]debug_wire2 = filter_spad[conv_filter_cnt];
+// wire [7:0]debug_wire3 = split_ifmap[3];
+// wire [7:0]debug_wire4 = split_ifmap[3]^128;
+// wire [31:0]debug_wire5 = filter_spad[conv_filter_cnt] * ifmap_spad[conv_ifmap_cnt];
+
+reg [2:0] state;
+reg [2:0] next_state;
+parameter IDLE          	= 3'd0;
+parameter READ_FILTER   	= 3'd1;
+parameter READ_IFMAP		= 3'd2;
+parameter READ_IPSUM    	= 3'd3;
+parameter CONV				= 3'd4;
+parameter WRITE_OPSUM   	= 3'd5;
 
 //spad counter
 reg [`IFMAP_INDEX_BIT - 1:0]  ifmap_spad_cnt;
@@ -273,15 +282,6 @@ always @(posedge clk or posedge rst) begin
 end
 
 // FSM controller
-reg [2:0] state;
-reg [2:0] next_state;
-parameter IDLE          	= 3'd0;
-parameter READ_FILTER   	= 3'd1;
-parameter READ_IFMAP		= 3'd2;
-parameter READ_IPSUM    	= 3'd3;
-parameter CONV				= 3'd4;
-parameter WRITE_OPSUM   	= 3'd5;
-
 always @(posedge clk or posedge rst) begin
 	if(rst)begin
 		state <= IDLE;

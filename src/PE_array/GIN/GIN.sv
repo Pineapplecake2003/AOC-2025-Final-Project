@@ -51,7 +51,15 @@ GIN_Bus #(`NUMS_PE_ROW, `YID_BITS) Y_Bus (
 );
 
 logic [`XID_BITS * (`NUMS_PE_ROW + 1) - 1:0] XID_chain;
-
+logic [31:0] single_PE_data[48:0];
+assign PE_data = {
+  single_PE_data[0] | single_PE_data[1] | single_PE_data[2] | single_PE_data[3] | single_PE_data[4] | single_PE_data[5] | single_PE_data[6] | single_PE_data[7] |
+  single_PE_data[8] | single_PE_data[9] | single_PE_data[10] | single_PE_data[11] | single_PE_data[12] | single_PE_data[13] | single_PE_data[14] | single_PE_data[15] |
+  single_PE_data[16] | single_PE_data[17] | single_PE_data[18] | single_PE_data[19] | single_PE_data[20] | single_PE_data[21] | single_PE_data[22] | single_PE_data[23] |
+  single_PE_data[24] | single_PE_data[25] | single_PE_data[26] | single_PE_data[27] | single_PE_data[28] | single_PE_data[29] | single_PE_data[30] | single_PE_data[31] |
+  single_PE_data[32] | single_PE_data[33] | single_PE_data[34] | single_PE_data[35] | single_PE_data[36] | single_PE_data[37] | single_PE_data[38] | single_PE_data[39] |
+  single_PE_data[40] | single_PE_data[41] | single_PE_data[42] | single_PE_data[43] | single_PE_data[44] | single_PE_data[45] | single_PE_data[46] | single_PE_data[47]
+  };
 always_comb begin
     XID_chain[`XID_BITS-1:0] = XID_scan_in; 
 end
@@ -70,7 +78,7 @@ generate
       // Slave I/O
       .slave_ready(PE_ready[`NUMS_PE_COL * i +: `NUMS_PE_COL]),
       .slave_valid(PE_valid[`NUMS_PE_COL * i +: `NUMS_PE_COL]),
-      .slave_data(PE_data),
+      .slave_data(single_PE_data[i]),
       // Config
       .set_id(set_XID),
       .ID_scan_in(XID_chain[`XID_BITS * i +: `XID_BITS]),
