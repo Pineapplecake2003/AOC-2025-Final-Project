@@ -98,4 +98,11 @@ module Top_tb ;
     initial begin
         #(`MAX_CYCLE * `CYCLE) $finish;
     end
+    
+    initial begin
+    `ifdef FSDB
+        $fsdbDumpfile("./wave/one_pass_tb.fsdb");
+        $fsdbDumpvars("+struct", "+mda", dut);
+    `endif
+    end
 endmodule
