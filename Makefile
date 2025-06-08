@@ -76,7 +76,7 @@ default: all
 
 .PHONY: all pe_all array_all ppu_all super_all
 
-pe_all: pe0 pe1 pe2 pe3 pe4 pe5 pe6 pe7
+pe_all: pe0 pe1 pe2 pe3 pe4 pe5 pe6 pe7 pe8
 array_all: \
     array0 array1 array2 array3 array4 \
 	array5 array7 array8 array9 array10 \
@@ -150,18 +150,14 @@ gen_test_data_for_pe:
 	g++ test_data_gen.cpp
 	./a.out > data.log
 
-gen_glb_mirror%:
-	g++ GLB_mirror_gen.cpp -DTBA=$*
-	./a.out
+gen_ID_CONV:
+	g++ ID_gen.cpp -o gen_ID.out
+	./gen_ID.out
 
-vcs_simulate%:
-	mkdir -p logs
-	vcs -R -sverilog +define+TBA$* +incdir+./include +incdir+./src -debug_access+all -full64 testbench/one_pass_tb.sv | tee ./logs/vcs_simulation_result.log
-	@echo "Detailed result store in ./logs/"
+gen_ID_LINEAR:
+	g++ ID_gen.cpp -o gen_ID.out -DLINEAR
+	./gen_ID.out
 
-# clean *.hex
 maintainer-copy::
 clean mostlyclean distclean maintainer-clean::
-	-rm -rf obj_dir logs a.out *.txt *.log *.dmp *.vpd wave/*.vcd wave/*.fsdb coverage.dat core *.zip release simv ucli.key simv.daidir csrc
-# clean *.hex
-	find . -type f -name "*.hex" -delete 
+	-rm -rf obj_dir logs a.out *.txt *.log *.dmp *.vpd wave/*.vcd wave/*.fsdb coverage.dat core *.zip release
