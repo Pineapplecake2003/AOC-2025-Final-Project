@@ -1,0 +1,8 @@
+===============[ single test ]===============
+Input file: ../../output/bin/input.bin
+Weight file: ../../output/bin/weight.bin
+Class index: 4
+Image index: 9
+=============================================
+Image Test: 9/10 image class         deer  
+Normalized image
