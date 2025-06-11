@@ -167,9 +167,19 @@ vcs_simulate%:
 	vcs -R -sverilog +define+TBA$* +incdir+./include +incdir+./src -debug_access+all -full64 testbench/one_pass_tb.sv | tee ./logs/vcs_simulation_result.log
 	@echo "Detailed result store in ./logs/"
 
+vcs_id_gen:
+	mkdir -p logs
+	vcs -full64 -sverilog -debug_access+all \
+		ID_gen_combinational.v tb_ID_gen_combinational.v \
+		-o simv_id_gen
+	./simv_id_gen | tee logs/vcs_id_gen.log
+	@echo "VCS simulation finished. Log: logs/vcs_id_gen.log"
+
 # clean *.hex
 maintainer-copy::
 clean mostlyclean distclean maintainer-clean::
 	-rm -rf obj_dir logs a.out *.txt *.log *.dmp *.vpd wave/*.vcd wave/*.fsdb coverage.dat core *.zip release simv ucli.key simv.daidir csrc
+	-rm -rf simv_id_gen.daidir
+	-rm -f gen_ID.out simv_id_gen
 # clean *.hex
 	find . -type f -name "*.hex" -delete 

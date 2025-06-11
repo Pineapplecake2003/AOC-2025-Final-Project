@@ -9,9 +9,9 @@ using namespace std;
 #define PE_ARRAY_W      8
 
 #define p               4
-#define t               4
 #define q               4
-#define r               1
+#define r               2
+#define t               2
 #define e               4
 
 #define KERNEL_H        3
