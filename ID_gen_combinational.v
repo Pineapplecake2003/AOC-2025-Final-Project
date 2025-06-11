@@ -26,7 +26,8 @@ module pe_array_id_generator (
     
     // Output partial sum IDs
     output reg [4:0] opsum_XID [0:47],
-    output reg [2:0] opsum_YID [0:5]
+    output reg [2:0] opsum_YID [0:5],
+    output reg [4:0] LN_congfig
 );
 
     // Internal variables
@@ -47,6 +48,16 @@ module pe_array_id_generator (
     assign row_block = 6 / (r * t_H);
     
     always @(*) begin
+        // LN_congfig
+        if(LINEAR) begin
+            LN_congfig = 5'd31;
+        end else begin
+            if(r==2)
+                LN_congfig = 5'd31;
+            else
+                LN_congfig = 5'd27;
+        end
+
         // Initialize all arrays
         for (idx = 0; idx < 48; idx = idx + 1) begin
             filter_XID[idx] = 5'd0;
@@ -96,7 +107,7 @@ module pe_array_id_generator (
                 temp_filter_XID = 0;
             end
         end
-            
+
         // Generate filter_YID
         temp_filter_YID = 0;
         for (row_cnt = 0; row_cnt < PE_ARRAY_H; row_cnt = row_cnt + 1) begin

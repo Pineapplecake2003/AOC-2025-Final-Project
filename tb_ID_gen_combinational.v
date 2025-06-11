@@ -20,6 +20,7 @@ wire [4:0] ipsum_XID [0:47];
 wire [2:0] ipsum_YID [0:5];   // 修改為每行一個
 wire [4:0] opsum_XID [0:47];
 wire [2:0] opsum_YID [0:5];   // 修改為每行一個
+wire [4:0] LN_congfig;
 
 // 被測模組實例化
 pe_array_id_generator dut (
@@ -41,7 +42,8 @@ pe_array_id_generator dut (
     .ipsum_XID(ipsum_XID),
     .ipsum_YID(ipsum_YID),
     .opsum_XID(opsum_XID),
-    .opsum_YID(opsum_YID)
+    .opsum_YID(opsum_YID),
+    .LN_congfig(LN_congfig)
 );
 
 initial begin
@@ -84,7 +86,12 @@ initial begin
     
     $display("\n=== opsum_YID ===");
     print_array_1d(opsum_YID, 6);
-
+    
+    $display("");  // 換行
+    $display("LN_congfig: ");  // 換行
+    $display("%0d", LN_congfig);
+    $display("");  // 換行
+    
     $finish;
 end
 
