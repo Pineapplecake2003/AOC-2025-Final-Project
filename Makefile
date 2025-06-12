@@ -86,6 +86,11 @@ super_all:super0 super1 super2 super3 super7 super8 super9 super10
 
 all: pe_all array_all ppu_all super_all
 
+VCS_all: \
+    vcs0 vcs1 vcs2 vcs3 vcs4 \
+	vcs5 vcs7 vcs8 vcs9 vcs10 \
+	vcs11 vcs12 vcs13 vcs14 vcs15 vcs16
+
 run:
 	@echo
 	@echo "-- Verilator Start"
@@ -155,11 +160,13 @@ id%:
 	./a.out
 
 vcs%:
+	g++ ID_to_verilog_file_format.cpp -DTBA=$*
+	./a.out
 	g++ GLB_mirror_gen.cpp -DTBA=$*
 	./a.out
 	mkdir -p logs
 	mkdir -p wave
-	vcs -R -sverilog +define+TBA$* +define+FSDB +incdir+./include +incdir+./src -debug_access+all -full64 testbench/one_pass_tb.sv | tee ./logs/vcs_simulation_result.log
+	vcs -R -sverilog +define+TBA$* +define+FSDB +incdir+./include +incdir+./src -debug_access+all -full64 testbench/one_pass_tb.sv | tee ./logs/vcs_simulation_result$*.log
 	@echo "Detailed result store in ./logs/"
 
 # clean *.hex

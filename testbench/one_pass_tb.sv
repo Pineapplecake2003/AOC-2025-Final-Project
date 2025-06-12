@@ -81,7 +81,7 @@ module Top_tb ;
         wait(done == 1);
         $display("\nDone\n");
         err = 0;
-        for (i = 0; i < num/4; i++)
+        for (i = 0; i < num; i++)
         begin
             if (`mem_word(`OPSUM_ADDR + i*4) !== GOLDEN[i])
             begin
@@ -97,6 +97,7 @@ module Top_tb ;
         end else begin
             $display("Pass.");
         end
+        $display("num: %d\n", num);
         $finish;
     end
 
