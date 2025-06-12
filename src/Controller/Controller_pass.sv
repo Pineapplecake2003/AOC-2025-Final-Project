@@ -84,9 +84,9 @@ module Controller_pass #(
     /* parameter decode */
     wire [1:0] R, S;
     wire [2:0] p, q, r, t, PE_config_p, PE_config_q;
-    wire [3:0] e;
+    wire [4:0] e;
     wire [7:0] W, PE_config_F;
-    assign e = mapping_param[15:12];
+    assign e = mapping_param[16:12];
     assign p = mapping_param[11:9];
     assign q = mapping_param[8:6];
     assign r = mapping_param[5:3];
@@ -149,10 +149,10 @@ module Controller_pass #(
     assign opsum_YID_scan_in = opsum_YID[counter];
 
     assign set_LN = (cs == SET_CONFIG)? ((counter == 0)? 1 : 0) : 0;
-    assign LN_config_in = 31;
+    assign LN_config_in = LN_CONFIG;
 
     assign PE_en = (cs == READ_FILTER)? 48'hffff_ffff_ffff : 0;
-    assign PE_config_out = (R - 1) << 10 | PE_config_p[1:0] << 7 | PE_config_F[4:0] << 2 | PE_config_q[1:0];
+    assign PE_config_out = PE_CONFIG;
 
     /***************************/
 
