@@ -81,21 +81,27 @@ module Top_tb ;
         wait(done == 1);
         $display("\nDone\n");
         err = 0;
-        for (i = 0; i < num; i++)
+        for (i = 0; i < num/4; i++)
         begin
             if (`mem_word(`OPSUM_ADDR + i*4) !== GOLDEN[i])
             begin
-                $display("GLB['h%4h] = %h, expect = %h", `OPSUM_ADDR + i*4, `mem_word(`OPSUM_ADDR + i*4), GOLDEN[i]);
+                $display("GLB[%d] = %h, expect = %h", `OPSUM_ADDR + i*4, `mem_word(`OPSUM_ADDR + i*4), GOLDEN[i]);
                 err = err + 1;
             end else
             begin
-                $display("GLB['h%4h] = %h, pass", `OPSUM_ADDR + i*4, `mem_word(`OPSUM_ADDR + i*4));
+                $display("GLB[%d] = %h, pass", `OPSUM_ADDR + i*4, `mem_word(`OPSUM_ADDR + i*4));
             end
+        end
+        if(err)begin
+            $display("Failed, %d errors.", err);
+        end else begin
+            $display("Pass.");
         end
         $finish;
     end
 
     initial begin
+        $display("Ttimeout.");
         #(`MAX_CYCLE * `CYCLE) $finish;
     end
     

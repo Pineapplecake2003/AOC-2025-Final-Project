@@ -106,6 +106,12 @@ logic [NUMS_PE_COL * NUMS_PE_ROW - 1 :0] ipsum_valid;
 logic [NUMS_PE_COL * 2 - 1 :0] pointwise_ipsum_valid;
 logic [NUMS_PE_COL * NUMS_PE_ROW - 1 :0] opsum_valid;
 genvar i_pe;
+wire [31:0]opsum_debug[47:0];
+generate
+  for (i_pe = 0; i_pe < NUMS_PE_COL * NUMS_PE_ROW; i_pe = i_pe + 1) begin
+    assign opsum_debug[i_pe] = out_PE_ospum[i_pe * DATA_SIZE +: DATA_SIZE];
+  end
+endgenerate
 generate
   /*
    * pe index                                                       addition direction ↓

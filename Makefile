@@ -150,11 +150,9 @@ gen_test_data_for_pe:
 	g++ test_data_gen.cpp
 	./a.out > data.log
 
-gen_glb_mirror%:
+vcs%:
 	g++ GLB_mirror_gen.cpp -DTBA=$*
 	./a.out
-
-vcs%:
 	mkdir -p logs
 	mkdir -p wave
 	vcs -R -sverilog +define+TBA$* +define+FSDB +incdir+./include +incdir+./src -debug_access+all -full64 testbench/one_pass_tb.sv | tee ./logs/vcs_simulation_result.log
