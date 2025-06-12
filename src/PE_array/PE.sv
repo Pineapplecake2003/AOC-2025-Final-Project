@@ -276,6 +276,9 @@ always @(posedge clk or posedge rst) begin
 	if(rst)begin
 		output_col_cnt <= 5'b0;
 	end
+	else if(state == IDLE)begin
+		output_col_cnt <= 5'b0;
+	end
 	else if(state == WRITE_OPSUM && next_state == READ_IFMAP)begin
 		output_col_cnt <= output_col_cnt + 5'b1;
 	end
