@@ -6,7 +6,7 @@ module GIN_Bus #(
   parameter ID_SIZE = `XID_BITS
 ) (
   input clk,
-  input rst,
+  input rst_n,
 
   // Master I/O
   input [ID_SIZE-1:0] tag,
@@ -40,7 +40,7 @@ generate
   for (i = 0; i < NUMS_SLAVE; i = i + 1) begin: MC_dachi
     GIN_MulticastController #ID_SIZE MC(
       .clk(clk),
-      .rst(rst),
+      .rst_n(rst_n),
       .set_id(set_id),
       .id_in(MC_id_chain[ID_SIZE * i +: ID_SIZE]),  
       .id(MC_id_chain[ID_SIZE * (i + 1) +: ID_SIZE]),

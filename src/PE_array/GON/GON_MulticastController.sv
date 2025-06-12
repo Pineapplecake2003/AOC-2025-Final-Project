@@ -5,7 +5,7 @@ module GON_MulticastController #(
     parameter ID_SIZE = `XID_BITS
 )(
     input clk,
-    input rst,
+    input rst_n,
 
     // config id
     input set_id,
@@ -22,8 +22,8 @@ module GON_MulticastController #(
 );
 
 // id_config
-always @(posedge clk or posedge rst) begin
-	if(rst)begin
+always @(posedge clk or negedge rst_n) begin
+	if(!rst_n)begin
 		id <= {ID_SIZE{1'b0}};
 	end
 	else if (set_id)begin

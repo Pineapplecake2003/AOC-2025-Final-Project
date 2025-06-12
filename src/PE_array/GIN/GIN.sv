@@ -4,7 +4,7 @@
 `include "define.svh"
 module GIN (
   input clk,
-  input rst,
+  input rst_n,
 
   // Slave SRAM <-> GIN
   input GIN_valid,
@@ -34,7 +34,7 @@ logic [`DATA_BITS-1:0] X_Bus_data;
 
 GIN_Bus #(`NUMS_PE_ROW, `YID_BITS) Y_Bus (
   .clk(clk),
-  .rst(rst),
+  .rst_n(rst_n),
   // Master I/O
   .tag(tag_Y),
   .master_valid(GIN_valid),
@@ -66,7 +66,7 @@ generate
   for (i = 0; i < `NUMS_PE_ROW; i = i + 1) begin
     GIN_Bus #(`NUMS_PE_COL, `XID_BITS) X_Bus (
       .clk(clk),
-      .rst(rst),
+      .rst_n(rst_n),
       // Master I/O
       .tag(tag_X),
       .master_valid(X_Bus_valid[i]),

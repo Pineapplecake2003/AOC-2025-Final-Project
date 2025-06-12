@@ -5,7 +5,7 @@ module GIN_MulticastController #(
   parameter ID_SIZE = `XID_BITS
   )(
   input clk,
-  input rst,
+  input rst_n,
 
   input set_id,
   input [ID_SIZE - 1:0] id_in,
@@ -23,8 +23,8 @@ module GIN_MulticastController #(
 );
 
 // id_config
-always @(posedge clk or posedge rst) begin
-	if(rst)begin
+always @(posedge clk or negedge rst_n) begin
+	if(!rst_n)begin
 		id <= {ID_SIZE{1'b0}};
 	end
 	else if (set_id)begin

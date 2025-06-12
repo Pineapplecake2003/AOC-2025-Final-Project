@@ -1,7 +1,7 @@
 `include "define.svh"
 module PE (
 	input clk,
-	input rst,
+	input rst_n,
 	input PE_en,
 	input [`CONFIG_SIZE-1:0] i_config,
 	input [`DATA_BITS-1:0] ifmap,
@@ -37,8 +37,8 @@ always@(*) begin
 	q = {1'b0, i_config_reg[1:0]} + 3'b1;
 end
 
-always @(posedge clk or posedge rst) begin
-	if(rst)begin
+always @(posedge clk or negedge rst_n) begin
+	if(!rst_n)begin
 		i_config_reg <= `CONFIG_SIZE'b0;
 	end
 	else if (PE_en)begin
@@ -92,8 +92,8 @@ always@(*) begin
 end
 
 // counters logic
-always @(posedge clk or posedge rst) begin
-	if(rst)begin
+always @(posedge clk or negedge rst_n) begin
+	if(!rst_n)begin
 		ifmap_spad_cnt <= `IFMAP_INDEX_BIT'b0;
 		filter_spad_cnt <= `FILTER_INDEX_BIT'b0;
 		psum_spad_cnt <= `OFMAP_INDEX_BIT'b0;
@@ -184,8 +184,8 @@ always @(posedge clk or posedge rst) begin
 		endcase
 	end
 end
-always @(posedge clk or posedge rst) begin
-	if(rst)begin
+always @(posedge clk or negedge rst_n) begin
+	if(!rst_n)begin
 		for (i = 0;i <`IFMAP_SPAD_LEN ; i = i + 1) begin
 			ifmap_spad[i] <= `IFMAP_SIZE'b0;
 		end
@@ -272,8 +272,8 @@ end
 
 // check dont yet
 reg [4:0] output_col_cnt;
-always @(posedge clk or posedge rst) begin
-	if(rst)begin
+always @(posedge clk or negedge rst_n) begin
+	if(!rst_n)begin
 		output_col_cnt <= 5'b0;
 	end
 	else if(state == WRITE_OPSUM && next_state == READ_IFMAP)begin
@@ -282,8 +282,8 @@ always @(posedge clk or posedge rst) begin
 end
 
 // FSM controller
-always @(posedge clk or posedge rst) begin
-	if(rst)begin
+always @(posedge clk or negedge rst_n) begin
+	if(!rst_n)begin
 		state <= IDLE;
 	end
 	else begin

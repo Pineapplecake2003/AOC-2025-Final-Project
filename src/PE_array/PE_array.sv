@@ -13,7 +13,7 @@ module PE_array #(
   parameter CONFIG_SIZE = `CONFIG_SIZE
 )(
   input clk,
-  input rst,
+  input rst_n,
 
   /* Scan Chain */
   input set_XID,
@@ -61,8 +61,8 @@ module PE_array #(
 
 // LN_config
 logic [`NUMS_PE_ROW-2:0] LN_config;
-always @(posedge clk or posedge rst) begin
-  if(rst)begin
+always @(posedge clk or negedge rst_n) begin
+  if(!rst_n)begin
 		LN_config <= {(`NUMS_PE_ROW-1){1'b0}};
 	end
 	else if (set_LN)begin
@@ -74,8 +74,8 @@ always @(posedge clk or posedge rst) begin
 end
 
 logic depthwise;
-always @(posedge clk or posedge rst) begin
-  if(rst)begin
+always @(posedge clk or negedge rst_n) begin
+  if(!rst_n)begin
     depthwise <= 1'b0;
   end
   else if(&PE_en)begin
@@ -127,7 +127,7 @@ generate
     if((i_pe / NUMS_PE_COL) % 3 == 0)begin // row0 or row3
       SUPER super_pe(
         .clk(clk),
-        .rst(rst),
+        .rst_n(rst_n),
         .PE_en(PE_en[i_pe]),
         .i_config(PE_config),
 
@@ -153,7 +153,7 @@ generate
     else begin
       PE pe(
         .clk(clk),
-        .rst(rst),
+        .rst_n(rst_n),
         .PE_en(PE_en[i_pe]),
         .i_config(PE_config),
 
@@ -182,7 +182,7 @@ endgenerate
 // filter
 GIN gin_filter(
   .clk(clk),
-  .rst(rst),
+  .rst_n(rst_n),
 
   .GIN_valid(GLB_filter_valid),
   .GIN_ready(GLB_filter_ready),
@@ -204,7 +204,7 @@ GIN gin_filter(
 // ifmap
 GIN gin_ifmap(
   .clk(clk),
-  .rst(rst),
+  .rst_n(rst_n),
 
   .GIN_valid(GLB_ifmap_valid),
   .GIN_ready(GLB_ifmap_ready),
@@ -228,7 +228,7 @@ logic [DATA_SIZE - 1: 0] out_GIN_ipsum;
 logic [NUMS_PE_COL * NUMS_PE_ROW - 1: 0] out_GIN_ipsum_valid;
 GIN gin_ipsum(
   .clk(clk),
-  .rst(rst),
+  .rst_n(rst_n),
 
   .GIN_valid(GLB_ipsum_valid),
   .GIN_ready(GLB_ipsum_ready),
@@ -323,7 +323,7 @@ end
 logic [NUMS_PE_COL * NUMS_PE_ROW - 1: 0] out_GON_ready;
 GON gon_opsum(
   .clk(clk),
-  .rst(rst),
+  .rst_n(rst_n),
 	
   .GON_valid(GLB_opsum_valid),
   .GON_ready(GLB_opsum_ready),

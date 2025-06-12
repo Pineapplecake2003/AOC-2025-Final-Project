@@ -6,7 +6,7 @@ module GON_Bus #(
     parameter ID_SIZE = `XID_BITS
 ) (
     input clk,
-    input rst,
+    input rst_n,
     input [ID_SIZE - 1:0] tag,
 
     input [NUMS_MASTER - 1:0] master_valid,
@@ -31,7 +31,7 @@ generate
     for (i_mc = 0; i_mc < NUMS_MASTER; i_mc = i_mc + 1) begin: MC_dachi
         GON_MulticastController #ID_SIZE MC(
             .clk(clk),
-            .rst(rst),
+            .rst_n(rst_n),
             .set_id(set_id),
             .id_in(MC_id_chain[ID_SIZE * i_mc +: ID_SIZE]),  
             .id(MC_id_chain[ID_SIZE * (i_mc + 1) +: ID_SIZE]),

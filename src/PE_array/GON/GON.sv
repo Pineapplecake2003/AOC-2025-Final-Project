@@ -3,7 +3,7 @@
 `include "src/PE_array/GON/GON_MulticastController.sv"
 module GON (
   input clk,
-  input rst,
+  input rst_n,
 
   /* Master GON <-> GLB */
   output logic GON_valid,
@@ -34,7 +34,7 @@ logic [`DATA_BITS * `NUMS_PE_ROW - 1:0] X_Bus_data;
 logic [`XID_BITS * (`NUMS_PE_ROW + 1) - 1:0] XID_chain;
 GON_Bus #(`NUMS_PE_ROW, `YID_BITS) Y_Bus (
   .clk(clk),
-  .rst(rst),
+  .rst_n(rst_n),
   // Master I/O
   .tag(tag_Y),
   .master_valid(X_Bus_valid),
@@ -60,7 +60,7 @@ generate
   for (i = 0; i < `NUMS_PE_ROW; i = i + 1) begin
     GON_Bus #(`NUMS_PE_COL, `XID_BITS) X_Bus (
       .clk(clk),
-      .rst(rst),
+      .rst_n(rst_n),
       // Master I/O
       .tag(tag_X),
       .master_valid(PE_valid[`NUMS_PE_COL * i +: `NUMS_PE_COL]),

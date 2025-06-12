@@ -4,7 +4,7 @@ module GLB #(
     parameter ADDR_WIDTH = 32           // 2^16 = 65536 Bytes
 )(
     input  logic                    clk,
-    input  logic                    rst,
+    input  logic                    rst_n,
     /* read port */
     input  logic [3:0]              re,     // read enable
     input  logic [ADDR_WIDTH-1:0]   r_addr, // byte address
@@ -19,8 +19,8 @@ module GLB #(
     // Byte-addressable memory: 64KiB = 65536 x 8-bit
     logic [DATA_WIDTH-1:0] mem [0 : (DEPTH * 1024) - 1];
 
-    always @(posedge clk or posedge rst) begin
-        if (rst) begin
+    always @(posedge clk or negedge rst_n) begin
+        if (!rst_n) begin
             dout <= 0;
         end
         else begin

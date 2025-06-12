@@ -9,7 +9,7 @@ module Controller_pass #(
     parameter CONFIG_SIZE = `CONFIG_SIZE
 )(
     input clk,
-    input rst,
+    input rst_n,
 
     /* higher-level controller interface */
     input bias_ipsum_sel,
@@ -270,8 +270,8 @@ module Controller_pass #(
     /****************************/
 
     // fsm logic
-    always_ff @(posedge clk or posedge rst) begin
-        if(rst) begin
+    always @(posedge clk or negedge rst_n) begin
+        if(!rst_n) begin
             cs                  <= IDLE;
             counter             <= 0;
             row_ct              <= 0;
@@ -374,7 +374,7 @@ module Controller_pass #(
     end
 
     // next state logic
-    always_comb begin
+    always @(*) begin
         case(cs)
         IDLE: begin
             ns = (op_config[0])? SET_CONFIG : IDLE;
@@ -395,7 +395,7 @@ module Controller_pass #(
             ns = (GLB_opsum_valid & GLB_opsum_ready && counter == p*t-1 && opsum_r_ct == e-1)? ((opsum_c_ct == PE_config_F[4:0])? DONE : READ_IFMAP) : WRITE_OPSUM;
         end
         DONE: begin
-            ns = IDLE;
+            ns = (op_config[0])? DONE : IDLE;
         end
         endcase
     end
