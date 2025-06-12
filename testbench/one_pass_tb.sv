@@ -85,11 +85,11 @@ module Top_tb ;
         begin
             if (`mem_word(`OPSUM_ADDR + i*4) !== GOLDEN[i])
             begin
-                $display("GLB[%d] = %h, expect = %h", `OPSUM_ADDR + i*4, `mem_word(`OPSUM_ADDR + i*4), GOLDEN[i]);
+                $display("GLB[%5d] = %h, expect = %h", `OPSUM_ADDR + i*4, `mem_word(`OPSUM_ADDR + i*4), GOLDEN[i]);
                 err = err + 1;
             end else
             begin
-                $display("GLB[%d] = %h, pass", `OPSUM_ADDR + i*4, `mem_word(`OPSUM_ADDR + i*4));
+                $display("GLB[%5d] = %h, pass", `OPSUM_ADDR + i*4, `mem_word(`OPSUM_ADDR + i*4));
             end
         end
         if(err)begin

@@ -1,3 +1,7 @@
+`include "src/PE_array/PE.sv"
+`include "src/PE_array/SUPER.sv"
+`include "src/PE_array/GIN/GIN.sv"
+`include "src/PE_array/GON/GON.sv"
 `include "src/PE_array/PE_array.sv"
 `include "src/Controller/GLB.sv"
 `include "src/Controller/Controller_pass.sv"
