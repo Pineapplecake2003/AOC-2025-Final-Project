@@ -40,6 +40,7 @@ parameter int FILTER_RS = 3;
 parameter [47:0]PE_EN= (1'b1 << (PE_ARRAY_H * PE_ARRAY_W)) - 1;
 parameter int DEPTHWISE = 0;
 parameter int PE_CONFIG = (DEPTHWISE << 12) + ((FILTER_RS - 1) << 10) + ((p - 1) << 7) + ((OFMAP_COL - 1) << 2) + (q - 1);
+parameter int LINEAR = 0;
 
 `elsif TBA1
 `define DATA_SRC "./testbench/PE_array_test_data/tb1/"
@@ -73,7 +74,7 @@ parameter int FILTER_RS = 3;
 parameter [47:0]PE_EN= (1'b1 << (PE_ARRAY_H * PE_ARRAY_W)) - 1;
 parameter int DEPTHWISE = 0;
 parameter int PE_CONFIG = (DEPTHWISE << 12) + ((FILTER_RS - 1) << 10) + ((p - 1) << 7) + ((OFMAP_COL - 1) << 2) + (q - 1);
-
+parameter int LINEAR = 0;
 
 `elsif TBA2
 `define DATA_SRC "./testbench/PE_array_test_data/tb2/"
@@ -107,7 +108,7 @@ parameter int FILTER_RS = 3;
 parameter [47:0]PE_EN= (1'b1 << (PE_ARRAY_H * PE_ARRAY_W)) - 1;
 parameter int DEPTHWISE = 0;
 parameter int PE_CONFIG = (DEPTHWISE << 12) + ((FILTER_RS - 1) << 10) + ((p - 1) << 7) + ((OFMAP_COL - 1) << 2) + (q - 1);
-
+parameter int LINEAR = 0;
 
 `elsif TBA3
 `define DATA_SRC "./testbench/PE_array_test_data/tb3/"
@@ -141,7 +142,7 @@ parameter int FILTER_RS = 3;
 parameter [47:0]PE_EN= (1'b1 << (PE_ARRAY_H * PE_ARRAY_W)) - 1;
 parameter int DEPTHWISE = 0;
 parameter int PE_CONFIG = (DEPTHWISE << 12) + ((FILTER_RS - 1) << 10) + ((p - 1) << 7) + ((OFMAP_COL - 1) << 2) + (q - 1);
-
+parameter int LINEAR = 0;
 
 `elsif TBA4
 `define DATA_SRC "./testbench/PE_array_test_data/tb4/"
@@ -175,7 +176,7 @@ parameter int FILTER_RS = 3;
 parameter [47:0]PE_EN= (1'b1 << (PE_ARRAY_H * PE_ARRAY_W)) - 1;
 parameter int DEPTHWISE = 0;
 parameter int PE_CONFIG = (DEPTHWISE << 12) + ((FILTER_RS - 1) << 10) + ((p - 1) << 7) + ((OFMAP_COL - 1) << 2) + (q - 1);
-
+parameter int LINEAR = 0;
 
 `elsif TBA5
 `define DATA_SRC "./testbench/PE_array_test_data/tb5/"
@@ -209,6 +210,7 @@ parameter int FILTER_RS = 3;
 parameter [47:0]PE_EN= (1'b1 << (PE_ARRAY_H * PE_ARRAY_W)) - 1;
 parameter int DEPTHWISE = 0;
 parameter int PE_CONFIG = (DEPTHWISE << 12) + ((FILTER_RS - 1) << 10) + ((p - 1) << 7) + ((OFMAP_COL - 1) << 2) + (q - 1);
+parameter int LINEAR = 0;
 
 `elsif TBA6
 `define DATA_SRC "./testbench/PE_array_test_data/tb6/"
@@ -242,6 +244,7 @@ parameter int FILTER_RS = 3;
 parameter [47:0]PE_EN= (1'b1 << (PE_ARRAY_H * PE_ARRAY_W)) - 1;
 parameter int DEPTHWISE = 1;
 parameter int PE_CONFIG = (DEPTHWISE << 12) + ((FILTER_RS - 1) << 10) + ((p - 1) << 7) + ((OFMAP_COL - 1) << 2) + (q - 1);
+parameter int LINEAR = 0;
 `elsif TBA7
 
 `define DATA_SRC "./testbench/PE_array_test_data/depthwise_separable_tb0_format/"
@@ -275,6 +278,7 @@ parameter int FILTER_RS = 3;
 parameter [47:0]PE_EN= (1'b1 << (PE_ARRAY_H * PE_ARRAY_W)) - 1;
 parameter int DEPTHWISE = 1;
 parameter int PE_CONFIG = (DEPTHWISE << 12) + ((FILTER_RS - 1) << 10) + ((p - 1) << 7) + ((OFMAP_COL - 1) << 2) + (q - 1);
+parameter int LINEAR = 0;
 
 `elsif TBA8
 `define DATA_SRC "./testbench/PE_array_test_data/depthwise_separable_tb1_format/"
@@ -308,6 +312,7 @@ parameter int FILTER_RS = 3;
 parameter [47:0]PE_EN= (1'b1 << (PE_ARRAY_H * PE_ARRAY_W)) - 1;
 parameter int DEPTHWISE = 1;
 parameter int PE_CONFIG = (DEPTHWISE << 12) + ((FILTER_RS - 1) << 10) + ((p - 1) << 7) + ((OFMAP_COL - 1) << 2) + (q - 1);
+parameter int LINEAR = 0;
 
 `elsif TBA9
 `define DATA_SRC "./testbench/PE_array_test_data/depthwise_separable_tb2_format/"
@@ -341,6 +346,7 @@ parameter int FILTER_RS = 3;
 parameter [47:0]PE_EN= (1'b1 << (PE_ARRAY_H * PE_ARRAY_W)) - 1;
 parameter int DEPTHWISE = 1;
 parameter int PE_CONFIG = (DEPTHWISE << 12) + ((FILTER_RS - 1) << 10) + ((p - 1) << 7) + ((OFMAP_COL - 1) << 2) + (q - 1);
+parameter int LINEAR = 0;
 
 `elsif TBA10
 `define DATA_SRC "./testbench/PE_array_test_data/depthwise_separable_tb3_format/"
@@ -374,6 +380,8 @@ parameter int FILTER_RS = 3;
 parameter [47:0]PE_EN= (1'b1 << (PE_ARRAY_H * PE_ARRAY_W)) - 1;
 parameter int DEPTHWISE = 1;
 parameter int PE_CONFIG = (DEPTHWISE << 12) + ((FILTER_RS - 1) << 10) + ((p - 1) << 7) + ((OFMAP_COL - 1) << 2) + (q - 1);
+parameter int LINEAR = 0;
+
 `elsif TBA11
 `define DATA_SRC "./testbench/PE_array_test_data/depthwise_separable_tb4_format/"
 `define CONFIG_SRC "./testbench/PE_array_test_data/depthwise_separable_tb4_format/"
@@ -406,6 +414,8 @@ parameter int FILTER_RS = 3;
 parameter [47:0]PE_EN= (1'b1 << (PE_ARRAY_H * PE_ARRAY_W)) - 1;
 parameter int DEPTHWISE = 1;
 parameter int PE_CONFIG = (DEPTHWISE << 12) + ((FILTER_RS - 1) << 10) + ((p - 1) << 7) + ((OFMAP_COL - 1) << 2) + (q - 1);
+parameter int LINEAR = 0;
+
 `elsif TBA12
 `define DATA_SRC "./testbench/PE_array_test_data/depthwise_separable_tb5_format/"
 `define CONFIG_SRC "./testbench/PE_array_test_data/depthwise_separable_tb5_format/"
@@ -438,6 +448,8 @@ parameter int FILTER_RS = 3;
 parameter [47:0]PE_EN= (1'b1 << (PE_ARRAY_H * PE_ARRAY_W)) - 1;
 parameter int DEPTHWISE = 1;
 parameter int PE_CONFIG = (DEPTHWISE << 12) + ((FILTER_RS - 1) << 10) + ((p - 1) << 7) + ((OFMAP_COL - 1) << 2) + (q - 1);
+parameter int LINEAR = 0;
+
 `elsif TBA13
 `define DATA_SRC "./testbench/PE_array_test_data/depthwise_separable_tb6_format/"
 `define CONFIG_SRC "./testbench/PE_array_test_data/depthwise_separable_tb6_format/"
@@ -470,6 +482,7 @@ parameter int FILTER_RS = 3;
 parameter [47:0]PE_EN= (1'b1 << (PE_ARRAY_H * PE_ARRAY_W)) - 1;
 parameter int DEPTHWISE = 1;
 parameter int PE_CONFIG = (DEPTHWISE << 12) + ((FILTER_RS - 1) << 10) + ((p - 1) << 7) + ((OFMAP_COL - 1) << 2) + (q - 1);
+parameter int LINEAR = 0;
 
 `elsif TBA14
 `define DATA_SRC "./testbench/PE_array_test_data/depthwise_separable_p_leq_4/"
@@ -503,6 +516,7 @@ parameter int FILTER_RS = 3;
 parameter [47:0]PE_EN= (1'b1 << (PE_ARRAY_H * PE_ARRAY_W)) - 1;
 parameter int DEPTHWISE = 1;
 parameter int PE_CONFIG = (DEPTHWISE << 12) + ((FILTER_RS - 1) << 10) + ((p - 1) << 7) + ((OFMAP_COL - 1) << 2) + (q - 1);
+parameter int LINEAR = 0;
 
 `elsif TBA15
 `define DATA_SRC "./testbench/PE_array_test_data/linear_tb1/"
@@ -536,6 +550,7 @@ parameter int FILTER_RS = 1;
 parameter [47:0]PE_EN= (1'b1 << (PE_ARRAY_H * PE_ARRAY_W)) - 1;
 parameter int DEPTHWISE = 0;
 parameter int PE_CONFIG = (DEPTHWISE << 12) + ((FILTER_RS - 1) << 10) + ((p - 1) << 7) + ((OFMAP_COL - 1) << 2) + (q - 1);
+parameter int LINEAR = 1;
 
 `elsif TBA16
 `define DATA_SRC "./testbench/PE_array_test_data/linear_tb2/"
@@ -569,6 +584,7 @@ parameter int FILTER_RS = 1;
 parameter [47:0]PE_EN= (1'b1 << (PE_ARRAY_H * PE_ARRAY_W)) - 1;
 parameter int DEPTHWISE = 0;
 parameter int PE_CONFIG = (DEPTHWISE << 12) + ((FILTER_RS - 1) << 10) + ((p - 1) << 7) + ((OFMAP_COL - 1) << 2) + (q - 1);
+parameter int LINEAR = 1;
 
 `endif
 

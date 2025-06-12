@@ -1,3 +1,5 @@
+`include "/src/Controller/ID_gen_combinational.v"
+
 module Controller_pass #(
     parameter NUMS_PE_ROW = `NUMS_PE_ROW,
     parameter NUMS_PE_COL = `NUMS_PE_COL,
@@ -82,6 +84,7 @@ module Controller_pass #(
 );
 
     /* parameter decode */
+    wire conv_linear;
     wire [1:0] R, S;
     wire [2:0] p, q, r, t, PE_config_p, PE_config_q;
     wire [4:0] e;
@@ -95,7 +98,7 @@ module Controller_pass #(
     assign R = shape_param1[23:22];
     assign S = shape_param1[21:20];
     assign W = shape_param2[15:8];
-
+    assign conv_linear = op_config[3];
     assign PE_config_p = p - 1;
     assign PE_config_F = (W - R) / U;
     assign PE_config_q = q - 1;
@@ -112,17 +115,41 @@ module Controller_pass #(
     /********************/
 
     /* loading XID, YID data */
-    reg [XID_BITS-1:0] ifmap_XID  [NUMS_PE_ROW*NUMS_PE_COL-1:0];
-    reg [XID_BITS-1:0] filter_XID [NUMS_PE_ROW*NUMS_PE_COL-1:0];
-    reg [XID_BITS-1:0] ipsum_XID  [NUMS_PE_ROW*NUMS_PE_COL-1:0];
-    reg [XID_BITS-1:0] opsum_XID  [NUMS_PE_ROW*NUMS_PE_COL-1:0];
+    wire [XID_BITS-1:0] ifmap_XID  [NUMS_PE_ROW*NUMS_PE_COL-1:0];
+    wire [XID_BITS-1:0] filter_XID [NUMS_PE_ROW*NUMS_PE_COL-1:0];
+    wire [XID_BITS-1:0] ipsum_XID  [NUMS_PE_ROW*NUMS_PE_COL-1:0];
+    wire [XID_BITS-1:0] opsum_XID  [NUMS_PE_ROW*NUMS_PE_COL-1:0];
 
-    reg [YID_BITS-1:0] ifmap_YID  [NUMS_PE_ROW-1:0];
-    reg [YID_BITS-1:0] filter_YID [NUMS_PE_ROW-1:0];
-    reg [YID_BITS-1:0] ipsum_YID  [NUMS_PE_ROW-1:0];
-    reg [YID_BITS-1:0] opsum_YID  [NUMS_PE_ROW-1:0];
+    wire [YID_BITS-1:0] ifmap_YID  [NUMS_PE_ROW-1:0];
+    wire [YID_BITS-1:0] filter_YID [NUMS_PE_ROW-1:0];
+    wire [YID_BITS-1:0] ipsum_YID  [NUMS_PE_ROW-1:0];
+    wire [YID_BITS-1:0] opsum_YID  [NUMS_PE_ROW-1:0];
     /*************************/
     
+    pe_array_id_generator pe_array_id_generator_inst (
+        .p(p),
+        .q(q),
+        .r(r),
+        .t(t),
+        .e(e),
+        .t_H(t_H[2:0]),
+        .t_W(t_W[2:0]),
+        .PE_ARRAY_H(NUMS_PE_ROW),
+        .PE_ARRAY_W(NUMS_PE_COL),
+        .KERNEL_H(R),
+        .LINEAR(conv_linear),
+        .filter_XID(filter_XID),
+        .filter_YID(filter_YID),
+        .ifmap_XID(ifmap_XID),
+        .ifmap_YID(ifmap_YID),
+        .ipsum_XID(ipsum_XID),
+        .ipsum_YID(ipsum_YID),
+        .opsum_XID(opsum_XID),
+        .opsum_YID(opsum_YID),
+        .LN_config(LN_config_in)
+    );
+
+
     parameter IDLE = 0,
         SET_CONFIG = 1,
         READ_FILTER = 2,
