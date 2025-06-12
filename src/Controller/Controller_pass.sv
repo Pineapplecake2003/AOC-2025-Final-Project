@@ -97,7 +97,7 @@ module Controller_pass #(
     assign W = shape_param2[15:8];
 
     assign PE_config_p = p - 1;
-    assign PE_config_F = W - 1;
+    assign PE_config_F = (W - R) / U;
     assign PE_config_q = q - 1;
     assign PE_config_U = U - 1;
 
@@ -153,8 +153,6 @@ module Controller_pass #(
 
     assign PE_en = (cs == READ_FILTER)? 48'hffff_ffff_ffff : 0;
     assign PE_config_out = (R - 1) << 10 | PE_config_p[1:0] << 7 | PE_config_F[4:0] << 2 | PE_config_q[1:0];
-    //TODO
-    //assign LN_config
 
     /***************************/
 
@@ -181,10 +179,11 @@ module Controller_pass #(
     end
 
     // glb_r_addr
-    wire [31:0] filter_addr, ifmap_addr, bias_addr, opsum_addr;
+    wire [31:0] filter_addr, ifmap_addr, bias_addr, ipsum_addr, opsum_addr;
     assign filter_addr = filter_baseaddr + counter;
-    assign ifmap_addr = ifmap_baseaddr + chn_ct + col_ct * q * r + row_ct * q * r * W;
+    assign ifmap_addr = ifmap_baseaddr + chn_ct * q + col_ct * q * r + row_ct * q * r * W;
     assign bias_addr = bias_baseaddr + (num_ct + ipsum_c_ct * p * t + ipsum_r_ct * p * t * W) * 4;
+    assign ipsum_addr = opsum_baseaddr + (num_ct + ipsum_c_ct * p * t + ipsum_r_ct * p * t * W) * 4;
     assign opsum_addr = opsum_baseaddr + (counter + opsum_c_ct * p * t + opsum_r_ct * p * t * W) * 4;
 
     always @(*) begin
@@ -196,7 +195,7 @@ module Controller_pass #(
             glb_r_addr = ifmap_addr;
         end
         READ_IPSUM: begin
-            glb_r_addr = (bias_ipsum_sel)? bias_addr : opsum_addr;
+            glb_r_addr = (bias_ipsum_sel)? bias_addr : ipsum_addr;
         end
         default: begin
             glb_r_addr = 0;
