@@ -10,7 +10,7 @@
 module Top(
     input           clk,
     input           rst_n,
-    input           ctrl_w_en,
+    input           ctrl_reg_w_en,
     input  [2:0]    ctrl_reg_wsel,
     input  [31:0]   ctrl_reg_wdata,
     input  [3:0]    dram_w_en,
