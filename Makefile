@@ -150,6 +150,10 @@ gen_test_data_for_pe:
 	g++ test_data_gen.cpp
 	./a.out > data.log
 
+id%:
+	g++ ID_to_verilog_file_format.cpp -DTBA=$*
+	./a.out
+
 vcs%:
 	g++ GLB_mirror_gen.cpp -DTBA=$*
 	./a.out

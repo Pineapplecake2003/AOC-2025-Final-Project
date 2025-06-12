@@ -9,3 +9,8 @@ test.*
 ./*.txt
 __pycache__/
 *.hex
+simv
+ucil.key
+csrc
+simv.daidir/
+novas_dump.log

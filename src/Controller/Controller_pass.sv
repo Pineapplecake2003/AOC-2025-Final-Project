@@ -149,7 +149,7 @@ module Controller_pass #(
     assign opsum_YID_scan_in = opsum_YID[counter];
 
     assign set_LN = (cs == SET_CONFIG)? ((counter == 0)? 1 : 0) : 0;
-    assign LN_config_in = 27;
+    assign LN_config_in = 31;
 
     assign PE_en = (cs == READ_FILTER)? 48'hffff_ffff_ffff : 0;
     assign PE_config_out = (R - 1) << 10 | PE_config_p[1:0] << 7 | PE_config_F[4:0] << 2 | PE_config_q[1:0];

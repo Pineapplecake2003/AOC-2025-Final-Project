@@ -206,13 +206,13 @@ PE_array #(
 );
 
 initial begin
-    $readmemh("./src/Controller/ifmap_XID.txt", controller_pass.ifmap_XID );
-    $readmemh("./src/Controller/filter_XID.txt", controller_pass.filter_XID);
-    $readmemh("./src/Controller/ipsum_XID.txt", controller_pass.ipsum_XID );
-    $readmemh("./src/Controller/opsum_XID.txt", controller_pass.opsum_XID );
-    $readmemh("./src/Controller/ifmap_YID.txt", controller_pass.ifmap_YID );
-    $readmemh("./src/Controller/filter_YID.txt", controller_pass.filter_YID);
-    $readmemh("./src/Controller/ipsum_YID.txt", controller_pass.ipsum_YID );
-    $readmemh("./src/Controller/opsum_YID.txt", controller_pass.opsum_YID );
+    $readmemh("./ifmap_XID.txt", controller_pass.ifmap_XID );
+    $readmemh("./filter_XID.txt", controller_pass.filter_XID);
+    $readmemh("./ipsum_XID.txt", controller_pass.ipsum_XID );
+    $readmemh("./opsum_XID.txt", controller_pass.opsum_XID );
+    $readmemh("./ifmap_YID.txt", controller_pass.ifmap_YID );
+    $readmemh("./filter_YID.txt", controller_pass.filter_YID);
+    $readmemh("./ipsum_YID.txt", controller_pass.ipsum_YID );
+    $readmemh("./opsum_YID.txt", controller_pass.opsum_YID );
 end
 endmodule
