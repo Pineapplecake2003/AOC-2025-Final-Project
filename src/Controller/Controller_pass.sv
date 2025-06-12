@@ -72,7 +72,7 @@ module Controller_pass #(
 
     /* glb interface */
     // write port
-    output  [3:0]           glb_we,
+    output reg [3:0]        glb_we,
     output  [31:0]          glb_w_addr,
     output  [DATA_SIZE-1:0] glb_w_data, 
     // read port
@@ -83,17 +83,23 @@ module Controller_pass #(
 
     /* parameter decode */
     wire [1:0] R, S;
-    wire [2:0] p, q, r, t;
+    wire [2:0] p, q, r, t, PE_config_p, PE_config_q;
     wire [3:0] e;
-    wire [7:0] W;
+    wire [7:0] W, PE_config_F;
     assign e = mapping_param[15:12];
     assign p = mapping_param[11:9];
     assign q = mapping_param[8:6];
     assign r = mapping_param[5:3];
     assign t = mapping_param[2:0];
+    assign U = shape_param1[25:24];
     assign R = shape_param1[23:22];
     assign S = shape_param1[21:20];
-    assign F = shape_param2[15:8];
+    assign W = shape_param2[15:8];
+
+    assign PE_config_p = p - 1;
+    assign PE_config_F = W - 1;
+    assign PE_config_q = q - 1;
+    assign PE_config_U = U - 1;
 
     wire [31:0] merge_num, merged_PE_ARRAY_W, merged_PE_ARRAY_H, array_H_tile, array_W_tile, t_H, t_W;
     assign merge_num = (e + NUMS_PE_COL - 1) / NUMS_PE_COL;
@@ -122,12 +128,11 @@ module Controller_pass #(
         READ_FILTER = 2,
         READ_IFMAP = 3,
         READ_IPSUM = 4,
-        WAIT_READY = 5,
-        WRITE_OPSUM = 6,
-        DONE = 7;
+        WRITE_OPSUM = 5,
+        DONE = 6;
         
     reg [31:0] counter;
-    reg [31:0] row_ct, col_ct, chn_ct, num_ct, r_ct, tH_ct, tW_ct;
+    reg [31:0] row_ct, col_ct, chn_ct, num_ct, r_ct, tH_ct, tW_ct, ipsum_r_ct, ipsum_c_ct, opsum_r_ct, opsum_c_ct;
     reg [2:0] cs, ns;
 
     /* SET_CONFIG output logic */
@@ -144,10 +149,10 @@ module Controller_pass #(
     assign opsum_YID_scan_in = opsum_YID[counter];
 
     assign set_LN = (cs == SET_CONFIG)? ((counter == 0)? 1 : 0) : 0;
-    assign LN_config = 27;
+    assign LN_config_in = 27;
 
     assign PE_en = (cs == READ_FILTER)? 48'hffff_ffff_ffff : 0;
-    assign PE_config_out = (p - 1) << 7 & (F - 1) << 2 & (q - 1);
+    assign PE_config_out = (R - 1) << 10 | PE_config_p[1:0] << 7 | PE_config_F[4:0] << 2 | PE_config_q[1:0];
     //TODO
     //assign LN_config
 
@@ -178,9 +183,9 @@ module Controller_pass #(
     // glb_r_addr
     wire [31:0] filter_addr, ifmap_addr, bias_addr, opsum_addr;
     assign filter_addr = filter_baseaddr + counter;
-    assign ifmap_addr = ifmap_baseaddr + counter;
-    assign bias_addr = bias_baseaddr + counter;
-    assign opsum_addr = opsum_baseaddr + counter;
+    assign ifmap_addr = ifmap_baseaddr + chn_ct + col_ct * q * r + row_ct * q * r * W;
+    assign bias_addr = bias_baseaddr + (num_ct + ipsum_c_ct * p * t + ipsum_r_ct * p * t * W) * 4;
+    assign opsum_addr = opsum_baseaddr + (counter + opsum_c_ct * p * t + opsum_r_ct * p * t * W) * 4;
 
     always @(*) begin
         case (cs)
@@ -200,13 +205,53 @@ module Controller_pass #(
     end
     /********************************/
 
+    /* glb reading signal output logic */
+    always @(*) begin
+        if(GLB_opsum_valid && GLB_opsum_ready) begin
+            case (q)
+            3'd1: begin
+                glb_we = 4'b0001;
+            end
+            3'd2: begin
+                glb_we = 4'b0011;
+            end
+            3'd3: begin
+                glb_we = 4'b0111;
+            end
+            3'd4: begin
+                glb_we = 4'b1111;
+            end
+            default: begin
+                glb_we = 4'd0;
+            end
+            endcase
+        end
+        else begin
+            glb_we = 0;
+        end
+    end
+
+    assign glb_w_addr = opsum_addr;
+    assign glb_w_data = PE_data_out;
+    /********************************/
+
     /* tag control output logic */
-    wire [31:0] filter_tag_X_tmp, filter_tag_Y_tmp;
+    wire [31:0] filter_tag_X_tmp, filter_tag_Y_tmp, ipsum_tag_X_tmp, opsum_tag_X_tmp;
     assign filter_tag_X_tmp = row_ct + R * tW_ct;
     assign filter_tag_Y_tmp = r_ct + tH_ct;
     assign filter_tag_X = filter_tag_X_tmp[XID_BITS-1:0];
     assign filter_tag_Y = filter_tag_Y_tmp[YID_BITS-1:0];
 
+    assign ifmap_tag_X = row_ct[XID_BITS-1:0];
+    assign ifmap_tag_Y = r_ct[YID_BITS-1:0];
+
+    assign ipsum_tag_X_tmp = ipsum_r_ct + e * tW_ct;
+    assign ipsum_tag_X = ipsum_tag_X_tmp[XID_BITS-1:0];
+    assign ipsum_tag_Y = tH_ct[YID_BITS-1:0];
+
+    assign opsum_tag_X_tmp = opsum_r_ct + e * tW_ct;
+    assign opsum_tag_X = opsum_tag_X_tmp[XID_BITS-1:0];
+    assign opsum_tag_Y = tH_ct[YID_BITS-1:0];
     /****************************/
 
     // fsm logic
@@ -221,6 +266,10 @@ module Controller_pass #(
             r_ct                <= 0;
             tH_ct               <= 0;
             tW_ct               <= 0;
+            ipsum_r_ct          <= 0;
+            ipsum_c_ct          <= 0;
+            opsum_r_ct          <= 0;
+            opsum_c_ct          <= 0;
             GLB_ifmap_valid     <= 0;
             GLB_filter_valid    <= 0;
             GLB_ipsum_valid     <= 0;
@@ -238,6 +287,10 @@ module Controller_pass #(
                 r_ct                <= 0;
                 tH_ct               <= 0;
                 tW_ct               <= 0;
+                ipsum_r_ct          <= 0;
+                ipsum_c_ct          <= 0;
+                opsum_r_ct          <= 0;
+                opsum_c_ct          <= 0;
                 GLB_filter_valid    <= 0;
                 GLB_ifmap_valid     <= 0;
                 GLB_ipsum_valid     <= 0;
@@ -249,17 +302,56 @@ module Controller_pass #(
             READ_FILTER: begin
                 if(GLB_filter_valid & GLB_filter_ready) begin
                     GLB_filter_valid    <= 0;
-                    counter             <= counter + q;
+                    counter             <= (filter_addr == bias_baseaddr - q)? 0 : counter + q;
                     chn_ct              <= (chn_ct == r-1)? 0 : chn_ct + 1;
                     col_ct              <= (chn_ct == r-1)? ((col_ct == S-1)? 0 :  col_ct + 1) : col_ct;
                     row_ct              <= (chn_ct == r-1 && col_ct == S-1)? ((row_ct == R-1)? 0 :  row_ct + 1) : row_ct;
                     num_ct              <= (chn_ct == r-1 && col_ct == S-1 && row_ct == R-1)? ((num_ct == p-1)? 0 : num_ct + 1) : num_ct;
                     r_ct                <= (r_ct   == r-1)? 0 : r_ct + 1;
-                    tH_ct               <= (chn_ct == r-1 && col_ct == S-1 && row_ct == R-1 && num_ct == p-1)? ((tH_ct == t_H - 1)? 0 : tH_ct + 1) : tH_ct;
-                    tW_ct               <= (chn_ct == r-1 && col_ct == S-1 && row_ct == R-1 && num_ct == p-1 && tH_ct == t_H - 1)? ((tW_ct == t_W - 1)? 0 : tW_ct + 1) : tW_ct;  
+                    tH_ct               <= (chn_ct == r-1 && col_ct == S-1 && row_ct == R-1 && num_ct % p == p-1)? ((tH_ct == t_H - 1)? 0 : tH_ct + 1) : tH_ct;
+                    tW_ct               <= (chn_ct == r-1 && col_ct == S-1 && row_ct == R-1 && num_ct % p == p-1 && tH_ct == t_H - 1)? ((tW_ct == t_W - 1)? 0 : tW_ct + 1) : tW_ct;  
                 end
                 else begin
-                    GLB_filter_valid    <= (filter_addr != bias_baseaddr)? 1 : 0;
+                    GLB_filter_valid    <= 1;
+                end
+            end
+            READ_IFMAP: begin
+                if(GLB_ifmap_valid & GLB_ifmap_ready) begin
+                    GLB_ifmap_valid     <= 0;
+                    chn_ct              <= (chn_ct == r-1)? 0 : chn_ct + 1;
+                    row_ct              <= (chn_ct == r-1)? ((row_ct == e + R - 2)? 0 :  row_ct + 1) : row_ct;
+                    col_ct              <= (chn_ct == r-1 && row_ct == e + R - 2)? ((col_ct >= S-1 && col_ct == W - 1)? 0 :  col_ct + 1) : col_ct;
+                    r_ct                <= (r_ct   == r-1)? 0 : r_ct + 1;
+               end
+                else begin
+                    GLB_ifmap_valid     <= 1;
+                end
+            end
+            READ_IPSUM: begin
+                if(GLB_ipsum_valid & GLB_ipsum_ready) begin
+                    GLB_ipsum_valid     <= 0;
+                    tH_ct               <= (num_ct % p == p-1)? (tH_ct == t_H-1)? 0 : tH_ct + 1 : tH_ct;
+                    tW_ct               <= (num_ct % p == p-1 && tH_ct == t_H-1)? ((tW_ct == t_W-1)? 0 : tW_ct + 1) : tW_ct;
+                    num_ct              <= (num_ct == p*t-1)? 0 : num_ct + 1;   // reuse as ipsum chn_ct
+                    ipsum_r_ct          <= (num_ct == p*t-1)? ((ipsum_r_ct == e-1)? 0 : ipsum_r_ct + 1) : ipsum_r_ct;
+                    ipsum_c_ct          <= (num_ct == p*t-1 && ipsum_r_ct == e-1)? ((ipsum_c_ct == W-1)? 0 : ipsum_c_ct + 1) : ipsum_c_ct;
+                    col_ct              <= (num_ct == p*t-1 && ipsum_r_ct == e-1 && ipsum_c_ct == W-1)? 0 : col_ct;
+               end
+                else begin
+                    GLB_ipsum_valid     <= 1;
+                end
+            end
+            WRITE_OPSUM: begin
+                if(GLB_opsum_valid & GLB_opsum_ready) begin
+                    GLB_opsum_ready     <= 0;
+                    tH_ct               <= (counter % p == p-1)? ((tH_ct == t_H-1)? 0 : tH_ct + 1) : tH_ct;
+                    tW_ct               <= (counter % p == p-1 && tH_ct == t_H-1)? ((tW_ct == t_W-1)? 0 : tW_ct + 1) : tW_ct;
+                    counter             <= (counter == p*t-1)? 0 : counter + 1; // reuse as opsum chn_ct
+                    opsum_r_ct          <= (counter == p*t-1)? ((opsum_r_ct == e-1)? 0 : opsum_r_ct + 1) : opsum_r_ct;
+                    opsum_c_ct          <= (counter == p*t-1 && opsum_r_ct == e-1)? ((opsum_c_ct == W-1)? 0 : opsum_c_ct + 1) : opsum_c_ct;
+                end
+                else begin
+                    GLB_opsum_ready     <= 1;
                 end
             end
             endcase
@@ -276,7 +368,16 @@ module Controller_pass #(
             ns = (counter == NUMS_PE_ROW*NUMS_PE_COL-1)? READ_FILTER : SET_CONFIG;
         end
         READ_FILTER: begin
-            ns = (filter_addr == bias_baseaddr)? DONE : READ_FILTER;
+            ns = (GLB_filter_valid & GLB_filter_ready & filter_addr == bias_baseaddr - q)? READ_IFMAP : READ_FILTER;
+        end
+        READ_IFMAP: begin
+            ns = (GLB_ifmap_valid & GLB_ifmap_ready && chn_ct == r-1 && row_ct == e + R - 2 && col_ct >= S-1)? READ_IPSUM : READ_IFMAP;
+        end
+        READ_IPSUM: begin
+            ns = (GLB_ipsum_valid & GLB_ipsum_ready && num_ct == p*t-1 && ipsum_r_ct == e-1)? WRITE_OPSUM : READ_IPSUM;
+        end
+        WRITE_OPSUM: begin
+            ns = (GLB_opsum_valid & GLB_opsum_ready && counter == p*t-1 && opsum_r_ct == e-1)? ((opsum_c_ct == PE_config_F[4:0])? DONE : READ_IFMAP) : WRITE_OPSUM;
         end
         DONE: begin
             ns = IDLE;

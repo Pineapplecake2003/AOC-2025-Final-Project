@@ -154,9 +154,10 @@ gen_glb_mirror%:
 	g++ GLB_mirror_gen.cpp -DTBA=$*
 	./a.out
 
-vcs_simulate%:
+vcs%:
 	mkdir -p logs
-	vcs -R -sverilog +define+TBA$* +incdir+./include +incdir+./src -debug_access+all -full64 testbench/one_pass_tb.sv | tee ./logs/vcs_simulation_result.log
+	mkdir -p wave
+	vcs -R -sverilog +define+TBA$* +define+FSDB +incdir+./include +incdir+./src -debug_access+all -full64 testbench/one_pass_tb.sv | tee ./logs/vcs_simulation_result.log
 	@echo "Detailed result store in ./logs/"
 
 # clean *.hex

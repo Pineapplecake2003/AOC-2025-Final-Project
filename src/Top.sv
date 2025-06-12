@@ -64,7 +64,7 @@ assign shape_param2 = 32'd0;
 assign ifmap_baseaddr = 32'd0;
 assign filter_baseaddr = q * r * (STRIDE * (e - 1) + FILT_ROW) * IFMAP_COL;
 assign bias_baseaddr = filter_baseaddr + p * t * q * r * FILT_ROW * FILT_COL;
-assign opsum_baseaddr = 32'd0;
+assign opsum_baseaddr = bias_baseaddr + p * t * 4;
 
 Controller_pass #(
     .NUMS_PE_ROW(`NUMS_PE_ROW),
@@ -178,7 +178,7 @@ PE_array #(
 
     // Controller
     .PE_en(PE_en),
-    .PE_config(PE_config),
+    .PE_config(PE_config_out),
     .ifmap_tag_X(ifmap_tag_X),
     .ifmap_tag_Y(ifmap_tag_Y),
     .filter_tag_X(filter_tag_X),
@@ -195,10 +195,10 @@ PE_array #(
     .GLB_filter_ready(GLB_filter_ready),
     .GLB_ipsum_valid(GLB_ipsum_valid),
     .GLB_ipsum_ready(GLB_ipsum_ready),
-    .GLB_data_in(GLB_data_in),
+    .GLB_data_in(PE_data_in),
     .GLB_opsum_valid(GLB_opsum_valid),
     .GLB_opsum_ready(GLB_opsum_ready),
-    .GLB_data_out(GLB_data_out)
+    .GLB_data_out(PE_data_out)
 );
 
 initial begin
