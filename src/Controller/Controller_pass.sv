@@ -162,29 +162,34 @@ module Controller_pass #(
     /* glb reading signal output logic */
     // glb_re
     always @(*) begin
-        case (q)
-        3'd1: begin
-            glb_re = 4'b0001;
+        if(cs != READ_IPSUM) begin
+            case (q)
+            3'd1: begin
+                glb_re = 4'b0001;
+            end
+            3'd2: begin
+                glb_re = 4'b0011;
+            end
+            3'd3: begin
+                glb_re = 4'b0111;
+            end
+            3'd4: begin
+                glb_re = 4'b1111;
+            end
+            endcase
         end
-        3'd2: begin
-            glb_re = 4'b0011;
-        end
-        3'd3: begin
-            glb_re = 4'b0111;
-        end
-        3'd4: begin
+        else begin
             glb_re = 4'b1111;
         end
-        endcase
     end
 
     // glb_r_addr
     wire [31:0] filter_addr, ifmap_addr, bias_addr, ipsum_addr, opsum_addr;
     assign filter_addr = filter_baseaddr + counter;
     assign ifmap_addr = ifmap_baseaddr + chn_ct * q + col_ct * q * r + row_ct * q * r * W;
-    assign bias_addr = bias_baseaddr + (num_ct + ipsum_c_ct * p * t + ipsum_r_ct * p * t * W) * 4;
-    assign ipsum_addr = opsum_baseaddr + (num_ct + ipsum_c_ct * p * t + ipsum_r_ct * p * t * W) * 4;
-    assign opsum_addr = opsum_baseaddr + (counter + opsum_c_ct * p * t + opsum_r_ct * p * t * W) * 4;
+    assign bias_addr = bias_baseaddr + (num_ct + ipsum_c_ct * p * t + ipsum_r_ct * p * t * (PE_config_F+1)) * 4;
+    assign ipsum_addr = opsum_baseaddr + (num_ct + ipsum_c_ct * p * t + ipsum_r_ct * p * t * (PE_config_F+1)) * 4;
+    assign opsum_addr = opsum_baseaddr + (counter + opsum_c_ct * p * t + opsum_r_ct * p * t * (PE_config_F+1)) * 4;
 
     always @(*) begin
         case (cs)
@@ -207,26 +212,10 @@ module Controller_pass #(
     /* glb reading signal output logic */
     always @(*) begin
         if(GLB_opsum_valid && GLB_opsum_ready) begin
-            case (q)
-            3'd1: begin
-                glb_we = 4'b0001;
-            end
-            3'd2: begin
-                glb_we = 4'b0011;
-            end
-            3'd3: begin
-                glb_we = 4'b0111;
-            end
-            3'd4: begin
-                glb_we = 4'b1111;
-            end
-            default: begin
-                glb_we = 4'd0;
-            end
-            endcase
+            glb_we = 4'b1111;
         end
         else begin
-            glb_we = 0;
+            glb_we = 4'b0;
         end
     end
 
