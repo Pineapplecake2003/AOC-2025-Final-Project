@@ -16,7 +16,6 @@ module Top(
     input  [3:0]    dram_w_en,
     input  [31:0]   dram_w_addr,
     input  [31:0]   dram_w_data,
-    input  [3:0]    r_en,
     input  [3:0]    dram_r_en,
     input  [31:0]   dram_r_addr,
     output [31:0]   dram_r_data,
