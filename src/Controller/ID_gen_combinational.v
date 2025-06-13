@@ -6,27 +6,27 @@ module pe_array_id_generator (
     input [2:0] t,           // t parameter
     input [4:0] e,         // t_H parameter  
     input [2:0] t_H,         // t_H parameter  
-    input [2:0] t_W,         // t_W parameter  
+    input [2:0] t_W,         // t_H parameter  
     input [2:0] PE_ARRAY_H,
     input [3:0] PE_ARRAY_W,
     input [1:0] KERNEL_H,
     input LINEAR,            // LINEAR mode flag
     
     // Filter IDs
-    output reg [4:0] filter_XID [47:0],
-    output reg [2:0] filter_YID [5:0],
+    output reg [4:0] filter_XID [0:47],
+    output reg [2:0] filter_YID [0:5],
     
     // Input feature map IDs
-    output reg [4:0] ifmap_XID [47:0],
-    output reg [2:0] ifmap_YID [5:0],
+    output reg [4:0] ifmap_XID [0:47],
+    output reg [2:0] ifmap_YID [0:5],
     
     // Input partial sum IDs
-    output reg [4:0] ipsum_XID [47:0],
-    output reg [2:0] ipsum_YID [5:0],
+    output reg [4:0] ipsum_XID [0:47],
+    output reg [2:0] ipsum_YID [0:5],
     
     // Output partial sum IDs
-    output reg [4:0] opsum_XID [47:0],
-    output reg [2:0] opsum_YID [5:0],
+    output reg [4:0] opsum_XID [0:47],
+    output reg [2:0] opsum_YID [0:5],
     output reg [4:0] LN_config
 );
 
@@ -40,12 +40,12 @@ module pe_array_id_generator (
     reg [2:0] temp_ipsum_YID;
     reg [4:0] temp_opsum_XID;
     reg [2:0] temp_opsum_YID;
-    reg [2:0] first_col_idx;
+    reg [4:0] first_col_idx;
     
     integer row_cnt, col_cnt, idx;
     
     // Calculate row_block
-    assign row_block = 6 / (r * t_H);
+    // assign row_block = 6 / (r * t_H);
     
     always @(*) begin
         // LN_config
@@ -96,7 +96,7 @@ module pe_array_id_generator (
             end
             
             if (!LINEAR) begin
-                if (row_cnt == row_block - 1) begin
+                if (row_cnt == KERNEL_H - 1) begin
                     temp_filter_XID = 0;
                     first_col_idx = 0;
                 end else begin
@@ -133,8 +133,9 @@ module pe_array_id_generator (
                     if ((col_cnt % e == 0) && (col_cnt >= e)) begin
                         temp_ifmap_XID = first_col_idx;
                     end else if (col_cnt != 0) begin
+                    // end else begin
                         temp_ifmap_XID = temp_ifmap_XID + 1;
-                    end
+                    end 
                     ifmap_XID[idx] = temp_ifmap_XID;
                 end else begin
                     if (col_cnt < t) begin
@@ -146,9 +147,14 @@ module pe_array_id_generator (
             end
             
             if (!LINEAR) begin
-                if (row_cnt == row_block - 1) begin
-                    temp_ifmap_XID = 0;
-                    first_col_idx = 0;
+                if (row_cnt == KERNEL_H - 1) begin
+                    if(e > PE_ARRAY_W) begin
+                        temp_ifmap_XID = PE_ARRAY_W;
+                        first_col_idx = PE_ARRAY_W;
+                    end else begin
+                        temp_ifmap_XID = 0;
+                        first_col_idx = 0;               
+                    end
                 end else begin
                     temp_ifmap_XID = first_col_idx + 1;
                     first_col_idx = first_col_idx + 1;
@@ -194,7 +200,7 @@ module pe_array_id_generator (
                     end
                 end
             end
-            temp_ipsum_XID = 0;
+            temp_ipsum_XID = (t==1 && r==1) ? temp_ipsum_XID : 0;
         end
         
         // Generate ipsum_YID
@@ -205,7 +211,7 @@ module pe_array_id_generator (
                     ((r == 1) && (row_cnt == 3)) || 
                     ((r == 2) && (row_cnt == 0))) begin
                     ipsum_YID[row_cnt] = temp_ipsum_YID;
-                    temp_ipsum_YID = temp_ipsum_YID + 1;
+                    temp_ipsum_YID = (t!=1) ? temp_ipsum_YID + 1 : temp_ipsum_YID;
                 end else begin
                     ipsum_YID[row_cnt] = 3'd7;
                 end
@@ -242,7 +248,7 @@ module pe_array_id_generator (
                     end
                 end
             end
-            temp_opsum_XID = 0;
+            temp_opsum_XID = (t==1 && r==1) ? temp_opsum_XID : 0;
         end
         
         // Generate opsum_YID
@@ -253,7 +259,7 @@ module pe_array_id_generator (
                     ((r == 1) && (row_cnt == 5)) || 
                     ((r == 2) && (row_cnt == 5))) begin
                     opsum_YID[row_cnt] = temp_opsum_YID;
-                    temp_opsum_YID = temp_opsum_YID + 1;
+                    temp_opsum_YID = (t!=1) ? temp_opsum_YID + 1 : temp_opsum_YID;
                 end else begin
                     opsum_YID[row_cnt] = 3'd7;
                 end

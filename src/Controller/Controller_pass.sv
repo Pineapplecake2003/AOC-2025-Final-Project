@@ -115,15 +115,15 @@ module Controller_pass #(
     /********************/
 
     /* loading XID, YID data */
-    wire [XID_BITS-1:0] ifmap_XID  [NUMS_PE_ROW*NUMS_PE_COL-1:0];
-    wire [XID_BITS-1:0] filter_XID [NUMS_PE_ROW*NUMS_PE_COL-1:0];
-    wire [XID_BITS-1:0] ipsum_XID  [NUMS_PE_ROW*NUMS_PE_COL-1:0];
-    wire [XID_BITS-1:0] opsum_XID  [NUMS_PE_ROW*NUMS_PE_COL-1:0];
+    wire [XID_BITS-1:0] ifmap_XID  [0:NUMS_PE_ROW*NUMS_PE_COL-1];
+    wire [XID_BITS-1:0] filter_XID [0:NUMS_PE_ROW*NUMS_PE_COL-1];
+    wire [XID_BITS-1:0] ipsum_XID  [0:NUMS_PE_ROW*NUMS_PE_COL-1];
+    wire [XID_BITS-1:0] opsum_XID  [0:NUMS_PE_ROW*NUMS_PE_COL-1];
 
-    wire [YID_BITS-1:0] ifmap_YID  [NUMS_PE_ROW-1:0];
-    wire [YID_BITS-1:0] filter_YID [NUMS_PE_ROW-1:0];
-    wire [YID_BITS-1:0] ipsum_YID  [NUMS_PE_ROW-1:0];
-    wire [YID_BITS-1:0] opsum_YID  [NUMS_PE_ROW-1:0];
+    wire [YID_BITS-1:0] ifmap_YID  [0:NUMS_PE_ROW-1];
+    wire [YID_BITS-1:0] filter_YID [0:NUMS_PE_ROW-1];
+    wire [YID_BITS-1:0] ipsum_YID  [0:NUMS_PE_ROW-1];
+    wire [YID_BITS-1:0] opsum_YID  [0:NUMS_PE_ROW-1];
     /*************************/
     
     pe_array_id_generator pe_array_id_generator_inst (
@@ -134,8 +134,8 @@ module Controller_pass #(
         .e(e),
         .t_H(t_H[2:0]),
         .t_W(t_W[2:0]),
-        .PE_ARRAY_H(NUMS_PE_ROW),
-        .PE_ARRAY_W(NUMS_PE_COL),
+        .PE_ARRAY_H(NUMS_PE_ROW[2:0]),
+        .PE_ARRAY_W(NUMS_PE_COL[3:0]),
         .KERNEL_H(R),
         .LINEAR(conv_linear),
         .filter_XID(filter_XID),

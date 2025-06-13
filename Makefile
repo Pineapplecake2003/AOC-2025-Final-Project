@@ -155,6 +155,22 @@ gen_test_data_for_pe:
 	g++ test_data_gen.cpp
 	./a.out > data.log
 
+gen_ID_CONV:
+	g++ ID_gen.cpp -o gen_ID.out
+	./gen_ID.out | tee gen_ID_conv.log
+
+gen_ID_LINEAR:
+	g++ ID_gen.cpp -o gen_ID.out -DLINEAR
+	./gen_ID.out | tee gen_ID_linear.log
+
+vcs_id_gen:
+	mkdir -p logs
+	vcs -full64 -sverilog -debug_access+all \
+		tb_ID_gen_combinational.v \
+		-o simv_id_gen
+	./simv_id_gen | tee logs/vcs_id_gen.log
+	@echo "VCS simulation finished. Log: logs/vcs_id_gen.log"
+
 id%:
 	g++ ID_to_verilog_file_format.cpp -DTBA=$*
 	./a.out
@@ -173,5 +189,7 @@ vcs%:
 maintainer-copy::
 clean mostlyclean distclean maintainer-clean::
 	-rm -rf obj_dir logs a.out *.txt *.log *.dmp *.vpd wave/*.vcd wave/*.fsdb coverage.dat core *.zip release simv ucli.key simv.daidir csrc
+	-rm -rf simv_id_gen.daidir
+	-rm -f gen_ID.out simv_id_gen
 # clean *.hex
 	find . -type f -name "*.hex" -delete 
