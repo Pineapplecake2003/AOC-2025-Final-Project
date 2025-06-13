@@ -5,7 +5,6 @@
 /picture/*
 test.*
 *.out
-./*.cpp
 ./*.txt
 __pycache__/
 *.hex
