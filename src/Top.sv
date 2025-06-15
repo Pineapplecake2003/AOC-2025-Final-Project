@@ -61,7 +61,7 @@ wire [31:0] glb_r_addr;
 wire [`DATA_SIZE-1:0] glb_r_data;
 
 assign bias_ipsum_sel = 0;
-assign op_config = (LINEAR << 3) | 1;
+assign op_config = (DEPTHWISE << 10) | (LINEAR << 3) | 1;
 assign mapping_param = (e << 12) | (p << 9) | (q << 6) | (r << 3) | t;
 assign shape_param1 = (1 << 26) | (STRIDE << 24) | (FILT_ROW << 22) | (FILT_COL << 20);
 assign shape_param2 = (IFMAP_COL << 8) | (IFMAP_COL);
@@ -204,15 +204,5 @@ PE_array #(
     .GLB_opsum_ready(GLB_opsum_ready),
     .GLB_data_out(PE_data_out)
 );
-/*
-initial begin
-    $readmemh("./ifmap_XID.txt", controller_pass.ifmap_XID );
-    $readmemh("./filter_XID.txt", controller_pass.filter_XID);
-    $readmemh("./ipsum_XID.txt", controller_pass.ipsum_XID );
-    $readmemh("./opsum_XID.txt", controller_pass.opsum_XID );
-    $readmemh("./ifmap_YID.txt", controller_pass.ifmap_YID );
-    $readmemh("./filter_YID.txt", controller_pass.filter_YID);
-    $readmemh("./ipsum_YID.txt", controller_pass.ipsum_YID );
-    $readmemh("./opsum_YID.txt", controller_pass.opsum_YID );
-end*/
+
 endmodule
