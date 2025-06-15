@@ -8,6 +8,7 @@ module tiling #(
     /* Controller signal */
     input  logic start,
     output logic finish,
+    output logic done,
 
     /* Tiling parameters */
     input  logic [31:0] mapping_param,
@@ -62,22 +63,22 @@ module tiling #(
     logic [31:0] F; // ofmap plane width
 
     always_comb begin
-        m = {22'b0, mapping_param[25:16]};
-        e = {28'b0, mapping_param[15:12]};
-        p = {29'b0, mapping_param[11:9]};
-        q = {29'b0, mapping_param[8:6]};
-        r = {29'b0, mapping_param[5:3]};
-        t = {29'b0, mapping_param[2:0]};
+        m   = {22'b0, mapping_param[25:16]};
+        e   = {28'b0, mapping_param[15:12]};
+        p   = {29'b0, mapping_param[11:9]};
+        q   = {29'b0, mapping_param[8:6]};
+        r   = {29'b0, mapping_param[5:3]};
+        t   = {29'b0, mapping_param[2:0]};
         PAD = {29'b0, shape_param1[28:26]};
-        U = {30'b0, shape_param1[25:24]};
-        R = {30'b0, shape_param1[23:22]};
-        S = {30'b0, shape_param1[21:20]};
-        C = {22'b0, shape_param1[19:10]};
-        M = {22'b0, shape_param1[9:0]};
+        U   = {30'b0, shape_param1[25:24]};
+        R   = {30'b0, shape_param1[23:22]};
+        S   = {30'b0, shape_param1[21:20]};
+        C   = {22'b0, shape_param1[19:10]};
+        M   = {22'b0, shape_param1[9:0]};
         W_original = {24'b0, shape_param2[15:8]};
         H_original = {24'b0, shape_param2[7:0]};
-        F = (int'(W_original) - int'(S) + (int'(PAD) << 1)) / int'(U) + 1;
-        E = (int'(H_original) - int'(R) + (int'(PAD) << 1)) / int'(U) + 1;
+        F   = (int'(W_original) - int'(S) + (int'(PAD) << 1)) / int'(U) + 1;
+        E   = (int'(H_original) - int'(R) + (int'(PAD) << 1)) / int'(U) + 1;
     end
 
     always_comb begin
@@ -131,6 +132,7 @@ module tiling #(
         LOAD_BIAS_GLB_W,
         WRITE_OPSUM_GLB,
         WRITE_OPSUM_DRAM,
+        DONE,
         FINISH
     } state_t;
 
@@ -141,7 +143,7 @@ module tiling #(
     logic [31:0] filter_row, filter_col, filter_ic, filter_oc, filter_glb_addr;
     logic [31:0] bias_x, bias_glb_addr;
     logic [31:0] opsum_row, opsum_col, opsum_oc, opsum_glb_addr;
-    logic        skip_ifmap, skip_opsum;
+    logic        skip_ifmap, all_last, skip_opsum;
 
     always_comb begin
         glb_w_data = dram_r_data;
@@ -157,6 +159,7 @@ module tiling #(
             glb_we     <= '0;
             glb_w_addr <= '0;
             finish     <= '0;
+            done       <= '0;
 
             // Counters initialization
             M_idx        <= m - 1;
@@ -187,6 +190,7 @@ module tiling #(
 
             skip_ifmap <= '0;
             skip_opsum <= 1'b1;
+            all_last   <= '0;
 
             state <= IDLE;
         end else begin
@@ -214,7 +218,8 @@ module tiling #(
 
                         m_idx_opsum     <= p * t - 1;
                         finish          <= '0;
-                        state           <= skip_ifmap ? LOAD_FILTER_DRAM_R : LOAD_IFMAP_DRAM_R;
+                        done            <= '0;
+                        state           <= all_last ? WRITE_OPSUM_GLB : (skip_ifmap ? LOAD_FILTER_DRAM_R : LOAD_IFMAP_DRAM_R);
                     end
                 end
                 LOAD_IFMAP_DRAM_R: begin
@@ -383,7 +388,44 @@ module tiling #(
                         E_idx        <= e - 1;
                         skip_ifmap   <= 1'b0;
                         skip_opsum   <= 1'b0;
+                    end else begin
+                        all_last     <= 1'b1;
                     end
+                    state <= all_last ? DONE : IDLE;
+                end
+                DONE: begin
+                    done         <= 1'b1;
+
+                    M_idx        <= m - 1;
+                    E_idx        <= e - 1;
+                    c_idx        <= q * r - 1;
+                    m_idx_filter <= p * t - 1;
+                    m_idx_bias   <= p * t - 1;
+                    m_idx_opsum  <= p * t - 1;
+
+                    ifmap_row       <= '0;
+                    ifmap_col       <= '0;
+                    ifmap_ic        <= '0;
+                    ifmpap_glb_addr <= '0;
+                    
+                    filter_row      <= '0;
+                    filter_col      <= '0;
+                    filter_ic       <= '0;
+                    filter_oc       <= '0;
+                    filter_glb_addr <= '0;
+                    
+                    bias_x        <= '0;
+                    bias_glb_addr <= '0;
+
+                    opsum_row      <= '0;
+                    opsum_col      <= '0;
+                    opsum_oc       <= '0;
+                    opsum_glb_addr <= '0;
+
+                    skip_ifmap  <= '0;
+                    skip_opsum  <= 1'b1;
+                    all_last    <= '0;
+
                     state <= IDLE;
                 end
                 default: begin
