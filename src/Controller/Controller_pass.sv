@@ -5,8 +5,7 @@ module Controller_pass #(
     parameter NUMS_PE_COL = `NUMS_PE_COL,
     parameter XID_BITS = `XID_BITS,
     parameter YID_BITS = `YID_BITS,
-    parameter DATA_SIZE = `DATA_BITS,
-    parameter CONFIG_SIZE = `CONFIG_SIZE
+    parameter DATA_SIZE = `DATA_BITS
 )(
     input clk,
     input rst_n,
@@ -23,6 +22,10 @@ module Controller_pass #(
     input [31:0] opsum_baseaddr,
     output done,
 
+    input                 ctrl_ID_wen,
+    input [2:0]           ctrl_ID_wsel,
+    input [5:0]           ctrl_ID_widx,
+    input [XID_BITS-1:0]  ctrl_ID_wdata,
     /* PE array interface */
     // Scan X Chain
     output set_XID,
@@ -44,7 +47,7 @@ module Controller_pass #(
 
     // tag controller
     output [NUMS_PE_ROW*NUMS_PE_COL-1:0] PE_en,
-    output [CONFIG_SIZE-1:0] PE_config_out,
+    output [9:0]          PE_config_out,
     output [XID_BITS-1:0] ifmap_tag_X,
     output [YID_BITS-1:0] ifmap_tag_Y,
     output [XID_BITS-1:0] filter_tag_X,
@@ -85,10 +88,10 @@ module Controller_pass #(
 
     /* parameter decode */
     wire conv_linear;
-    wire [1:0] R, S;
-    wire [2:0] p, q, r, t, PE_config_p, PE_config_q;
-    wire [4:0] e;
-    wire [7:0] W, PE_config_F;
+    wire [1:0] R, S, PE_config_p, PE_config_q;
+    wire [2:0] p, q, r, t;
+    wire [4:0] e, PE_config_F;
+    wire [7:0] W;
     assign e = mapping_param[16:12];
     assign p = mapping_param[11:9];
     assign q = mapping_param[8:6];
@@ -102,7 +105,6 @@ module Controller_pass #(
     assign PE_config_p = p - 1;
     assign PE_config_F = (W - R) / U;
     assign PE_config_q = q - 1;
-    assign PE_config_U = U - 1;
 
     wire [31:0] merge_num, merged_PE_ARRAY_W, merged_PE_ARRAY_H, array_H_tile, array_W_tile, t_H, t_W;
     assign merge_num = (e + NUMS_PE_COL - 1) / NUMS_PE_COL;
@@ -115,41 +117,17 @@ module Controller_pass #(
     /********************/
 
     /* loading XID, YID data */
-    wire [XID_BITS-1:0] ifmap_XID  [NUMS_PE_ROW*NUMS_PE_COL-1:0];
-    wire [XID_BITS-1:0] filter_XID [NUMS_PE_ROW*NUMS_PE_COL-1:0];
-    wire [XID_BITS-1:0] ipsum_XID  [NUMS_PE_ROW*NUMS_PE_COL-1:0];
-    wire [XID_BITS-1:0] opsum_XID  [NUMS_PE_ROW*NUMS_PE_COL-1:0];
+    reg [XID_BITS-1:0] ifmap_XID  [NUMS_PE_ROW*NUMS_PE_COL-1:0];
+    reg [XID_BITS-1:0] filter_XID [NUMS_PE_ROW*NUMS_PE_COL-1:0];
+    reg [XID_BITS-1:0] ipsum_XID  [NUMS_PE_ROW*NUMS_PE_COL-1:0];
+    reg [XID_BITS-1:0] opsum_XID  [NUMS_PE_ROW*NUMS_PE_COL-1:0];
 
-    wire [YID_BITS-1:0] ifmap_YID  [NUMS_PE_ROW-1:0];
-    wire [YID_BITS-1:0] filter_YID [NUMS_PE_ROW-1:0];
-    wire [YID_BITS-1:0] ipsum_YID  [NUMS_PE_ROW-1:0];
-    wire [YID_BITS-1:0] opsum_YID  [NUMS_PE_ROW-1:0];
+    reg [YID_BITS-1:0] ifmap_YID  [NUMS_PE_ROW-1:0];
+    reg [YID_BITS-1:0] filter_YID [NUMS_PE_ROW-1:0];
+    reg [YID_BITS-1:0] ipsum_YID  [NUMS_PE_ROW-1:0];
+    reg [YID_BITS-1:0] opsum_YID  [NUMS_PE_ROW-1:0];
     /*************************/
     
-    pe_array_id_generator pe_array_id_generator_inst (
-        .p(p),
-        .q(q),
-        .r(r),
-        .t(t),
-        .e(e),
-        .t_H(t_H[2:0]),
-        .t_W(t_W[2:0]),
-        .PE_ARRAY_H(NUMS_PE_ROW),
-        .PE_ARRAY_W(NUMS_PE_COL),
-        .KERNEL_H(R),
-        .LINEAR(conv_linear),
-        .filter_XID(filter_XID),
-        .filter_YID(filter_YID),
-        .ifmap_XID(ifmap_XID),
-        .ifmap_YID(ifmap_YID),
-        .ipsum_XID(ipsum_XID),
-        .ipsum_YID(ipsum_YID),
-        .opsum_XID(opsum_XID),
-        .opsum_YID(opsum_YID),
-        .LN_config(LN_config_in)
-    );
-
-
     parameter IDLE = 0,
         SET_CONFIG = 1,
         READ_FILTER = 2,
@@ -176,10 +154,10 @@ module Controller_pass #(
     assign opsum_YID_scan_in = opsum_YID[counter];
 
     assign set_LN = (cs == SET_CONFIG)? ((counter == 0)? 1 : 0) : 0;
-    assign LN_config_in = LN_CONFIG;
+    assign LN_config_in = (r == 2)? 5'd31 : 5'd27;
 
-    assign PE_en = (cs == READ_FILTER)? 48'hffff_ffff_ffff : 0;
-    assign PE_config_out = PE_CONFIG;
+    assign PE_en = (cs != IDLE && cs != SET_CONFIG && cs != DONE)? 48'hffff_ffff_ffff : 0;
+    assign PE_config_out = {conv_linear, PE_config_p, PE_config_F, PE_config_q};
 
     /***************************/
 
@@ -310,6 +288,34 @@ module Controller_pass #(
                 GLB_ifmap_valid     <= 0;
                 GLB_ipsum_valid     <= 0;
                 GLB_opsum_ready     <= 0;
+                if(ctrl_ID_wen) begin
+                    case (ctrl_ID_wsel)
+                    3'd0: begin
+                        ifmap_XID[ctrl_ID_widx] <= ctrl_ID_wdata;
+                    end
+                    3'd1: begin
+                        filter_XID[ctrl_ID_widx] <= ctrl_ID_wdata;
+                    end
+                    3'd2: begin
+                        ipsum_XID[ctrl_ID_widx] <= ctrl_ID_wdata;
+                    end
+                    3'd3: begin
+                        opsum_XID[ctrl_ID_widx] <= ctrl_ID_wdata;
+                    end
+                    3'd4: begin
+                        ifmap_YID[ctrl_ID_widx] <= ctrl_ID_wdata[YID_BITS-1:0];
+                    end
+                    3'd5: begin
+                        filter_YID[ctrl_ID_widx] <= ctrl_ID_wdata[YID_BITS-1:0];
+                    end
+                    3'd6: begin
+                        ipsum_YID[ctrl_ID_widx] <= ctrl_ID_wdata[YID_BITS-1:0];
+                    end
+                    3'd7: begin
+                        opsum_YID[ctrl_ID_widx] <= ctrl_ID_wdata[YID_BITS-1:0];
+                    end
+                    endcase
+                end
             end
             SET_CONFIG: begin
                 counter             <= (counter == NUMS_PE_ROW*NUMS_PE_COL-1)? 0 : counter + 1;

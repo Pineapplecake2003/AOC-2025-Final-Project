@@ -10,6 +10,10 @@
 module Top(
     input           clk,
     input           rst_n,
+    input           ctrl_ID_wen,
+    input  [2:0]    ctrl_ID_wsel,
+    input  [5:0]    ctrl_ID_widx,
+    input  [4:0]    ctrl_ID_wdata,
     input           ctrl_reg_w_en,
     input  [2:0]    ctrl_reg_wsel,
     input  [31:0]   ctrl_reg_wdata,
@@ -123,7 +127,7 @@ wire [`XID_BITS-1:0] ifmap_XID_scan_in, filter_XID_scan_in, ipsum_XID_scan_in, o
 wire [`YID_BITS-1:0] ifmap_YID_scan_in, filter_YID_scan_in, ipsum_YID_scan_in, opsum_YID_scan_in;
 wire [`NUMS_PE_ROW-2:0] LN_config_in;
 wire [`NUMS_PE_ROW*`NUMS_PE_COL-1:0] PE_en;
-wire [`CONFIG_SIZE-1:0] PE_config_out;
+wire [9:0] PE_config_out;
 wire [`XID_BITS-1:0] ifmap_tag_X, filter_tag_X, ipsum_tag_X, opsum_tag_X;
 wire [`YID_BITS-1:0] ifmap_tag_Y, filter_tag_Y, ipsum_tag_Y, opsum_tag_Y;
 wire GLB_ifmap_ready, GLB_filter_ready, GLB_ipsum_ready, GLB_opsum_ready;
@@ -135,8 +139,7 @@ Controller_pass #(
     .NUMS_PE_COL(`NUMS_PE_COL),
     .XID_BITS(`XID_BITS),
     .YID_BITS(`YID_BITS),
-    .DATA_SIZE(`DATA_BITS),
-    .CONFIG_SIZE(`CONFIG_SIZE)
+    .DATA_SIZE(`DATA_BITS)
 ) controller_pass (
     .clk(clk),
     .rst_n(rst_n),
@@ -150,7 +153,11 @@ Controller_pass #(
     .bias_baseaddr(bias_baseaddr),
     .opsum_baseaddr(opsum_baseaddr),
     .done(done),
-
+    .ctrl_ID_wen(ctrl_ID_wen)
+    .ctrl_ID_wsel(ctrl_ID_wsel),
+    .ctrl_ID_widx(ctrl_ID_widx),
+    .ctrl_ID_wdata(ctrl_ID_wdata),
+    
     .set_XID(set_XID),
     .ifmap_XID_scan_in(ifmap_XID_scan_in),
     .filter_XID_scan_in(filter_XID_scan_in),
