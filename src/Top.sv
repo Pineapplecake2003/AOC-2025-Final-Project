@@ -20,13 +20,13 @@ module Top(
     input  [3:0]    dram_w_en,
     input  [31:0]   dram_w_addr,
     input  [31:0]   dram_w_data,
-    input  [3:0]    dram_r_en,
+    input           dram_r_en,
     input  [31:0]   dram_r_addr,
     output [31:0]   dram_r_data,
     output [3:0]    glb_we,    
     output [31:0]   glb_w_addr,
     output [31:0]   glb_w_data,
-    output [3:0]    glb_re,    
+    output          glb_re,    
     output [31:0]   glb_r_addr,
     input  [31:0]   glb_r_data,
     output done
@@ -106,12 +106,14 @@ assign bias_baseaddr = filter_baseaddr + p * t * q * r * R * S;
 assign opsum_baseaddr = bias_baseaddr + p * t * 4;
 
 /* controller <-> glb */
-wire [3:0] ctrl_we, ctrl_re;
+wire ctrl_re;
+wire [3:0] ctrl_we;
 wire [31:0] ctrl_w_addr, ctrl_r_addr;
-wire [`DATA_SIZE-1:0] ctrl_w_data, ctrl_r_data;
+wire [`DATA_SIZE-1:0] ctrl_w_data;
 
 /* glb signal select */
-wire [3:0] glb_we, glb_re;
+wire glb_re;
+wire [3:0] glb_we;
 wire [31:0] glb_w_addr, glb_r_addr;
 wire [`DATA_SIZE-1:0] glb_w_data, glb_r_data;
 assign glb_we       = (op_config[0])? ctrl_we     : dram_w_en;
@@ -119,8 +121,7 @@ assign glb_w_addr   = (op_config[0])? ctrl_w_addr : dram_w_addr;
 assign glb_w_data   = (op_config[0])? ctrl_w_data : dram_w_data;
 assign glb_re       = (op_config[0])? ctrl_re     : dram_r_en;
 assign glb_r_addr   = (op_config[0])? ctrl_r_addr : dram_r_addr;
-assign glb_r_data   = (op_config[0])? ctrl_r_data : dram_r_data;
-
+assign dram_r_data  = glb_r_data;
 /* wire for connecting only */
 wire set_XID, set_YID, set_LN;
 wire [`XID_BITS-1:0] ifmap_XID_scan_in, filter_XID_scan_in, ipsum_XID_scan_in, opsum_XID_scan_in;
@@ -203,7 +204,7 @@ Controller_pass #(
     .glb_w_data(ctrl_w_data),
     .glb_re(ctrl_re),
     .glb_r_addr(ctrl_r_addr),
-    .glb_r_data(ctrl_r_data)
+    .glb_r_data(glb_r_data)
 );
 /*
 GLB glb(
