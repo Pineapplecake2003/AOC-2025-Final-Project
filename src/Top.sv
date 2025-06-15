@@ -217,6 +217,7 @@ tiling u_tiling (
     /* Controller signal */
     .start(tiling_start),
     .finish(tiling_done),
+    .done(all_done),
 
     /* Tiling parameters */
     .mapping_param(mapping_param),
