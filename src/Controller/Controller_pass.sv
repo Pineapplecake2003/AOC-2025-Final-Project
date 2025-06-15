@@ -12,6 +12,7 @@ module Controller_pass #(
     input rst,
 
     /* higher-level controller interface */
+    input start,
     input bias_ipsum_sel,
     input [31:0] op_config,
     input [31:0] mapping_param,
@@ -378,7 +379,7 @@ module Controller_pass #(
     always_comb begin
         case(cs)
         IDLE: begin
-            ns = (op_config[0])? SET_CONFIG : IDLE;
+            ns = (start)? SET_CONFIG : IDLE;
         end
         SET_CONFIG: begin
             ns = (counter == NUMS_PE_ROW*NUMS_PE_COL-1)? READ_FILTER : SET_CONFIG;
