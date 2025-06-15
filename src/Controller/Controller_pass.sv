@@ -88,7 +88,7 @@ module Controller_pass #(
 
     /* parameter decode */
     wire conv_linear;
-    wire [1:0] R, S, PE_config_p, PE_config_q;
+    wire [1:0] R, S, U, PE_config_p, PE_config_q;
     wire [2:0] p, q, r, t;
     wire [4:0] e, PE_config_F;
     wire [7:0] W;
