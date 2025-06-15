@@ -1,11 +1,12 @@
+`include "define.svh"
 module Controller #(
     parameter NUMS_PE_ROW = `NUMS_PE_ROW,
     parameter NUMS_PE_COL = `NUMS_PE_COL,
-    parameter XID_BITS = `XID_BITS,
-    parameter YID_BITS = `YID_BITS,
-    parameter DATA_SIZE = `DATA_BITS,
+    parameter XID_BITS    = `XID_BITS,
+    parameter YID_BITS    = `YID_BITS,
+    parameter DATA_SIZE   = `DATA_BITS,
     parameter CONFIG_SIZE = `CONFIG_SIZE,
-    parameter MMIO_ADDR = `MMIO_ADDR
+    parameter MMIO_ADDR   = `MMIO_ADDR
 )(
     input clk,
     input rst,

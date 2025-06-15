@@ -1,9 +1,0 @@
-DFG 'pre inline' patterns with depth 1
-            3 (EQ cA:a vA:a):1
-
-DFG 'pre inline' patterns with depth 2
-
-DFG 'pre inline' patterns with depth 3
-
-DFG 'pre inline' patterns with depth 4
-

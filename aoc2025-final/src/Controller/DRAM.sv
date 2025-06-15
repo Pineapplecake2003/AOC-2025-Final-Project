@@ -2,7 +2,7 @@ module DRAM #(
     parameter DATA_WIDTH = 8,
     parameter DEPTH = 1024,               // KiB
     parameter ADDR_WIDTH = 20             // 2^20 = 1048576 Bytes
-    parameter string INIT_FILE = ""       // initialized memory file
+    // parameter string INIT_FILE = "./"       // initialized memory file
 )(
     input  logic                    clk,
     input  logic                    rst,

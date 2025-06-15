@@ -1,9 +1,0 @@
-DFG 'post inline' patterns with depth 1
-            3 (EQ cA:a vA:a):1
-
-DFG 'post inline' patterns with depth 2
-
-DFG 'post inline' patterns with depth 3
-
-DFG 'post inline' patterns with depth 4
-
