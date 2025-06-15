@@ -84,11 +84,11 @@ module Controller_pass #(
 );
 
     /* parameter decode */
-    wire conv_linear;
-    wire [1:0] R, S;
-    wire [2:0] p, q, r, t, PE_config_p, PE_config_q;
-    wire [4:0] e;
-    wire [7:0] W, PE_config_F;
+    wire conv_linear, PE_config_U, PE_config_dp;
+    wire [1:0] R, S, PE_config_p, PE_config_q, PE_config_R;
+    wire [2:0] p, q, r, t;
+    wire [4:0] e, PE_config_F;
+    wire [7:0] W;
     assign e = mapping_param[16:12];
     assign p = mapping_param[11:9];
     assign q = mapping_param[8:6];
@@ -99,10 +99,12 @@ module Controller_pass #(
     assign S = shape_param1[21:20];
     assign W = shape_param2[15:8];
     assign conv_linear = op_config[3];
+    assign PE_config_dp = op_config[10];
     assign PE_config_p = p - 1;
     assign PE_config_F = (W - R) / U;
     assign PE_config_q = q - 1;
     assign PE_config_U = U - 1;
+    assign PE_config_R = R - 1;
 
     wire [31:0] merge_num, merged_PE_ARRAY_W, merged_PE_ARRAY_H, array_H_tile, array_W_tile, t_H, t_W;
     assign merge_num = (e + NUMS_PE_COL - 1) / NUMS_PE_COL;
@@ -176,10 +178,9 @@ module Controller_pass #(
     assign opsum_YID_scan_in = opsum_YID[counter];
 
     assign set_LN = (cs == SET_CONFIG)? ((counter == 0)? 1 : 0) : 0;
-    assign LN_config_in = LN_CONFIG;
 
-    assign PE_en = (cs == READ_FILTER)? 48'hffff_ffff_ffff : 0;
-    assign PE_config_out = PE_CONFIG;
+    assign PE_en = (cs != IDLE && cs != SET_CONFIG && cs != DONE)? 48'hffff_ffff_ffff : 0;
+    assign PE_config_out =  {PE_config_dp, PE_config_R ,PE_config_U, PE_config_p, PE_config_F, PE_config_q};
 
     /***************************/
 
