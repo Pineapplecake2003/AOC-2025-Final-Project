@@ -19,6 +19,12 @@ module Top(
     input  [3:0]    dram_r_en,
     input  [31:0]   dram_r_addr,
     output [31:0]   dram_r_data,
+    output [3:0]    glb_we,    
+    output [31:0]   glb_w_addr,
+    output [31:0]   glb_w_data,
+    output [3:0]    glb_re,    
+    output [31:0]   glb_r_addr,
+    input  [31:0]   glb_r_data,
     output done
 );
 
@@ -34,7 +40,7 @@ always @(posedge clk or negedge rst_n) begin
         shape_param2    <= 0;
     end
     else begin
-        if(w_en) begin
+        if(ctrl_reg_w_en) begin
             case(ctrl_reg_wsel)
             3'd0: begin
                 mapping_param   <= ctrl_reg_wdata;
@@ -55,14 +61,6 @@ always @(posedge clk or negedge rst_n) begin
         end
     end
 end
-
-/********* for testing only *********/
-assign bias_ipsum_sel = 0;
-assign op_config = (LINEAR << 3) | 1;
-assign mapping_param = (e << 12) | (p << 9) | (q << 6) | (r << 3) | t;
-assign shape_param1 = (1 << 26) | (STRIDE << 24) | (FILT_ROW << 22) | (FILT_COL << 20);
-assign shape_param2 = (IFMAP_COL << 8) | (IFMAP_COL);
-/***********************************/
 
 /* decode wire */
 wire maxpool, relu, conv_linear;
@@ -112,12 +110,12 @@ wire [`DATA_SIZE-1:0] ctrl_w_data, ctrl_r_data;
 wire [3:0] glb_we, glb_re;
 wire [31:0] glb_w_addr, glb_r_addr;
 wire [`DATA_SIZE-1:0] glb_w_data, glb_r_data;
-assign glb_we       = (op_config)? ctrl_we     : dram_w_en;
-assign glb_w_addr   = (op_config)? ctrl_w_addr : dram_w_addr;
-assign glb_w_data   = (op_config)? ctrl_w_data : dram_w_data;
-assign glb_re       = (op_config)? ctrl_re     : dram_r_en;
-assign glb_r_addr   = (op_config)? ctrl_r_addr : dram_r_addr;
-assign glb_r_data   = (op_config)? ctrl_r_data : dram_r_data;
+assign glb_we       = (op_config[0])? ctrl_we     : dram_w_en;
+assign glb_w_addr   = (op_config[0])? ctrl_w_addr : dram_w_addr;
+assign glb_w_data   = (op_config[0])? ctrl_w_data : dram_w_data;
+assign glb_re       = (op_config[0])? ctrl_re     : dram_r_en;
+assign glb_r_addr   = (op_config[0])? ctrl_r_addr : dram_r_addr;
+assign glb_r_data   = (op_config[0])? ctrl_r_data : dram_r_data;
 
 /* wire for connecting only */
 wire set_XID, set_YID, set_LN;
@@ -193,27 +191,25 @@ Controller_pass #(
 
     .PE_data_out(PE_data_out),
 
-    .glb_we(glb_we),
-    .glb_w_addr(glb_w_addr),
-    .glb_w_data(glb_w_data),
-    .glb_re(glb_re),
-    .glb_r_addr(glb_r_addr),
-    .glb_r_data(glb_r_data)
+    .glb_we(ctrl_we),
+    .glb_w_addr(ctrl_w_addr),
+    .glb_w_data(ctrl_w_data),
+    .glb_re(ctrl_re),
+    .glb_r_addr(ctrl_r_addr),
+    .glb_r_data(ctrl_r_data)
 );
-
+/*
 GLB glb(
     .clk(clk),
     .rst_n(rst_n),
-    /* read port */
     .re(glb_re),            // read enable
     .r_addr(glb_r_addr),    // byte address
     .dout(glb_r_data),      // 32-bit read data
-    /* write port */
     .we(glb_we),            // write enable
     .w_addr(glb_w_addr),    // byte address
     .din(glb_w_data)        // 32-bit write data
 );
-
+*/
 PE_array #(
     .NUMS_PE_ROW(`NUMS_PE_ROW),
     .NUMS_PE_COL(`NUMS_PE_COL),
