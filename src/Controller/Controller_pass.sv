@@ -66,7 +66,7 @@ module Controller_pass #(
     input       GLB_ipsum_ready,
 
     // GIN input data
-    output [DATA_SIZE-1:0] PE_data_in,
+    output reg [DATA_SIZE-1:0] PE_data_in,
 
     // GON handshake signal
     input       GLB_opsum_valid,
@@ -77,7 +77,7 @@ module Controller_pass #(
 
     /* glb interface */
     // write port
-    output reg [3:0]        glb_we,
+    output                  glb_we,
     output  [31:0]          glb_w_addr,
     output  [DATA_SIZE-1:0] glb_w_data, 
     // read port
@@ -162,8 +162,14 @@ module Controller_pass #(
     /***************************/
 
     /* PE_data_in output logic */
-    assign PE_data_in = glb_r_data;
-
+    always @(*) begin
+        case(PE_config_q)
+        2'd0: PE_data_in = {24'd0, glb_r_data[7:0]};
+        2'd1: PE_data_in = {16'd0, glb_r_data[15:0]};
+        2'd2: PE_data_in = {8'd0,  glb_r_data[23:0]};
+        2'd3: PE_data_in = glb_r_data;
+        endcase
+    end
     /* glb reading signal output logic */
 
     assign glb_re = (cs == READ_FILTER || cs == READ_IFMAP || cs == READ_IPSUM);
@@ -171,7 +177,7 @@ module Controller_pass #(
     // glb_r_addr
     wire [31:0] filter_addr, ifmap_addr, bias_addr, ipsum_addr, opsum_addr;
     assign filter_addr = filter_baseaddr + counter;
-    assign ifmap_addr = ifmap_baseaddr + chn_ct * 4 + col_ct * 4 * r + row_ct * 4 * r * W;
+    assign ifmap_addr = ifmap_baseaddr + chn_ct * q + col_ct * q * r + row_ct * q * r * W;
     assign bias_addr = bias_baseaddr + (num_ct + ipsum_c_ct * p * t + ipsum_r_ct * p * t * (PE_config_F+1)) * 4;
     assign ipsum_addr = opsum_baseaddr + (num_ct + ipsum_c_ct * p * t + ipsum_r_ct * p * t * (PE_config_F+1)) * 4;
     assign opsum_addr = opsum_baseaddr + (counter + opsum_c_ct * p * t + opsum_r_ct * p * t * (PE_config_F+1)) * 4;
@@ -197,10 +203,10 @@ module Controller_pass #(
     /* glb reading signal output logic */
     always @(*) begin
         if(GLB_opsum_valid && GLB_opsum_ready) begin
-            glb_we = 4'b1111;
+            glb_we = 1'b1;
         end
         else begin
-            glb_we = 4'b0;
+            glb_we = 1'b0;
         end
     end
 
@@ -307,7 +313,7 @@ module Controller_pass #(
             READ_FILTER: begin
                 if(GLB_filter_valid & GLB_filter_ready) begin
                     GLB_filter_valid    <= 0;
-                    counter             <= (filter_addr == bias_baseaddr - 4)? 0 : counter + 4;
+                    counter             <= (filter_addr == bias_baseaddr - q)? 0 : counter + q;
                     chn_ct              <= (chn_ct == r-1)? 0 : chn_ct + 1;
                     col_ct              <= (chn_ct == r-1)? ((col_ct == S-1)? 0 :  col_ct + 1) : col_ct;
                     row_ct              <= (chn_ct == r-1 && col_ct == S-1)? ((row_ct == R-1)? 0 :  row_ct + 1) : row_ct;
@@ -379,7 +385,7 @@ module Controller_pass #(
             ns = (counter == NUMS_PE_ROW*NUMS_PE_COL-1)? READ_FILTER : SET_CONFIG;
         end
         READ_FILTER: begin
-            ns = (GLB_filter_valid & GLB_filter_ready & filter_addr == bias_baseaddr - 4)? READ_IFMAP : READ_FILTER;
+            ns = (GLB_filter_valid & GLB_filter_ready & filter_addr == bias_baseaddr - q)? READ_IFMAP : READ_FILTER;
         end
         READ_IFMAP: begin
             ns = (GLB_ifmap_valid & GLB_ifmap_ready && chn_ct == r-1 && row_ct == e + R - 2 && col_ct >= S-1)? READ_IPSUM : READ_IFMAP;

@@ -17,13 +17,13 @@ module Top(
     input           ctrl_reg_w_en,
     input  [2:0]    ctrl_reg_wsel,
     input  [31:0]   ctrl_reg_wdata,
-    input  [3:0]    dram_w_en,
+    input           dram_w_en,
     input  [31:0]   dram_w_addr,
     input  [31:0]   dram_w_data,
     input           dram_r_en,
     input  [31:0]   dram_r_addr,
     output [31:0]   dram_r_data,
-    output [3:0]    glb_we,    
+    output          glb_we,    
     output [31:0]   glb_w_addr,
     output [31:0]   glb_w_data,
     output          glb_re,    
@@ -106,16 +106,11 @@ assign bias_baseaddr = filter_baseaddr + p * t * q * r * R * S;
 assign opsum_baseaddr = bias_baseaddr + p * t * 4;
 
 /* controller <-> glb */
-wire ctrl_re;
-wire [3:0] ctrl_we;
+wire ctrl_re, ctrl_we;
 wire [31:0] ctrl_w_addr, ctrl_r_addr;
 wire [`DATA_SIZE-1:0] ctrl_w_data;
 
 /* glb signal select */
-wire glb_re;
-wire [3:0] glb_we;
-wire [31:0] glb_w_addr, glb_r_addr;
-wire [`DATA_SIZE-1:0] glb_w_data, glb_r_data;
 assign glb_we       = (op_config[0])? ctrl_we     : dram_w_en;
 assign glb_w_addr   = (op_config[0])? ctrl_w_addr : dram_w_addr;
 assign glb_w_data   = (op_config[0])? ctrl_w_data : dram_w_data;
