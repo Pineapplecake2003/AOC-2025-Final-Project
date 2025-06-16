@@ -185,13 +185,13 @@ module Controller_pass #(
     always @(*) begin
         case (cs)
         READ_FILTER: begin
-            glb_r_addr = filter_addr;
+            glb_r_addr = {2'd0, filter_addr[31:2]};
         end
         READ_IFMAP: begin
-            glb_r_addr = ifmap_addr;
+            glb_r_addr = {2'd0, ifmap_addr[31:2]};
         end
         READ_IPSUM: begin
-            glb_r_addr = (bias_ipsum_sel)? bias_addr : ipsum_addr;
+            glb_r_addr = (bias_ipsum_sel)? {2'd0, bias_addr[31:2]} : {2'd0, ipsum_addr[31:2]};
         end
         default: begin
             glb_r_addr = 0;
@@ -210,7 +210,7 @@ module Controller_pass #(
         end
     end
 
-    assign glb_w_addr = opsum_addr;
+    assign glb_w_addr = {2'd0, opsum_addr[31:2]};
     assign glb_w_data = PE_data_out;
     /********************************/
 
