@@ -3,7 +3,6 @@
 `define MAX_CYCLE 500000
 `define MAX_TILE 20
 `include "../../src/Tiling/tiling.sv"
-// `include "../../src/Controller/GLB.sv"
 
 module tiling_tb;
 
@@ -257,7 +256,7 @@ module tiling_tb;
         glb_ifmap_base_addr    = 0;
         glb_filter_base_addr   = W * (U*(e-1)+R)* q*r;
         glb_bias_base_addr     = W * (U*(e-1)+R)* q*r + p*t *q*r*R*R;
-        glb_opsum_base_addr    = W * (U*(e-1)+R) * q*r + p*t *q*r*R*R + p*t*4;
+        glb_opsum_base_addr    = W * (U*(e-1)+R)* q*r + p*t *q*r*R*R + p*t*4;
 
         // 載入txt到DRAM
         load_txt_to_mem("./tb0/ifmap.txt",  dram_ifmap_base_addr,  34*34*6);

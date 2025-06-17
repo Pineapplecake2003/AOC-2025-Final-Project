@@ -1,5 +1,4 @@
-/* verilator lint_off MULTITOP */
-`include "define.svh"
+`include "../../include/define.svh"
 
 module GIN_MulticastController #(
   parameter ID_SIZE = `XID_BITS

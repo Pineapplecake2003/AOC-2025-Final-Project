@@ -1,4 +1,5 @@
-`include "/src/Controller/ID_gen_combinational.v"
+`include "../../src/Controller/ID_gen_combinational.v"
+`include "../../include/define.svh"
 
 module Controller_pass #(
     parameter NUMS_PE_ROW = `NUMS_PE_ROW,
@@ -86,7 +87,7 @@ module Controller_pass #(
 
     /* parameter decode */
     wire conv_linear, PE_config_U, PE_config_dp;
-    wire [1:0] R, S, PE_config_p, PE_config_q, PE_config_R;
+    wire [1:0] R, S, U, PE_config_p, PE_config_q, PE_config_R;
     wire [2:0] p, q, r, t;
     wire [4:0] e, PE_config_F;
     wire [7:0] W;

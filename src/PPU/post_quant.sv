@@ -1,4 +1,4 @@
-`include "define.svh"
+`include "../../include/define.svh"
 
 module post_quant(
 	input [`DATA_BITS - 1 : 0] data_in,

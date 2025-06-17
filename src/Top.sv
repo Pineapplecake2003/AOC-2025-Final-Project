@@ -1,22 +1,32 @@
-`include "src/PE_array/PE.sv"
-`include "src/PE_array/SUPER.sv"
-`include "src/PE_array/GIN/GIN.sv"
-`include "src/PE_array/GON/GON.sv"
-`include "src/PE_array/PE_array.sv"
-`include "src/Controller/GLB.sv"
-`include "src/Controller/Controller_pass.sv"
-`include "src/Tiling/tiling.sv"
-`include "define.svh"
+`include "../../src/PE_array/PE.sv"
+`include "../../src/PE_array/SUPER.sv"
+`include "../../src/PE_array/GIN/GIN.sv"
+`include "../../src/PE_array/GON/GON.sv"
+`include "../../src/PE_array/PE_array.sv"
+`include "../../src/Controller/GLB.sv"
+`include "../../src/Controller/Controller_pass.sv"
+`include "../../src/Tiling/tiling.sv"
+`include "../../include/define.svh"
 
-module Top(
-    input           clk,
-    input           rst,
-    input           ctrl_reg_w_en,
-    input  [1:0]    ctrl_reg_wsel,
-    input  [31:0]   ctrl_reg_wdata,
-    output reg      dla_done
+module Top #(
+    parameter DRAM_IFMAP_BASE_ADDR  = 0,    // uint8_t 34*34*6 = 6936
+    parameter DRAM_FILTER_BASE_ADDR = 6936, // int8_t  3*3*6*8 = 432
+    parameter DRAM_BIAS_BASE_ADDR   = 7368, // int32_t 8*4 = 32
+    parameter DRAM_OPSUM_BASE_ADDR  = 7400  // int32_t 16*16*8*4 = 8192
+)(
+    input         clk,
+    input         rst,
+    input         ctrl_reg_w_en,
+    input  [1:0]  ctrl_reg_wsel,
+    input  [31:0] ctrl_reg_wdata,
+    output reg    dla_done,
+
+    /* DRAM*/
+    output logic        dram_we,     // write enable
+    output logic [31:0] dram_addr,   // byte address
+    output logic [31:0] dram_w_data, // 32-bit write data
+    input  logic [31:0] dram_r_data // 32-bit read data
 );
-
 
 // higher-level controller interface
 wire bias_ipsum_sel, pass_start, tiling_start, pass_done, tiling_done, all_done;
@@ -25,20 +35,22 @@ reg [1:0] cs, ns;
 
 /*  testing only  */
 assign bias_ipsum_sel = 0;
-assign op_config = (DEPTHWISE << 10) | (LINEAR << 3) | 1;
-assign mapping_param = (e << 12) | (p << 9) | (q << 6) | (r << 3) | t;
-assign shape_param1 = (1 << 26) | (STRIDE << 24) | (FILT_ROW << 22) | (FILT_COL << 20);
-assign shape_param2 = (IFMAP_COL << 8) | (IFMAP_COL);
+// assign op_config = (DEPTHWISE << 10) | (LINEAR << 3) | 1;
+// assign mapping_param = (e << 12) | (p << 9) | (q << 6) | (r << 3) | t;
+// assign shape_param1 = (1 << 26) | (STRIDE << 24) | (FILT_ROW << 22) | (FILT_COL << 20);
+// assign shape_param2 = (IFMAP_COL << 8) | (IFMAP_COL);
 /******************/
-
-assign pass_start = (tiling_done & !all_done);
-assign tiling_start = (cs == idle)? op_config[0] : pass_done;
-assign dla_done = (cs == done)? 1 : 0;
 
 parameter idle = 0;
 parameter tiling = 1;
 parameter pass = 2;
 parameter done = 3;
+
+assign pass_start = (tiling_done & !all_done);
+assign tiling_start = (cs == idle)? op_config[0] : pass_done;
+assign dla_done = (cs == done)? 1 : 0;
+
+
 
 always @(posedge clk or posedge rst) begin
     if(rst) begin
@@ -116,14 +128,35 @@ wire GLB_ipsum_valid;
 wire GLB_opsum_ready;
 wire [`DATA_SIZE-1:0] PE_data_in;
 
+wire [3:0]            glb_we;
+wire [31:0]           glb_w_addr;
+wire [`DATA_SIZE-1:0] glb_w_data;
+wire [3:0]            glb_re;
+wire [31:0]           glb_r_addr;
+wire [`DATA_SIZE-1:0] glb_r_data;
+
+wire [31:0] current_opsum_glb_addr;
+wire [1:0] R, S;
+wire [2:0] p, q, r, t;
+wire [4:0] e;
+wire [7:0] W;
+
+assign e = mapping_param[16:12];
+assign p = mapping_param[11:9];
+assign q = mapping_param[8:6];
+assign r = mapping_param[5:3];
+assign t = mapping_param[2:0];
+assign U = shape_param1[25:24];
+assign R = shape_param1[23:22];
+assign S = shape_param1[21:20];
+assign W = shape_param2[15:8];
+
 /* glb base address */
 wire [31:0] filter_baseaddr, ifmap_baseaddr, bias_baseaddr, opsum_baseaddr;
-assign ifmap_baseaddr = 32'd0;
-assign filter_baseaddr = q * r * (STRIDE * (e - 1) + FILT_ROW) * IFMAP_COL;
-assign bias_baseaddr = filter_baseaddr + p * t * q * r * FILT_ROW * FILT_COL;
-
-//TODO
-assign opsum_baseaddr = bias_baseaddr + p * t * 4;
+assign ifmap_baseaddr  = '0;
+assign filter_baseaddr = W * (U*(e-1)+R)* q*r;
+assign bias_baseaddr   = W * (U*(e-1)+R)* q*r + p*t *q*r*R*S;
+assign opsum_baseaddr  = W * (U*(e-1)+R)* q*r + p*t *q*r*R*S + p*t*4;
 
 /* controller <-> glb */
 wire [3:0] ctrl2glb_we, ctrl2glb_re;
@@ -149,7 +182,7 @@ Controller_pass #(
     .filter_baseaddr(filter_baseaddr),
     .ifmap_baseaddr(ifmap_baseaddr),
     .bias_baseaddr(bias_baseaddr),
-    .opsum_baseaddr(opsum_baseaddr),
+    .opsum_baseaddr(current_opsum_glb_addr),
     .done(pass_done),
 
     .set_XID(set_XID),
@@ -204,12 +237,6 @@ wire [3:0] dram2glb_we, dram2glb_re;
 wire [31:0] dram2glb_w_addr, dram2glb_r_addr;
 wire [`DATA_SIZE-1:0] dram2glb_w_data;
 
-/* wire for connect only */
-wire [31:0] dram_ifmap_base_addr, dram_filter_base_addr, dram_bias_base_addr, dram_opsum_base_addr;
-wire        dram_we,    
-wire [31:0] dram_addr, dram_w_data, dram_r_data;
-/*************************/
-
 tiling u_tiling (
     .clk(clk),
     .rst(rst),
@@ -218,6 +245,7 @@ tiling u_tiling (
     .start(tiling_start),
     .finish(tiling_done),
     .done(all_done),
+    .controller_glb_addr(current_opsum_glb_addr),
 
     /* Tiling parameters */
     .mapping_param(mapping_param),
@@ -225,10 +253,10 @@ tiling u_tiling (
     .shape_param2(shape_param2),
 
     /* DRAM base address */
-    .dram_ifmap_base_addr(dram_ifmap_base_addr),
-    .dram_filter_base_addr(dram_filter_base_addr),
-    .dram_bias_base_addr(dram_bias_base_addr),
-    .dram_opsum_base_addr(dram_opsum_base_addr),
+    .dram_ifmap_base_addr (DRAM_IFMAP_BASE_ADDR),
+    .dram_filter_base_addr(DRAM_FILTER_BASE_ADDR),
+    .dram_bias_base_addr  (DRAM_BIAS_BASE_ADDR),
+    .dram_opsum_base_addr (DRAM_OPSUM_BASE_ADDR),
 
     /* DRAM */
     .dram_we(dram_we),
@@ -251,13 +279,6 @@ tiling u_tiling (
     .glb_w_addr(dram2glb_w_addr),
     .glb_w_data(dram2glb_w_data)
 );
-
-wire [3:0]              glb_we;
-wire [31:0]             glb_w_addr;
-wire [`DATA_SIZE-1:0]   glb_w_data;
-wire [3:0]              glb_re;
-wire [31:0]             glb_r_addr;
-wire [`DATA_SIZE-1:0]   glb_r_data;
 
 assign glb_we = (cs == pass)? ctrl2glb_we : dram2glb_we;
 assign glb_w_addr = (cs == pass)? ctrl2glb_w_addr : dram2glb_w_addr;
