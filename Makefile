@@ -155,6 +155,10 @@ gen_test_data_for_pe:
 	g++ test_data_gen.cpp
 	./a.out > data.log
 
+gen_test_data_for_mobilenet:
+	g++ mobilenet_data_gen.cpp
+	./a.out > data.log
+
 gen_ID_CONV:
 	g++ ID_gen.cpp -o gen_ID.out
 	./gen_ID.out | tee gen_ID_conv.log
