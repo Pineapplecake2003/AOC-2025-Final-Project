@@ -176,11 +176,18 @@ module tiling_tb;
                     ifmap_tile[h][w][c] = glb_mem[if_addr++];
 
         // 讀 filter_tile
+        // fil_addr = glb_filter_addr;
+        // for (rr = 0; rr < R; rr++)
+        //     for (s = 0; s < R; s++)
+        //         for (ic = 0; ic < q*r; ic++)
+        //             for (oc = 0; oc < p*t; oc++)
+        //                 filter_tile[rr][s][ic][oc] = $signed(glb_mem[fil_addr++]);
+
         fil_addr = glb_filter_addr;
-        for (rr = 0; rr < R; rr++)
-            for (s = 0; s < R; s++)
-                for (ic = 0; ic < q*r; ic++)
-                    for (oc = 0; oc < p*t; oc++)
+        for (oc = 0; oc < p*t; oc++)
+            for (rr = 0; rr < R; rr++)
+                for (s = 0; s < R; s++)
+                    for (ic = 0; ic < q*r; ic++)
                         filter_tile[rr][s][ic][oc] = $signed(glb_mem[fil_addr++]);
 
         // DLA 運算
@@ -242,13 +249,13 @@ module tiling_tb;
     always #(`CYCLE/2) clk = ~clk;
 
     initial begin
-        localparam int P = 1, U = 1, e = 8, q = 3, r = 1, p = 4, t = 2;
-        localparam int R = 3, W = 34, F = 32, C = 3, M = 32;
+        localparam int P = 1, U = 1, e = 8, q = 3, r = 1, p = 4, t = 2, m = 32;
+        localparam int R = 3, W = 34, F = 32, C = 3, M = 32; // W is after padding
         int errors = 0, tile = 0;
         clk = 0; rst = 1; start = 0;
         // 設定參數與 base address
         // mapping_param = 32'h000484ca;
-        mapping_param  = (6'b0 << 26) + (m << 15) + (e << 12) + (p << 9) + (q << 6) + (r << 3) + t;
+        mapping_param  = (6'b0 << 26) + (m << 16) + (e << 12) + (p << 9) + (q << 6) + (r << 3) + t;
         // shape_param1   = 32'h02f01808;
         shape_param1  = (3'b0 << 29) + (P << 26) + (U << 24) + (R << 22) + (R << 20) + (C << 10) + M;
         // shape_param2   = 32'h00002222;
@@ -261,16 +268,16 @@ module tiling_tb;
         // dram_bias_base_addr    = 7368; // int32_t 8*4 = 32
         dram_bias_base_addr    = dram_filter_base_addr + R * R * C * M; 
         // dram_opsum_base_addr   = 7400; // int32_t 16*16*8*4 = 8192
-        dram_opsum_base_addr   = dram_bias_base_addr + 4 * M ;
+        dram_opsum_base_addr   = dram_bias_base_addr + 4 * M;
         
         glb_filter_base_addr   = W * (U*(e-1)+R)* q*r;
         glb_bias_base_addr     = W * (U*(e-1)+R)* q*r + p*t *q*r*R*R;
         glb_opsum_base_addr    = W * (U*(e-1)+R)* q*r + p*t *q*r*R*R + p*t*4;
 
         // 載入txt到DRAM
-        load_txt_to_mem("./tb1/ifmap.txt",  dram_ifmap_base_addr,  W*W*C);
-        load_txt_to_mem("./tb1/filter.txt", dram_filter_base_addr, R*R*C*M);
-        load_txt_to_mem("./tb1/bias.txt",   dram_bias_base_addr,   8*M);
+        load_txt_to_mem("./conv0/ifmap.txt",  dram_ifmap_base_addr,  W*W*C);
+        load_txt_to_mem("./conv0/filter.txt", dram_filter_base_addr, R*R*C*M);
+        load_txt_to_mem("./conv0/bias.txt",   dram_bias_base_addr,   8*M);
         // golden_output 只用來比對，不需載入DRAM
 
         #(`CYCLE) rst = 0;
@@ -299,7 +306,8 @@ module tiling_tb;
             @(negedge clk);
         end
 
-        errors = check_glb_vs_golden(dram_opsum_base_addr, "./tb1/golden_output.txt", F*F*M, 4);
+        // errors = check_glb_vs_golden(dram_opsum_base_addr, "./tb1/golden_output.txt", F*F*M, 4);
+        errors = check_glb_vs_golden(dram_opsum_base_addr, "./conv0/golden_output.txt", F*F*M, 4);
         if (errors == 0)
             $display("All Tiles PASS!");
         else
