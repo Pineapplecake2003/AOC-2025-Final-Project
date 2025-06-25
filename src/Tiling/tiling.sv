@@ -280,27 +280,27 @@ module tiling #(
                     state     <= LOAD_FILTER_GLB_W;
                     debug1    <= 3;
                 end
-                LOAD_FILTER_GLB_W: begin
-                    if (filter_oc < M_idx - m + 1 + m_idx_filter) begin
-                        filter_oc  <= filter_oc + 1;
-                        filter_glb_addr <= filter_glb_addr + 1;
-                        state      <= LOAD_FILTER_DRAM_R;
-                    end else if (filter_ic < c_idx) begin
-                        filter_oc  <= M_idx - m + 1 + m_idx_filter - p * t + 1;
+                LOAD_FILTER_GLB_W: begin                    
+                    if (filter_ic < c_idx) begin
                         filter_ic  <= filter_ic + 1;
                         filter_glb_addr <= filter_glb_addr + 1;
                         state      <= LOAD_FILTER_DRAM_R;
                     end else if (filter_col < R - 1) begin
-                        filter_oc  <= M_idx - m + 1 + m_idx_filter - p * t + 1;
                         filter_ic  <= c_idx - q * r + 1;
                         filter_col <= filter_col + 1;
                         filter_glb_addr <= filter_glb_addr + 1;
                         state      <= LOAD_FILTER_DRAM_R;
                     end else if (filter_row < R - 1) begin
-                        filter_oc  <= M_idx - m + 1 + m_idx_filter - p * t + 1;
                         filter_ic  <= c_idx - q * r + 1;
                         filter_col <= '0;
                         filter_row <= filter_row + 1;
+                        filter_glb_addr <= filter_glb_addr + 1;
+                        state      <= LOAD_FILTER_DRAM_R;
+                    end else if (filter_oc < M_idx - m + 1 + m_idx_filter) begin
+                        filter_ic  <= c_idx - q * r + 1;
+                        filter_col <= '0;
+                        filter_row <= filter_row + 1;
+                        filter_oc  <= filter_oc + 1;
                         filter_glb_addr <= filter_glb_addr + 1;
                         state      <= LOAD_FILTER_DRAM_R;
                     end else begin

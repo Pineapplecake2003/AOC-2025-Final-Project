@@ -30,7 +30,7 @@ module tiling_tb;
 
     // 模擬 DRAM 記憶體
     logic [7:0] dram_mem [0 : 16000];
-    logic [DATA_WIDTH-1:0] mem [0 : 3860];
+    logic [DATA_WIDTH-1:0] mem [0 : 16000];
 
     // DRAM 行為
     always @ (posedge clk) begin
@@ -177,11 +177,11 @@ module tiling_tb;
 
         // 讀 filter_tile
         fil_addr = glb_filter_addr;
-        for (rr = 0; rr < R; rr++)
-            for (s = 0; s < R; s++)
-                for (ic = 0; ic < q*r; ic++)
-                    for (oc = 0; oc < p*t; oc++)
-                        filter_tile[rr][s][ic][oc] = $signed(glb_mem[fil_addr++]);
+        for (int oc = 0; oc < p * t; oc++)
+            for (int row = 0; row < R; row++)
+                for (int col = 0; col < R; col++)
+                    for (int ic = 0; ic < q * r; ic++)
+                        filter_tile[row][col][ic][oc] = $signed(glb_mem[fil_addr++]);
 
         // DLA 運算
         for (oc = 0; oc < p*t; oc++)
@@ -242,7 +242,7 @@ module tiling_tb;
     always #(`CYCLE/2) clk = ~clk;
 
     initial begin
-        localparam int P = 1, U = 1, e = 8, q = 3, r = 1, p = 4, t = 2;
+        localparam int P = 0, U = 1, e = 8, q = 3, r = 1, p = 4, t = 2, m = 32;
         localparam int R = 3, W = 34, F = 32, C = 3, M = 32;
         int errors = 0, tile = 0;
         clk = 0; rst = 1; start = 0;
@@ -263,9 +263,11 @@ module tiling_tb;
         // dram_opsum_base_addr   = 7400; // int32_t 16*16*8*4 = 8192
         dram_opsum_base_addr   = dram_bias_base_addr + 4 * M ;
         
-        glb_filter_base_addr   = W * (U*(e-1)+R)* q*r;
-        glb_bias_base_addr     = W * (U*(e-1)+R)* q*r + p*t *q*r*R*R;
-        glb_opsum_base_addr    = W * (U*(e-1)+R)* q*r + p*t *q*r*R*R + p*t*4;
+        glb_ifmap_base_addr    = 0;
+        glb_filter_base_addr   = glb_ifmap_base_addr + W * W * C;
+        glb_bias_base_addr     = glb_filter_base_addr + R * R * C * M;
+        glb_opsum_base_addr    = glb_bias_base_addr + 4 * M;
+        // base_addr    = W * (U*(e-1)+R) * q*r + p*t *q*r*R*R + p*t*4;
 
         // 載入txt到DRAM
         load_txt_to_mem("./tb1/ifmap.txt",  dram_ifmap_base_addr,  W*W*C);
@@ -306,6 +308,9 @@ module tiling_tb;
             $display("FAIL: %0d errors", errors);
 
         $display("All test done.");
+        $display("dram_filter_base_addr %0d", dram_filter_base_addr);
+        $display("dram_bias_base_addr %0d", dram_bias_base_addr);
+        $display("dram_opsum_base_addr %0d", dram_opsum_base_addr);
         $finish;
     end
 

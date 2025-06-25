@@ -6,14 +6,14 @@ using namespace std;
 // ifmap [row][col][c]
 // psum [row][col][oc]
 // filter [row][col][ic][oc]
-#define M 8
-#define C 6
-#define m 4
-#define p 2
+#define M 32
+#define C 3
+#define m 32
+#define p 4
 #define q 3
 #define r 1
-#define t 1
-#define U 2
+#define t 2
+#define U 1
 #define e 8
 #define R 3
 #define H 34
@@ -99,7 +99,7 @@ void load_ifmap_from_file(const char* filename, uint8_t ifmap_buf[H][W][C]) {
     }
     for (int h_idx = 0; h_idx < H; h_idx++) {
         for (int w_idx = 0; w_idx < W; w_idx++) {
-            for (int c_idx = 0; c_idx < 6; c_idx++) {
+            for (int c_idx = 0; c_idx < C; c_idx++) {
                 int temp;
                 fscanf(file, "%d,", &temp);
                 ifmap_buf[h_idx][w_idx][c_idx] = (int8_t)temp;
@@ -210,12 +210,22 @@ void dla_compute(int glb_ifmap_addr, int glb_filter_addr,int glb_opsum_addr, uin
     ////cin >>ttt;
 
     int filter_addr = glb_filter_addr;
-    for (int r1 = 0; r1 < R; r1++) {
-        for (int r2 = 0; r2 < R; r2++) {
-            for (int ic = 0; ic < q*r; ic++) {
-                for (int oc = 0; oc < p*t; oc++) {
-                    int idx = (((r1 * R + r2) * (q*r) + ic) * (p*t)) + oc;
-                    filter_tile[r1][r2][ic][oc] = (int8_t)glb[filter_addr + idx];
+    // for (int r1 = 0; r1 < R; r1++) {
+    //     for (int r2 = 0; r2 < R; r2++) {
+    //         for (int ic = 0; ic < q*r; ic++) {
+    //             for (int oc = 0; oc < p*t; oc++) {
+    //                 int idx = (((r1 * R + r2) * (q*r) + ic) * (p*t)) + oc;
+    //                 filter_tile[r1][r2][ic][oc] = (int8_t)glb[filter_addr + idx];
+    //             }
+    //         }
+    //     }
+    // }
+    
+    for (int oc = 0; oc < p * t; oc++) {
+        for (int row = 0; row < R; row++) {
+            for (int col = 0; col < R; col++) {
+                for (int ic = 0; ic < q * r; ic++) {
+                    filter_tile[row][col][ic][oc] = (int8_t)glb[filter_addr++];
                 }
             }
         }
@@ -351,12 +361,10 @@ int main(int argc, char const *argv[])
     int32_t golden_opsum[E][F][M];
     uint8_t glb[65535] = {0};
 
-    load_ifmap_from_file("./U=2,E=F=16/ifmap.txt", ifmap);
-    load_filter_from_file("./U=2,E=F=16/filter.txt", filter);
-    load_bias_from_file("./U=2,E=F=16/bias.txt", bias);
-    load_golden_output_from_file("./U=2,E=F=16/golden_output.txt", golden_opsum);
-
-
+    load_ifmap_from_file("./tb1/ifmap.txt", ifmap);
+    load_filter_from_file("./tb1/filter.txt", filter);
+    load_bias_from_file("./tb1/bias.txt", bias);
+    load_golden_output_from_file("./tb1/golden_output.txt", golden_opsum);
 
     int E_idx;
     int num = 0;
