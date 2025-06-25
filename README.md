@@ -1,5 +1,4 @@
 # AOC 2025 Final Project
-# Please switch to stride2
 ## Team 1 : Cache Me If You Can
 N26140626 葉人豪
 E94101119 宋晉誠
