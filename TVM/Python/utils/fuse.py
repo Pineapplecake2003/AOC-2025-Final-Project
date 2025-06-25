@@ -116,7 +116,7 @@ def pattern_table():
         (f"{COMPILER_NAME}.qlinear_relu", fuse_dense_add_relu()),
         (f"{COMPILER_NAME}.qlinear", fuse_dense_add()),
         (f"{COMPILER_NAME}.flatten", fuse_flatten()),
-        (f"{COMPILER_NAME}.global_avg_pool2d", fuse_global_avg_pool2d()),
+        (f"{COMPILER_NAME}.qglobal_avg_pool2d", fuse_global_avg_pool2d()),
         (f"{COMPILER_NAME}.quantize", quantize()),
         (f"{COMPILER_NAME}.dequantize", dequantize()),
     ]

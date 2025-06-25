@@ -23,11 +23,13 @@ int qconv2d_relu_cpu(uint8_t *input_in_DRAM, int8_t *filter_in_DRAM,
                      uint32_t ifmap_len, uint32_t filter_len,
                      // shape parameter
                      uint32_t PAD, uint32_t U, uint32_t R, uint32_t S,
-                     uint32_t C, uint32_t M, uint32_t W, uint32_t H,
+                     uint32_t C_F, uint32_t M, uint32_t W, uint32_t H,
+                     uint32_t C_I,
                      uint32_t scale) {  // int32_t scale_factor: merge ifmap and
                                         // weight and ofmap scale bit-shift
     int start_cycles = __rdtsc();
-    conv(C, H, W, input_in_DRAM, M, C, R, S, filter_in_DRAM, bias, PAD,
+    //convolution 分成input_C filter_C
+    conv(C_I, H, W, input_in_DRAM, M, C_F, R, S, filter_in_DRAM, bias, PAD,
          opsum_in_DRAM, scale);
     int end_cycles = __rdtsc();
     return (end_cycles - start_cycles);
@@ -57,12 +59,12 @@ int qlinear_cpu(uint8_t *input_in_DRAM, int8_t *filter_in_DRAM,
     return (end_cycles - start_cycles);
 };
 
-int qglobal_avg_pool2d_cpu(uint8_t *input_in_DRAM, uint8_t *opsum_in_DRAM,
-                           uint32_t batch, uint32_t height, uint32_t width,
-                           uint32_t channels, uint32_t scale) {
+int qglobal_avg_pool2d_cpu(uint8_t *input_in_DRAM, uint8_t *output_in_DRAM,
+                            uint32_t C, uint32_t H, uint32_t W,
+                            uint32_t scale) {  // int32_t scale_factor: merge
+                                               // ifmap and ofmap scale bit-shift
     int start_cycles = __rdtsc();
-    global_avg_pool2d(batch, height, width, channels, input_in_DRAM,
-                      opsum_in_DRAM, scale);
+    global_avg_pool2d(C, H, W, input_in_DRAM, output_in_DRAM, scale);
     int end_cycles = __rdtsc();
     return (end_cycles - start_cycles);
 }

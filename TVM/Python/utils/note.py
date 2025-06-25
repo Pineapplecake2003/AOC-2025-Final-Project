@@ -60,6 +60,19 @@ tvm_auto_args_NOTES = {
         "input_scale",
         "input_zero_point",
     ],
+    f"{COMPILER_NAME}_qglobal_avg_pool2d": [
+        "input",
+        "input_scale",
+        "input_zero_point",
+        "weight",
+        "weight_scale",
+        "weight_zero_point",
+        "bias",
+        "bias_scale",
+        "bias_zero_point",
+        "dequantize_scale",
+        "dequantize_zero_point",
+    ],
     f"{COMPILER_NAME}_quantize":[
         "input",
         "input_scale",
@@ -69,9 +82,6 @@ tvm_auto_args_NOTES = {
         "input",
         "input_scale",
         "input_zero_point",
-    ],
-    f"{COMPILER_NAME}_global_avg_pool2d": [
-    "input", "input_scale", "input_zero_point",
     ],
 }
 
@@ -91,7 +101,7 @@ tvm_c_func_call_gen = {
     {config["m"]}, {config["e"]}, {config["p"]}, {config["q"]}, {config["r"]}, {config["t"]},
 #endif
     {config["PAD"]}, {config["U"]}, {config["R"]}, {config["S"]},
-    {config["C"]}, {config["M"]}, {config["W"]}, {config["H"]},
+    {config["C_F"]}, {config["M"]}, {config["W"]}, {config["H"]},{config["C_I"]},
     {convert_log(config["input_scale"] * config["weight_scale"] / config["dequantize_scale"])}
   );
 """,
@@ -107,7 +117,7 @@ tvm_c_func_call_gen = {
     {config["m"]}, {config["e"]}, {config["p"]}, {config["q"]}, {config["r"]}, {config["t"]},
 #endif
     {config["PAD"]}, {config["U"]}, {config["R"]}, {config["S"]},
-    {config["C"]}, {config["M"]}, {config["W"]}, {config["H"]},
+    {config["C_F"]}, {config["M"]}, {config["W"]}, {config["H"]},{config["C_I"]},
     {convert_log(config["input_scale"] * config["weight_scale"] / config["dequantize_scale"])}
   );
 """,
@@ -125,11 +135,14 @@ tvm_c_func_call_gen = {
     {convert_log(config["input_scale"] * config["weight_scale"] / config["dequantize_scale"])}
   );
 """,
-    f"{COMPILER_NAME}_global_avg_pool2d": lambda config: f"""
+    f"{COMPILER_NAME}_qglobal_avg_pool2d": lambda config: f"""
+#ifndef CPU_ONLY
+  qglobal_avg_pool2d(
+#else
   qglobal_avg_pool2d_cpu(
     {config["input"]}, {config["output"]},
-    {config["N"]}, {config["H"]}, {config["W"]}, {config["C"]},
-    {convert_log(config["input_scale"])}
+    {config["C_I"]}, {config["H"]}, {config["W"]},
+    {convert_log(config["input_scale"] * config["weight_scale"] / config["dequantize_scale"])}
   );
 """,
     f"{COMPILER_NAME}_quantize": lambda config: f"""

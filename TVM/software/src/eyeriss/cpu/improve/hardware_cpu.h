@@ -64,18 +64,8 @@ void linear(uint32_t input_size, uint32_t output_size, uint8_t* activation,
 
 /**
  * @brief Performs global average pooling 2D on the CPU.
- *
- * @param batch        Batch size.
- * @param height       Input feature map height.
- * @param width        Input feature map width.
- * @param channels     Number of channels.
- * @param activation   Pointer to input feature map (NHWC format).
- * @param output       Pointer to output vector.
- * @param scale        Scale factor for quantization.
  */
-void global_avg_pool2d(uint32_t batch, uint32_t height, uint32_t width,
-                       uint32_t channels, uint8_t* activation, uint8_t* output,
-                       uint32_t scale);
+void global_avg_pool2d(uint32_t input_C, uint32_t input_H, uint32_t input_W, uint8_t* input, uint8_t* output, uint32_t scale);
 
 /**
  * @brief Quantizes floating-point values into 8-bit integers.

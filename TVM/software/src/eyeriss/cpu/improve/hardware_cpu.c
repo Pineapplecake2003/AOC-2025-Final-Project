@@ -1,6 +1,7 @@
 #include "hardware_cpu.h"
 #include <immintrin.h>
 #include <stdio.h>
+#include <math.h>
 
 void conv_maxpooling(uint32_t input_C, uint32_t input_H, uint32_t input_W,
                      uint8_t* activation, uint32_t filter_N, uint32_t filter_C,
@@ -63,9 +64,16 @@ void conv(uint32_t input_C, uint32_t input_H, uint32_t input_W,
           uint8_t* activation, uint32_t filter_N, uint32_t filter_C,
           uint32_t filter_H, uint32_t filter_W, int8_t* filter, int32_t* bias,
           uint32_t padding, uint8_t* output, uint32_t scale) {
-    if (filter_C == 1 && filter_N == input_C) { //depthwise convolution
+    //printf("input_C: %d, input_H: %d, input_W: %d\n", input_C, input_H, input_W);
+    //printf("activation: %p\n", *activation);
+    //printf("filter_N: %d, filter_C: %d, filter_H: %d, filter_W: %d\n", filter_N, filter_C, filter_H, filter_W);
+    //printf("padding: %d, scale: %d\n", padding, scale);
+    //printf("\n");
+
+    if (filter_C == 1 && filter_N == input_C) {
+        // Depthwise convolution
+        //printf("Depthwise convolution\n");
         for (uint32_t n = 0; n < filter_N; n++) {
-            uint32_t c = n; // oc = ic
             for (uint32_t h = 0; h < input_H; h++) {
                 for (uint32_t w = 0; w < input_W; w++) {
                     int32_t temp = bias[n];
@@ -74,9 +82,12 @@ void conv(uint32_t input_C, uint32_t input_H, uint32_t input_W,
                             int32_t in_h = (int32_t)h + (int32_t)fh - (int32_t)padding;
                             int32_t in_w = (int32_t)w + (int32_t)fw - (int32_t)padding;
                             if (in_h >= 0 && in_h < (int32_t)input_H && in_w >= 0 && in_w < (int32_t)input_W) {
-                                uint32_t activation_index = c * input_H * input_W + in_h * input_W + in_w;
-                                uint32_t filter_index = n * filter_H * filter_W + fh * filter_W + fw;
-                                int32_t activation_val = (int32_t)activation[activation_index] - 128;
+                                uint32_t activation_index = in_h * input_W + in_w;
+                                uint32_t filter_index = n * filter_C * filter_H * filter_W +
+                                                        n * filter_H * filter_W +
+                                                        fh * filter_W +
+                                                        fw;
+                                int32_t activation_val = activation[activation_index] - 128;
                                 int32_t weight_val = filter[filter_index];
                                 temp += activation_val * weight_val;
                             }
@@ -85,10 +96,40 @@ void conv(uint32_t input_C, uint32_t input_H, uint32_t input_W,
                     uint32_t temp_relu = relu(temp);
                     uint8_t temp_out = requant(temp_relu, scale);
                     output[n * input_H * input_W + h * input_W + w] = temp_out;
+                    //printf("%d\n",temp_out);
                 }
             }
         }
-    } else { //pointwise convolution & convolution
+    } 
+    else if (filter_W == 1 && filter_H == 1){
+        // Standard or pointwise convolution
+        //printf("Pointwise convolution\n");
+        //printf("input_C: %d, input_H: %d, input_W: %d\n", input_C, input_H, input_W);
+        //printf("filter_N: %d, filter_C: %d, filter_H: %d, filter_W: %d\n", filter_N, filter_C, filter_H, filter_W);
+        //printf("padding: %d, scale: %d\n", padding, scale);
+        //printf("\n");
+        for (uint32_t n = 0; n < filter_N; n++) {
+            for (uint32_t h = 0; h < input_H; h++) {
+                for (uint32_t w = 0; w < input_W; w++) {
+                    int32_t temp = bias[n];
+                    for (uint32_t c = 0; c < filter_C; c++) {
+                            uint32_t activation_index = c * input_H * input_W + h * input_W + w;
+                            uint32_t filter_index = n * filter_C;
+                            int32_t activation_val = activation[activation_index] - 128;
+                            int32_t weight_val = filter[filter_index];
+                            temp += activation_val * weight_val;
+                    }
+                    uint32_t temp_relu = relu(temp);
+                    uint8_t temp_out = requant(temp_relu, scale);
+                    output[n * input_H * input_W + h * input_W + w] = temp_out;
+                    //printf("output[%d][%d][%d]=%d\n",n,h,w,temp_out);
+                }
+            }
+        }
+    }
+    else {
+        // Standard convolution
+        //printf("Standard convolution\n");
         for (uint32_t n = 0; n < filter_N; n++) {
             for (uint32_t h = 0; h < input_H; h++) {
                 for (uint32_t w = 0; w < input_W; w++) {
@@ -99,11 +140,13 @@ void conv(uint32_t input_C, uint32_t input_H, uint32_t input_W,
                                 int32_t in_h = (int32_t)h + (int32_t)fh - (int32_t)padding;
                                 int32_t in_w = (int32_t)w + (int32_t)fw - (int32_t)padding;
                                 if (in_h >= 0 && in_h < (int32_t)input_H && in_w >= 0 && in_w < (int32_t)input_W) {
-                                    uint32_t activation_index = c * input_H * input_W + in_h * input_W + in_w;
-                                    uint32_t filter_index = n * filter_C * filter_H * filter_W + c * filter_H * filter_W + fh * filter_W + fw;
-                                    int32_t activation_val = (int32_t)activation[activation_index] - 128;
+                                    uint32_t activation_index = c * input_H * input_W +in_h * input_W + in_w;
+                                    uint32_t filter_index = n * filter_C * filter_H * filter_W +
+                                                            c * filter_H * filter_W + fh * filter_W + fw;
+                                    int32_t activation_val = activation[activation_index] - 128;
                                     int32_t weight_val = filter[filter_index];
                                     temp += activation_val * weight_val;
+                                    
                                 }
                             }
                         }
@@ -111,12 +154,45 @@ void conv(uint32_t input_C, uint32_t input_H, uint32_t input_W,
                     uint32_t temp_relu = relu(temp);
                     uint8_t temp_out = requant(temp_relu, scale);
                     output[n * input_H * input_W + h * input_W + w] = temp_out;
+                    //printf("%d\n",temp_out);
                 }
             }
         }
     }
 }
-
+void global_avg_pool2d(uint32_t input_C, uint32_t input_H, uint32_t input_W,
+    uint8_t* input, uint8_t* output, uint32_t scale) {
+    for (uint32_t c = 0; c < input_C; c++) {
+        int32_t sum = 0;
+        for (uint32_t h = 0; h < input_H; h++) {
+            for (uint32_t w = 0; w < input_W; w++) {
+                sum += (int8_t)input[c * input_H * input_W + h * input_W + w] - 128;
+                //printf("input[%d][%d][%d] = %d\n", c, h, w, input[c * input_H * input_W + h * input_W + w]);
+            }
+        }
+        int32_t avg = sum / (int32_t)(input_H * input_W);
+        avg = (avg < 0)? 0:((avg > 255)? 255 : avg);
+        output[c] = (uint8_t)avg;
+        //printf("%d \n",output[c]);
+    }
+}
+//alteration
+/*
+void global_avg_pool2d(uint32_t input_C, uint32_t input_H, uint32_t input_W,
+                       uint8_t* input, uint8_t* output, uint32_t scale) {
+    for (uint32_t c = 0; c < input_C; c++) {
+        int32_t sum = 0;
+        for (uint32_t h = 0; h < input_H; h++) {
+            for (uint32_t w = 0; w < input_W; w++) {
+                sum += (int32_t)input[c * input_H * input_W + h * input_W + w] - 128;
+            }
+        }
+        int32_t avg = sum / (int32_t)(input_H * input_W);
+        uint8_t temp_out = requant(avg, scale);
+        output[c] = temp_out;
+        //printf("%d \n",output[c]);
+    }
+}*/
 void linear_relu(uint32_t input_size, uint32_t output_size, uint8_t* activation,
                  uint8_t* output, int8_t* filter, int32_t* bias,
                  uint32_t scale) {
@@ -186,47 +262,6 @@ void linear(uint32_t input_size, uint32_t output_size, uint8_t* activation,
     free(activation_buffer);
     //! hint<<
 };
-
-//alteration
-void global_avg_pool2d(uint32_t batch, uint32_t height, uint32_t width,
-                       uint32_t channels, uint8_t* activation, uint8_t* output,
-                       uint32_t scale) {
-    printf("Global Average Pooling: batch=%d, height=%d, width=%d, channels=%d\n",
-           batch, height, width, channels);
-    uint32_t* sums = (uint32_t*)malloc(channels * sizeof(uint32_t));
-
-    uint32_t spatial_size = height * width;
-
-    for (uint32_t n = 0; n < batch; n++) {
-        memset(sums, 0, channels * sizeof(uint32_t));
-
-        uint32_t input_base = n * height * width * channels;
-        for (uint32_t h = 0; h < height; h++) {
-            for (uint32_t w = 0; w < width; w++) {
-                uint32_t base_idx = input_base + (h * width + w) * channels;
-                uint32_t c = 0;
-                for (; c + 3 < channels; c += 4) {
-                    sums[c] += (uint32_t)activation[base_idx + c] - 128;
-                    sums[c + 1] += (uint32_t)activation[base_idx + c + 1] - 128;
-                    sums[c + 2] += (uint32_t)activation[base_idx + c + 2] - 128;
-                    sums[c + 3] += (uint32_t)activation[base_idx + c + 3] - 128;
-                }
-                for (; c < channels; c++) {
-                    sums[c] += (uint32_t)activation[base_idx + c] - 128;
-                }
-            }
-        }
-
-        uint32_t output_base = n * channels;
-        for (uint32_t c = 0; c < channels; c++) {
-            uint32_t avg = sums[c] / spatial_size;
-            output[output_base + c] = requant(avg, scale);
-        }
-    }
-
-    free(sums);
-    printf("Global Average Pooling completed.\n");
-}
 
 void quantize(float* input_in_DRAM, uint8_t* output_in_DRAM, uint32_t size,
               uint32_t scale) {
