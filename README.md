@@ -14,7 +14,7 @@ F74106092 吳翰宇
 
 * 最小化資料移動：減少對 DRAM 和全域快取的讀寫次數，降低能量消耗。
 * 強化資料重用：在處理單元（Processing Elements）內部實現最大化的資料重用，進一步節省功耗。
-* 資料壓縮與閘控技術：運用如游程編碼（Run-Length Coding）與跳過零值的運算（Zero Skipping）等技巧，減少不必要的運算與資料傳輸。
+* 資料壓縮：運用如游程編碼（Run-Length Coding）與跳過零值的運算（Zero Skipping）等技巧，減少不必要的運算與資料傳輸。
 
 這些方法能夠協助提升 CNN 推論在硬體上的能源效率，延長裝置使用壽命、減少熱功耗、並推動 AI 系統朝向低功耗、高效能的方向發展。
 
@@ -31,15 +31,14 @@ F74106092 吳翰宇
 | InceptionV3     | 23.8M | ~5.7G (MACs)  | (ImageNet) top1=77.9% top5=93.7%   | Conv, BN, ReLU, Concat, MaxPool               | **Moderate:**  High reuse with multi-size filters, but layer shape variation increases DRAM access (~3-6 MB on v2).                             |
 | DenseNet121     | 8M    | ~5.7G (MACs)  | (ImageNet) top1=74.98% top5=92.21% | Conv, BN, ReLU, Concat, MaxPool               | **High:** Low params, stable layers, high reuse via dense connections. DRAM access ~2-5 MB after pruning.                                                    |
 | ConvNeXt Tiny   | 28.6M | ~8.7G (MACs)  | (ImageNet) top1=82.1% top5=95.8%   | Conv, LayerNorm, GELU, MaxPool                | **High:** High reuse with 7x7 filters, stable layers. DRAM access ~3-6 MB. Good for original Eyeriss.                                                        |
-
 >[!Warning]
 >Why not choose SqueezeNet
->SqueezeNet **may not easy** to implement in Eyeriss(mapping parameter).
+>SqueezeNet **may not easy** to implement in >Eyeriss(mapping parameter).
 
 
 ## Software
 ### AI Model Design and Quantization
-**file path:**`AOC-PE-filter-size-change/Performance_Modeling/mobilenetv1-cifar10.ipynb`
+**file path：**`Performance_Modeling/mobilenetv1-cifar10.ipynb`
 
 you can run **mobilenetv1-cifar10.ipynb** with kaggle or colab.
 
@@ -149,12 +148,12 @@ conda activate aoc
 ```
 2.Install packages
 ```bash
-cd AOC-PE-filter-size-change/Performance_Modeling
+cd Performance_Modeling
 pip install -r requirements.txt
 ```
 
 #### FP32 - mobilenetv1.pt
-**file path:**`AOC-PE-filter-size-change/Performance_Modeling/weights/mobilenetv1.pt`
+**file path：**`Performance_Modeling/weights/mobilenetv1.pt`
 
 ```bash
 python3 profiling.py weights/mobilenetv1.pt
@@ -164,7 +163,7 @@ python3 profiling.py weights/mobilenetv1.pt
 ![mobilenet_v1_fp32](https://hackmd.io/_uploads/ryeFuY6mlx.jpg)
 
 #### INT8 - mobilenetv1-power2.pt
-**file path:**`AOC-PE-filter-size-change/Performance_Modelin/Profiling_Results/weights/mobilenetv1-power2.pt`
+**file path：**`Performance_Modelin/Profiling_Results/weights/mobilenetv1-power2.pt`
 
 ```bash
 python3 profiling.py weights/mobilenetv1-power2.pt -b power2
@@ -205,7 +204,7 @@ python3 profiling.py weights/mobilenetv1-power2.pt -b power2
 We use the following mapping result to generate the verification test data for the subsequent testbench.
 
 ```bash
-cd AOC-PE-filter-size-change/Performance_Modeling
+cd Performance_Modeling
 python3 main.py ./weights/mobilenetv1-power2.pt
 ```
 
@@ -222,7 +221,7 @@ python3 main.py ./weights/mobilenetv1-power2.pt
 | mobilenetv1.conv6  | 33512     | 2363648   | 1056768   | 3420416    | 153856    | 8192       | 162048      | 2170880 | 1920960      | 71.43575999999997 | 7437.50624687656 | 512 | 1 | 4 | 4 | 4 | 2 | 2 | 1920960   |
 | mobilenetv1.conv7  | 33128     | 3152384   | 2105344   | 5257728    | 281088    | 8192       | 289280      | 4268032 | 2998656      | 119.71900799999999 | 7984.844410295812 | 512 | 1 | 4 | 4 | 4 | 2 | 2 | 2998656   |
 | mobilenetv1.conv8  | 16808     | 2236928   | 1052672   | 3289600    | 543232    | 4096       | 547328      | 2134016 | 2333056      | 147.212896       | 12619.748175783176 | 1024 | 1 | 2 | 4 | 4 | 2 | 4 | 2333056   |
-  
+
 >[!Warning]
 > Because the algorithm for the first 3x3 convolution in the first layer of eyeriss.py is different from the depthwise separable convolution, it has been recalculated separately.
 
@@ -239,33 +238,10 @@ python3 main.py ./weights/mobilenetv1-power2.pt
 
 
 ### PE config modification
-```graphviz
-digraph {
-    rankdir="LR"
-    node [shape=record];
-    bits [label="{
 
-        {{9}|mode} | 
-        {{8|7}|p-1} | 
-        {{6|5|4|3|2}|F-1} |
-        {{1|0}|q-1}
-    }"];
-}
-```
-```graphviz
-digraph {
-    rankdir="LR"
-    node [shape=record];
-    bits [label="{
-        {{12}|depthwise} |
-        {{11|10}| FILTER_RS - 1} | 
-        {{9}|U - 1} | 
-        {{8|7}|p-1} | 
-        {{6|5|4|3|2}|F-1} |
-        {{1|0}|q-1}
-    }"];
-}
-```
+![config](https://hackmd.io/_uploads/Hk6CHqY4ge.png)
+
+
 為了支援MobileNet depthwise separable convolution 多了`depthwise`，`FILTER_RS-1`為可以支援kernel size from 1 to 3，將`mode`改為`U-1`用以支援stride = 1 or 2。
 
 ### PE (Process Element)
@@ -384,6 +360,8 @@ Controller_pass 負責協調 Eyeriss PE array 與 Global Buffer（GLB）間的�
 - This alternating sequence continues—data movement followed by computation—until `tiling.sv` detects that there is no more data to load, indicating that the entire layer has been processed.
 - At this point, an `all_done` signal is sent to the host to indicate that the DLA has finished processing. Additionally, `op_config[0]` is cleared back to `0` to prevent the DLA from being unintentionally restarted.
 
+### Tiling.cpp
+使用C/C++驗證moblienet 每個layer 的tiling 邏輯，輸入為整層layer `ifmap.txt`, `filter.txt`, `bias.txt`,將tiling 與運算完結果與`golden.txt`比對，用以驗證tiling邏輯。
 
 ## TVM
 ### Similar to Lab5.0 : Enviroment Setup
@@ -434,7 +412,6 @@ This command produces two SVG images representing the Relay graph:
     
     ![visu_VGG8_relay_ir_pass](https://hackmd.io/_uploads/SJXiOFTXgx.svg)
 
-
 ### 2. Simulation and Performance Analysis (Failed)
 
 For more config in compiling cpu-only version runtime, move into `testbench/cpu`, then use `make usage` for more details about configurations.
@@ -467,7 +444,7 @@ It is needed to `make clean` before any new configuration applied.
 
 But,our result is not fit in Mobilnet_v1 model accuracy.
 
-### Single Test
+### 3. Single Test
 
 #### Our result
 ```
@@ -537,16 +514,28 @@ The problem we will figure out in future.
 |`gen_test_data_for_depthwise_array`|Generate depthwise separable convolution one pass testbench data for array.|
 |`gen_test_data_for_pe`|Generate normal convolution testbench data for PE.|
 |`gen_test_data_for_depthwise_pe`|Generate depthwise separable convolution testbench data for SUPER.|
+|`gen_test_data_for_mobilenet`|Generate normal convolution testbench data for MobileNetV1.|
+|`gen_test_data_for_mobilenet_depthwise`|Generate depthwise separable convolution testbench data for MobileNetV1.|
+|`gen_test_data_for_mobilenet_linear`|Generate FC layer testbench data for MobileNetV1.|
+|`gen_ID_CONV`|Generate CONV layer ID for specific mapping parameter by `ID_gen.cpp`.|
+|`gen_ID_LINEAR`|Generate FC layer ID for specific mapping parameter by `ID_gen.cpp`.|
+|`vcs_id_gen`|Generate layer ID for specific mapping parameter by `ID_gen_combinational.v`.|
 |`vcs%`|Generate GLB mirror for No.`%` testbench as inital data in GLB, simulate one pass normal/depthwise separable convolution in module which consist of `PE_array`, `GLB`, `Controller_pass` with vcs.|
 |`clean`|Remove unnecessary files.|
 
 
 >[!Warning]
 >`%` is a interger number which reperesent No.`%` testcase.
->If you replace `%` with `_all` in the options above, the Makefile will run all test cases.
+>If you replace `%` with `_all` in the options above, >the Makefile will run all test cases.
 
 #### Usage
 Type
 ```bash
 make <options>
 ```
+
+#### Makefile of tiling.cpp
+|options|function|
+|---|---|
+|`layer0`~`layer9`|Execute C++ simulation of tiling of all 10 layers of our MobileNetV1 model.|
+|`clean`|Remove unnecessary files.|
