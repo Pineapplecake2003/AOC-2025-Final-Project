@@ -12,6 +12,7 @@ reg [2:0] t;
 reg [5:0] e;
 reg [2:0] t_H;
 reg [2:0] t_W;
+reg [1:0] U;
 reg LINEAR;
 wire [4:0] filter_XID [0:47];
 wire [2:0] filter_YID [0:5];  // 修改為每行一個
@@ -35,6 +36,7 @@ pe_array_id_generator dut (
     .e(e),
     .t_H(t_H),
     .t_W(t_W),
+    .U(U),
     .LINEAR(LINEAR),
     .filter_XID(filter_XID),
     .filter_YID(filter_YID),
@@ -54,11 +56,12 @@ initial begin
     KERNEL_H = 2'd3;     // 卷積核高度
     p = 3'd4;
     q = 3'd4;
-    r = 3'd1;            // 重要參數（恢復為C代碼的r=1）
-    t = 3'd1;
-    e = 6'd16;
+    r = 3'd2;            // 重要參數（恢復為C代碼的r=1）
+    t = 3'd4;
+    e = 5'd2;
     t_H = 3'd1;          // 預先計算值
-    t_W = 3'd1;
+    t_W = 3'd4;
+    U = 2'd1;
     LINEAR = 0;          // 非線性模式
     
     #5000;

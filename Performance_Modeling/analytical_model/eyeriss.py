@@ -153,6 +153,7 @@ class EyerissAnalyzer:
 
         # filter usage
         # 公式：filter_usage = (p × t) × (q × r) × R × S × 1 byte
+        # depthwise + pointwise
         filter_usage = (mapping.q * mapping.r) * conv.R * conv.S * DATA_SIZE \
                      + (mapping.p * mapping.t) * (mapping.q * mapping.r) * DATA_SIZE
 
@@ -223,7 +224,7 @@ class EyerissAnalyzer:
             )
             num_filter_tiles_point = (
                 math.ceil(conv.M / (mapping.m)) *
-                math.ceil(mapping.m/ (mapping.p * mapping.t)) *
+                math.ceil(mapping.m / (mapping.p * mapping.t)) *
                 math.ceil(conv.N / mapping.n) *
                 math.ceil(conv.E / mapping.e) *
                 math.ceil(conv.C / (mapping.q * mapping.r))

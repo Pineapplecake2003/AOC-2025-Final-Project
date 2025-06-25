@@ -46,7 +46,7 @@ void load_data(vector<vector<vector<int8_t>>>& ifmap, vector<vector<vector<vecto
     ifmap_file.close();
     ss.str(line);
     ss.clear();
-    for (int i = 0; i < (e + FILT_ROW - 1); i++) {
+    for (int i = 0; i < STRIDE * (e-1) + FILT_ROW; i++) {
         for (int j = 0; j < IFMAP_COL; j++) {
             for (int k = 0; k < q * r; k++) {
                 if (getline(ss, value, ',')) {
@@ -113,7 +113,7 @@ void load_data(vector<vector<vector<int8_t>>>& ifmap, vector<vector<vector<vecto
 }
 int main(int argc, char const *argv[])
 {
-    vector<vector<vector<int8_t>>> ifmap((e + FILT_ROW - 1), vector<vector<int8_t>>(IFMAP_COL, vector<int8_t>(q * r)));
+    vector<vector<vector<int8_t>>> ifmap((STRIDE * (e-1) + FILT_ROW), vector<vector<int8_t>>(IFMAP_COL, vector<int8_t>(q * r)));
     vector<vector<vector<vector<int8_t>>>> filter(
         p * t, vector<vector<vector<int8_t>>>(FILT_ROW, vector<vector<int8_t>>(FILT_COL, vector<int8_t>(q * r))));
     vector<vector<vector<int32_t>>> ipsum(e, vector<vector<int>>(OFMAP_COL, vector<int32_t>(p * t)));
@@ -125,7 +125,7 @@ int main(int argc, char const *argv[])
     load_data(ifmap, filter, ipsum, opsum_golden, bias);
     int num_bytes = 0;
     // ifmap
-    for (int row = 0; row < (e + FILT_ROW - 1); row++){
+    for (int row = 0; row < (STRIDE * (e-1) + FILT_ROW); row++){
         for (int col = 0; col < IFMAP_COL; col++){
             for (int ic = 0; ic < q * r; ic++){
                 fprintf(GLB_file, "%02x\n", static_cast<uint8_t>(ifmap[row][col][ic]));

@@ -1,7 +1,7 @@
 /* verilator lint_off MULTITOP */
-`include "../../src/PE_array/GIN/GIN_Bus.sv"
-`include "../../src/PE_array/GIN/GIN_MulticastController.sv"
-`include "../../include/define.svh"
+`include "src/PE_array/GIN/GIN_Bus.sv"
+`include "src/PE_array/GIN/GIN_MulticastController.sv"
+`include "define.svh"
 module GIN (
   input clk,
   input rst,

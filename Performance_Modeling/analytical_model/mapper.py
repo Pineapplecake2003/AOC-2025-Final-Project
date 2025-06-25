@@ -84,7 +84,8 @@ class EyerissMapper:
         self.analyzer.hardware = hardware_param
 
     def p_avaliable(self) -> list[int]:
-        p_max = self.hardware.filter_spad_size // PSUM_DATA_SIZE
+        # normal pe case (psum spad size is 16)
+        p_max = (self.hardware.psum_spad_size // 2) // PSUM_DATA_SIZE
         return list(range(1, p_max + 1))
 
     def q_avaliable(self) -> list[int]:
@@ -119,7 +120,8 @@ class EyerissMapper:
             return False
 
         # psum_spad_size limitations
-        if q + p > self.hardware.psum_spad_size // 4:
+        # super pe case (psum size is 32)
+        if (q + p > self.hardware.psum_spad_size // 4):
             return False
 
         # e 約束條件：e 必須與 PE 陣列寬度相關或等於輸出高度
@@ -176,7 +178,7 @@ class EyerissMapper:
         pe_array_w_list = [8]
         ifmap_spad_size_list = [12]
         filter_spad_size_list = [48]
-        psum_spad_size_list = [32]
+        psum_spad_size_list = [32] # SUPER PE psum spad size
         glb_size_list = [64 * 2**10]
         bus_bw_list = [4]
         noc_bw_list = [4]

@@ -1,4 +1,5 @@
-`include "../../include/define.svh"
+/* verilator lint_off MULTITOP */
+`include "define.svh"
 
 module GIN_Bus #(
   parameter NUMS_SLAVE = `NUMS_PE_COL,

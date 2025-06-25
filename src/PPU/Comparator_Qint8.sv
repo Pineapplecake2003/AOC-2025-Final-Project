@@ -1,4 +1,4 @@
-`include "../../include/define.svh"
+`include "define.svh"
 
 module Comparator_Qint8 (
 	input clk,

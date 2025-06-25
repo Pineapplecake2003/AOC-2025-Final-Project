@@ -1,5 +1,5 @@
 # AOC 2025 Final Project
-
+# Please switch to stride2
 ## Team 1 : Cache Me If You Can
 N26140626 葉人豪
 E94101119 宋晉誠
@@ -7,316 +7,6 @@ E24104032 吳秉宥
 E24106034 簡德彥
 F74106092 吳翰宇
 
-## File Hierachy
-```
-AOC-2025-Final-Project--->
-AOC-2025-Final-Project/
-├── art
-│   ├── fail.txt
-│   └── pass.txt
-├── count.py
-├── GLB_mirror_gen.cpp
-├── ID_gen.cpp
-├── ID_to_verilog_file_format.cpp
-├── include
-│   ├── define.svh
-│   └── one_pass_tb.svh
-├── Makefile
-├── mobilenet_data_gen.cpp
-├── Performance_Modeling
-│   ├── analytical_model
-│   │   ├── eyeriss.py
-│   │   ├── __init__.py
-│   │   └── mapper.py
-│   ├── CONV.csv
-│   ├── FC_layer.csv
-│   ├── layer_info.py
-│   ├── lib
-│   │   ├── models
-│   │   │   ├── __init__.py
-│   │   │   ├── lenet.py
-│   │   │   ├── mlp.py
-│   │   │   ├── mobilenet_v1.py
-│   │   │   └── qconfig.py
-│   │   └── utils
-│   │       ├── dataset.py
-│   │       ├── __init__.py
-│   │       └── utils.py
-│   ├── main.py
-│   ├── mobilenetv1-cifar10.ipynb
-│   ├── network_parser
-│   │   ├── __init__.py
-│   │   ├── network_parser.py
-│   │   ├── parser_onnx.onnx
-│   │   └── torch2onnx.py
-│   ├── onnx_inference.py
-│   ├── profiling.py
-│   ├── Profiling_Results
-│   │   ├── mobilenet_v1_fp32.jpg
-│   │   └── mobilenet_v1_int8.jpg
-│   ├── requirements.txt
-│   ├── roofline.py
-│   └── weights
-│       ├── mobilenetv1-power2.pt
-│       └── mobilenetv1.pt
-├── README.md
-├── src
-│   ├── Controller
-│   │   ├── Controller_pass.sv
-│   │   ├── filter_XID.txt
-│   │   ├── filter_YID.txt
-│   │   ├── GLB.sv
-│   │   ├── ID_gen_combinational.v
-│   │   ├── ifmap_XID.txt
-│   │   ├── ifmap_YID.txt
-│   │   ├── ipsum_XID.txt
-│   │   ├── ipsum_YID.txt
-│   │   ├── opsum_XID.txt
-│   │   └── opsum_YID.txt
-│   ├── PE_array
-│   │   ├── GIN
-│   │   │   ├── GIN_Bus.sv
-│   │   │   ├── GIN_MulticastController.sv
-│   │   │   └── GIN.sv
-│   │   ├── GON
-│   │   │   ├── GON_Bus.sv
-│   │   │   ├── GON_MulticastController.sv
-│   │   │   └── GON.sv
-│   │   ├── PE_array.sv
-│   │   ├── PE.sv
-│   │   ├── SUPER_newer.sv
-│   │   └── SUPER.sv
-│   ├── PPU
-│   │   ├── Comparator_Qint8.sv
-│   │   ├── post_quant.sv
-│   │   ├── PPU.sv
-│   │   └── ReLU_Qint8.sv
-│   ├── Tiling
-│   │   └── tiling.sv
-│   └── Top.sv
-├── tb_ID_gen_combinational.v
-├── testbench
-│   ├── config_PE_array.h
-│   ├── config_PE.h
-│   ├── config_PPU.h
-│   ├── config_SUPER.h
-│   ├── one_pass_tb.sv
-│   ├── PE_array_test_data
-│   │   ├── depthwise_separable_p_leq_4
-│   │   │   └── test data ...
-│   │   ├── depthwise_separable_tb0_format
-│   │   │   └── test data ...
-│   │   ├── depthwise_separable_tb1_format
-│   │   │   └── test data ...
-│   │   ├── depthwise_separable_tb2_format
-│   │   │   └── test data ...
-│   │   ├── depthwise_separable_tb3_format
-│   │   │   └── test data ...
-│   │   ├── depthwise_separable_tb4_format
-│   │   │   └── test data ...
-│   │   ├── depthwise_separable_tb5_format
-│   │   │   └── test data ...
-│   │   ├── depthwise_separable_tb6_format
-│   │   │   └── test data ...
-│   │   ├── linear_tb1
-│   │   │   └── test data ...
-│   │   ├── linear_tb2
-│   │   │   └── test data ...
-│   │   ├── tb0
-│   │   │   └── test data ...
-│   │   ├── tb1
-│   │   │   └── test data ...
-│   │   ├── tb2
-│   │   │   └── test data ...
-│   │   ├── tb3
-│   │   │   └── test data ...
-│   │   ├── tb4
-│   │   │   └── test data ...
-│   │   ├── tb5
-│   │   │   └── test data ...
-│   │   └── tb6
-│   │       └── test data ...
-│   ├── PE_test_data
-│   │   ├── depthwise_separable0
-│   │   │   └── test data ...
-│   │   ├── depthwise_separable1
-│   │   │   └── test data ...
-│   │   ├── depthwise_separable2
-│   │   │   └── test data ...
-│   │   ├── depthwise_separable3
-│   │   │   └── test data ...
-│   │   ├── tb0
-│   │   │   └── test data ...
-│   │   ├── tb1
-│   │   │   └── test data ...
-│   │   ├── tb2
-│   │   │   └── test data ...
-│   │   ├── tb3
-│   │   │   └── test data ...
-│   │   ├── tb4
-│   │   │   └── test data ...
-│   │   ├── tb5
-│   │   │   └── test data ...
-│   │   ├── tb6
-│   │   │   └── test data ...
-│   │   └── tb7
-│   │       └── test data ...
-│   ├── PPU_test_data
-│   │       └── test data ...
-│   ├── tb_array.cpp
-│   ├── tb_PE.cpp
-│   ├── tb_PPU.cpp
-│   ├── tb_SUPER.cpp
-│   ├── Tiling
-│   │   ├── Makefile
-│   │   ├── tb_tiling.cpp
-│   │   ├── testbench.sv
-│   │   └── tiling.cpp
-│   ├── Tiling_cpp
-│   │   ├── conv0
-│   │   │   ├── bias.txt
-│   │   │   ├── data.log
-│   │   │   ├── filter.txt
-│   │   │   ├── golden_output.txt
-│   │   │   └── ifmap.txt
-│   │   ├── conv1
-│   │   │   ├── bias.txt
-│   │   │   ├── data.log
-│   │   │   ├── filter.txt
-│   │   │   ├── golden_output.txt
-│   │   │   └── ifmap.txt
-│   │   ├── conv3
-│   │   │   ├── bias.txt
-│   │   │   ├── data.log
-│   │   │   ├── filter.txt
-│   │   │   ├── golden_output.txt
-│   │   │   └── ifmap.txt
-│   │   ├── conv5
-│   │   │   ├── bias.txt
-│   │   │   ├── data.log
-│   │   │   ├── filter.txt
-│   │   │   ├── golden_output.txt
-│   │   │   └── ifmap.txt
-│   │   ├── conv7
-│   │   │   ├── bias.txt
-│   │   │   ├── data.log
-│   │   │   ├── filter.txt
-│   │   │   ├── golden_output.txt
-│   │   │   └── ifmap.txt
-│   │   ├── Makefile
-│   │   ├── tiling.cpp
-│   │   └── ttt.py
-│   └── Top
-│       ├── conv0
-│       │   ├── bias.txt
-│       │   ├── filter.txt
-│       │   ├── golden_output.txt
-│       │   └── ifmap.txt
-│       ├── makefile
-│       ├── tb0
-│       │   ├── bias.txt
-│       │   ├── filter.txt
-│       │   ├── golden_output.txt
-│       │   └── ifmap.txt
-│       └── testbench.sv
-├── test_data_gen.cpp
-└── TVM
-    ├── Csource
-    │   ├── color.h
-    │   ├── input.c
-    │   ├── input.h
-    │   ├── utils.c
-    │   └── utils.h
-    ├── data
-    │   └── cifar10
-    │       └── cifar-10-batches-py
-    │           └── batches.meta
-    ├── lab
-    │   ├── makefile
-    │   ├── massif.out.massif_test
-    │   ├── massif_output.txt
-    │   ├── massif_test
-    │   └── massif_test.c
-    ├── Makefile
-    ├── model
-    │   └── Mobilenet_v1-power2.onnx
-    ├── output
-    │   ├── bin
-    │   │   ├── input.bin
-    │   │   └── weight.bin
-    │   ├── Ccodegen
-    │   │   ├── model.cpp
-    │   │   ├── weight.c
-    │   │   └── weight.h
-    │   ├── model_c
-    │   │   ├── devc.o
-    │   │   ├── lib0.o
-    │   │   └── lib1.o
-    │   ├── model_c.tar
-    │   ├── relay
-    │   │   ├── relay_mc_AnnotateTarget_model.txt
-    │   │   ├── relay_mc_MergeCompilerRegions_model.txt
-    │   │   ├── relay_mc_MergeComposite_model.txt
-    │   │   ├── relay_mc_origin_model.txt
-    │   │   └── relay_mc_PartitionGraph_model.txt
-    │   ├── visu_VGG8_relay_ir_pass.svg
-    │   └── visu_VGG8_relay_ir.svg
-    ├── Python
-    │   ├── build_model.py
-    │   ├── utils
-    │   │   ├── codegen.py
-    │   │   ├── datagen.py
-    │   │   ├── fuse.py
-    │   │   ├── __init__.py
-    │   │   ├── note.py
-    │   │   ├── __pycache__
-    │   │   └── utils.py
-    │   └── VisuTVM
-    │       ├── main.py
-    │       ├── __pycache__
-    │       ├── utils.py
-    │       └── visu_tvm.py
-    ├── simulation
-    │   ├── hardware
-    │   │   └── Compiled hardware files.
-    │   └── software
-    │       ├── include
-    │       │   ├── eyeriss
-    │       │   │   └── runtime.h
-    │       │   └── hal
-    │       │       ├── axi.hpp
-    │       │       └── hal.hpp
-    │       └── src
-    │           ├── eyeriss
-    │           │   ├── cpu
-    │           │   │   ├── improve
-    │           │   │   │   ├── hardware_cpu.c
-    │           │   │   │   ├── hardware_cpu.h
-    │           │   │   │   └── runtime_cpu.c
-    │           │   │   └── original
-    │           │   │       ├── hardware_cpu.c
-    │           │   │       ├── hardware_cpu.h
-    │           │   │       └── runtime_cpu.c
-    │           │   └── dla
-    │           │       ├── hardware_dla.cpp
-    │           │       ├── hardware_dla.h
-    │           │       └── runtime_dla.cpp
-    │           └── hal
-    │               └── hal.cpp
-    └── testbench
-        ├── cpu
-        │   ├── log
-        │   │   ├── err.log
-        │   │   └── out.log
-        │   ├── main
-        │   ├── main.cpp
-        │   ├── Makefile
-        │   └── obj
-        └── dla
-            ├── main.cpp
-            ├── Makefile
-            └── obj
-```
 ## Main Purpose And Motivation 
 本研究的主要目的是在執行卷積神經網路（CNN）推論時，優化系統的能源效率。隨著深度學習模型在邊緣裝置與嵌入式系統中的應用越來越普遍，能源消耗成為一個關鍵課題。根據 ESL 的資料指出，DRAM 存取最多可佔系統總能耗的 70%，因此，如何有效減少資料移動，並選用一個適合實作且修改過的模型放在 Eyeriss 硬體上運行，最終選擇 Mobilenet v1 去改良，去檢測是否符合我們預期結果。成為提升能效的首要任務。
 
@@ -324,7 +14,7 @@ AOC-2025-Final-Project/
 
 * 最小化資料移動：減少對 DRAM 和全域快取的讀寫次數，降低能量消耗。
 * 強化資料重用：在處理單元（Processing Elements）內部實現最大化的資料重用，進一步節省功耗。
-* 資料壓縮：運用如游程編碼（Run-Length Coding）與跳過零值的運算（Zero Skipping）等技巧，減少不必要的運算與資料傳輸。
+* 資料壓縮與閘控技術：運用如游程編碼（Run-Length Coding）與跳過零值的運算（Zero Skipping）等技巧，減少不必要的運算與資料傳輸。
 
 這些方法能夠協助提升 CNN 推論在硬體上的能源效率，延長裝置使用壽命、減少熱功耗、並推動 AI 系統朝向低功耗、高效能的方向發展。
 
@@ -341,14 +31,14 @@ AOC-2025-Final-Project/
 | InceptionV3     | 23.8M | ~5.7G (MACs)  | (ImageNet) top1=77.9% top5=93.7%   | Conv, BN, ReLU, Concat, MaxPool               | **Moderate:**  High reuse with multi-size filters, but layer shape variation increases DRAM access (~3-6 MB on v2).                             |
 | DenseNet121     | 8M    | ~5.7G (MACs)  | (ImageNet) top1=74.98% top5=92.21% | Conv, BN, ReLU, Concat, MaxPool               | **High:** Low params, stable layers, high reuse via dense connections. DRAM access ~2-5 MB after pruning.                                                    |
 | ConvNeXt Tiny   | 28.6M | ~8.7G (MACs)  | (ImageNet) top1=82.1% top5=95.8%   | Conv, LayerNorm, GELU, MaxPool                | **High:** High reuse with 7x7 filters, stable layers. DRAM access ~3-6 MB. Good for original Eyeriss.                                                        |
->[!Warning]
->Why not choose SqueezeNet
->SqueezeNet **may not easy** to implement in >Eyeriss(mapping parameter).
-
+:::warning
+Why not choose SqueezeNet
+SqueezeNet **may not easy** to implement in Eyeriss(mapping parameter).
+:::
 
 ## Software
 ### AI Model Design and Quantization
-**file path：**`Performance_Modeling/mobilenetv1-cifar10.ipynb`
+**file path：**`AOC-PE-filter-size-change/Performance_Modeling/mobilenetv1-cifar10.ipynb`
 
 you can run **mobilenetv1-cifar10.ipynb** with kaggle or colab.
 
@@ -458,12 +148,12 @@ conda activate aoc
 ```
 2.Install packages
 ```bash
-cd Performance_Modeling
+cd AOC-PE-filter-size-change/Performance_Modeling
 pip install -r requirements.txt
 ```
 
 #### FP32 - mobilenetv1.pt
-**file path：**`Performance_Modeling/weights/mobilenetv1.pt`
+**file path：**`AOC-PE-filter-size-change/Performance_Modeling/weights/mobilenetv1.pt`
 
 ```bash
 python3 profiling.py weights/mobilenetv1.pt
@@ -473,7 +163,7 @@ python3 profiling.py weights/mobilenetv1.pt
 ![mobilenet_v1_fp32](https://hackmd.io/_uploads/ryeFuY6mlx.jpg)
 
 #### INT8 - mobilenetv1-power2.pt
-**file path：**`Performance_Modelin/Profiling_Results/weights/mobilenetv1-power2.pt`
+**file path：**`AOC-PE-filter-size-change/Performance_Modelin/Profiling_Results/weights/mobilenetv1-power2.pt`
 
 ```bash
 python3 profiling.py weights/mobilenetv1-power2.pt -b power2
@@ -514,7 +204,7 @@ python3 profiling.py weights/mobilenetv1-power2.pt -b power2
 We use the following mapping result to generate the verification test data for the subsequent testbench.
 
 ```bash
-cd Performance_Modeling
+cd AOC-PE-filter-size-change/Performance_Modeling
 python3 main.py ./weights/mobilenetv1-power2.pt
 ```
 
@@ -548,10 +238,33 @@ python3 main.py ./weights/mobilenetv1-power2.pt
 
 
 ### PE config modification
+```graphviz
+digraph {
+    rankdir="LR"
+    node [shape=record];
+    bits [label="{
 
-![config](https://hackmd.io/_uploads/Hk6CHqY4ge.png)
-
-
+        {{9}|mode} | 
+        {{8|7}|p-1} | 
+        {{6|5|4|3|2}|F-1} |
+        {{1|0}|q-1}
+    }"];
+}
+```
+```graphviz
+digraph {
+    rankdir="LR"
+    node [shape=record];
+    bits [label="{
+        {{12}|depthwise} |
+        {{11|10}| FILTER_RS - 1} | 
+        {{9}|U - 1} | 
+        {{8|7}|p-1} | 
+        {{6|5|4|3|2}|F-1} |
+        {{1|0}|q-1}
+    }"];
+}
+```
 為了支援MobileNet depthwise separable convolution 多了`depthwise`，`FILTER_RS-1`為可以支援kernel size from 1 to 3，將`mode`改為`U-1`用以支援stride = 1 or 2。
 
 ### PE (Process Element)
@@ -824,28 +537,16 @@ The problem we will figure out in future.
 |`gen_test_data_for_depthwise_array`|Generate depthwise separable convolution one pass testbench data for array.|
 |`gen_test_data_for_pe`|Generate normal convolution testbench data for PE.|
 |`gen_test_data_for_depthwise_pe`|Generate depthwise separable convolution testbench data for SUPER.|
-|`gen_test_data_for_mobilenet`|Generate normal convolution testbench data for MobileNetV1.|
-|`gen_test_data_for_mobilenet_depthwise`|Generate depthwise separable convolution testbench data for MobileNetV1.|
-|`gen_test_data_for_mobilenet_linear`|Generate FC layer testbench data for MobileNetV1.|
-|`gen_ID_CONV`|Generate CONV layer ID for specific mapping parameter by `ID_gen.cpp`.|
-|`gen_ID_LINEAR`|Generate FC layer ID for specific mapping parameter by `ID_gen.cpp`.|
-|`vcs_id_gen`|Generate layer ID for specific mapping parameter by `ID_gen_combinational.v`.|
 |`vcs%`|Generate GLB mirror for No.`%` testbench as inital data in GLB, simulate one pass normal/depthwise separable convolution in module which consist of `PE_array`, `GLB`, `Controller_pass` with vcs.|
 |`clean`|Remove unnecessary files.|
 
 
->[!Warning]
->`%` is a interger number which reperesent No.`%` testcase.
->If you replace `%` with `_all` in the options above, >the Makefile will run all test cases.
-
+:::info
+`%` is a interger number which reperesent No.`%` testcase.
+If you replace `%` with `_all` in the options above, the Makefile will run all test cases.
+:::
 #### Usage
 Type
 ```bash
 make <options>
 ```
-
-#### Makefile of tiling.cpp
-|options|function|
-|---|---|
-|`layer0`~`layer9`|Execute C++ simulation of tiling of all 10 layers of our MobileNetV1 model.|
-|`clean`|Remove unnecessary files.|

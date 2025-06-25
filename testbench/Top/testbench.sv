@@ -2,7 +2,7 @@
 `define CYCLE 10.0    
 `define MAX_CYCLE 500000
 `define MAX_TILE 20
-`include "../../src/Top.sv"
+`include "src/Top.sv"
 
 module Top_tb;
 
@@ -20,7 +20,7 @@ module Top_tb;
     logic [31:0] ctrl_reg_wdata;
 
     // 模擬 DRAM 記憶體
-    logic [7:0] dram_mem [0 : 16000];
+    logic [7:0] dram_mem [0 : 20000];
 
     Top #(
         .DRAM_IFMAP_BASE_ADDR (0),

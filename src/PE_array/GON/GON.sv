@@ -1,6 +1,6 @@
 /* verilator lint_off MULTITOP */
-`include "../../src/PE_array/GON/GON_Bus.sv"
-`include "../../src/PE_array/GON/GON_MulticastController.sv"
+`include "src/PE_array/GON/GON_Bus.sv"
+`include "src/PE_array/GON/GON_MulticastController.sv"
 module GON (
   input clk,
   input rst,

@@ -20,14 +20,14 @@
 // #define OUT_HEIGHT      e
 // #define OUT_WIDTH       ((IN_WIDTH - KERNEL_SIZE_W)/STRIDE + 1)
 // #define OUT_CHANNEL     (p*t)
-#define IN_INITIAL      31
-#define PADDING         1
+#define IN_INITIAL      5
+#define PADDING         0
 #define IN_WIDTH        IN_INITIAL + 2 * PADDING 
 #define IN_HEIGHT       IN_WIDTH
-#define IN_CHANNEL      64
+#define IN_CHANNEL      512
 #define OUT_WIDTH       ((IN_WIDTH - KERNEL_SIZE_W)/STRIDE + 1)
 #define OUT_HEIGHT      OUT_WIDTH
-#define OUT_CHANNEL     128
+#define OUT_CHANNEL     1024
 
 uint8_t random_uint8() {
     static std::random_device rd;
@@ -106,6 +106,22 @@ int main(){
                 pointwise_filter[oc][ic][0][0] = random_int8();
             }
         }
+    #elif USE_LINEAR // M is 10
+        for (int oc = 0; oc < OUT_CHANNEL; oc++){
+            for (int ic = 0; ic < IN_CHANNEL; ic++){
+                for (int row = 0; row < KERNEL_SIZE_H; row++){
+                    for (int col = 0; col < KERNEL_SIZE_W; col++){
+                        if(oc==10 || oc==11){ // for linear layer
+                            filter[oc][ic][row][col] = 0; // 0 for linear layer
+                        } else if(ic>1023){
+                            filter[oc][ic][row][col] = 0; // 0 for linear layer
+                        } else{
+                            filter[oc][ic][row][col] = random_int8();
+                        }
+                    }
+                }
+            }
+        }       
     #else
         // 初始化 filter (一般卷積核)
         for (int oc = 0; oc < OUT_CHANNEL; oc++){
@@ -335,24 +351,23 @@ int main(){
                 pointwise_filter_num += 4;
             }
         }
-    #else
-        /*
+    #elif USE_LINEAR
         // Linear 待補齊
         for(int oc =0; oc < OUT_CHANNEL; oc++){
             for (int ic = 0; ic < IN_CHANNEL; ic++){
-                if(oc == 10 || oc == 11){ // for linear layer
-                    fprintf(filter_file, "%d", 0);
-                } else {
-                    fprintf(filter_file, "%d", pointwise_filter[oc][ic][0][0]);
-                }
+                // if(oc == 10 || oc == 11){ // for linear layer
+                //     fprintf(filter_file, "%d", 0);
+                // } else {
+                //     fprintf(filter_file, "%d", filter[oc][ic][0][0]);
+                // }
+                fprintf(filter_file, "%d", filter[oc][ic][0][0]);
+
                 if(!(oc == OUT_CHANNEL-1 && ic == IN_CHANNEL-1)){
                     fprintf(filter_file, ",");
                 }
             }
         }
-        */
-
-        
+    #else
         for (int oc = 0; oc < OUT_CHANNEL; oc++){
             for (int row = 0; row < KERNEL_SIZE_H; row++){
                 for (int col = 0; col < KERNEL_SIZE_W; col++){
@@ -366,22 +381,6 @@ int main(){
                 }
             }
         }
-
-        // 因應 tiling 那邊的 filter file loop 順序
-        // filter_file loop nest with oc to the most inner loop 
-        // for (int row = 0; row < KERNEL_SIZE_H; row++){
-        //     for (int col = 0; col < KERNEL_SIZE_W; col++){
-        //         for (int ic = 0; ic < IN_CHANNEL; ic++){
-        //             for (int oc = 0; oc < OUT_CHANNEL; oc++){
-        //                 if(oc == OUT_CHANNEL-1 && ic == IN_CHANNEL-1 && row == KERNEL_SIZE_H-1 && col == KERNEL_SIZE_W-1){
-        //                     fprintf(filter_file, "%d", filter[oc][ic][row][col]);
-        //                 } else {
-        //                     fprintf(filter_file, "%d,", filter[oc][ic][row][col]);
-        //                 }
-        //             }
-        //         }
-        //     }
-        // } 
     #endif
 
     for (int oc = 0; oc < OUT_CHANNEL; oc++){

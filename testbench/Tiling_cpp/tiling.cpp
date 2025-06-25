@@ -3,37 +3,26 @@
 #include <stdint.h>
 #include <iostream>
 #include <iomanip> // for std::setw
+#include "config_tiling.h"
 using namespace std;
 // ifmap [row][col][c]
 // psum [row][col][oc]
 // filter [row][col][ic][oc]
-<<<<<<< HEAD:testbench/Tiling/tiling.cpp
-#define M 32
-#define C 3
-#define m 32
-#define p 4
-#define q 3
-#define r 1
-#define t 2
-#define U 1
-#define e 8
-=======
-#define C 512
-#define M 512
-#define m 512
-#define p 4
-#define q 4
-#define r 2
-#define t 2
-#define U 1
-#define e 4
->>>>>>> c672c32ec52d0556ab9e8b97679eceac52f9a1cb:testbench/Tiling_cpp/tiling.cpp
-#define R 3
-#define H 6 // H after padding
-#define W 6 // W after padding
-#define PAD 0
-#define F ((W-3+2*PAD)/U+1)
-#define E ((H-3+2*PAD)/U+1)
+// #define C 1032
+// #define M 12
+// #define m 12
+// #define p 4
+// #define q 4
+// #define r 6
+// #define t 3
+// #define U 1
+// #define e 1
+// #define R 1
+// #define H 1 // H after padding
+// #define W 1 // W after padding
+// #define PAD 0
+// #define F ((W-R+2*PAD)/U+1)
+// #define E ((H-R+2*PAD)/U+1)
 
 void print_ifmap_custom(uint8_t data[H][W][C], int h, int w, int c) {
     printf("ifmap:\n");
@@ -202,7 +191,7 @@ void compare_with_golden(int32_t opsum[E][F][M], int32_t golden[E][F][M]) {
 void dla_compute(int glb_ifmap_addr, int glb_filter_addr,int glb_opsum_addr, uint8_t* glb){
     printf("DLA compute. opsum addr: %d\n", glb_opsum_addr);
     uint8_t ifmap_tile[U*(e-1)+R][W][q*r];
-    int8_t filter_tile[3][3][q*r][p*t];
+    int8_t filter_tile[R][R][q*r][p*t];
     int8_t depthwise_filter_tile[R][R][q*r];
     int8_t pointwise_filter_tile[1][1][q*r][p*t];
     int32_t psum_tile[e][F][p*t]={{{0}}};
@@ -249,7 +238,7 @@ void dla_compute(int glb_ifmap_addr, int glb_filter_addr,int glb_opsum_addr, uin
     for (int oc = 0; oc < p * t; oc++) {
         for (int row = 0; row < R; row++) {
             for (int col = 0; col < R; col++) {
-                for (int ic = 0; ic < q * r; ic++) {
+                for (int ic = 0; ic < q*r; ic++) {
                     filter_tile[row][col][ic][oc] = (int8_t)glb[filter_addr++];
                 }
             }
@@ -315,6 +304,16 @@ void dla_compute(int glb_ifmap_addr, int glb_filter_addr,int glb_opsum_addr, uin
                     }
                 }
             }
+        }
+        for (int oc = 0; oc < p * t; oc++) {
+            std::cout << "Output Channel " << oc << ":\n";
+            for (int h = 0; h < e; h++) {
+                for (int w = 0; w < F; w++) {
+                    std::cout << std::setw(6) << psum_tile[h][w][oc] << " ";
+                }
+                std::cout << "\n";
+            }
+            std::cout << "-----------------------------\n";
         }
     #else
         int depthwise_result_tile[e][F][q*r] = {{{0}}}; 
@@ -477,53 +476,56 @@ int main(int argc, char const *argv[])
     int32_t golden_opsum[E][F][M];
     uint8_t glb[65535] = {0};
 
-<<<<<<< HEAD:testbench/Tiling/tiling.cpp
-    load_ifmap_from_file("./tb1/ifmap.txt", ifmap);
-    load_filter_from_file("./tb1/filter.txt", filter);
-    load_bias_from_file("./tb1/bias.txt", bias);
-    load_golden_output_from_file("./tb1/golden_output.txt", golden_opsum);
-=======
-    load_ifmap_from_file("./conv7/ifmap.txt", ifmap);
-    load_filter_from_file("./conv7/filter.txt", filter);
-    load_bias_from_file("./conv7/bias.txt", bias);
-    load_golden_output_from_file("./conv7/golden_output.txt", golden_opsum);
->>>>>>> c672c32ec52d0556ab9e8b97679eceac52f9a1cb:testbench/Tiling_cpp/tiling.cpp
+    load_ifmap_from_file(IFMAP_FILE.c_str(), ifmap);
+    load_filter_from_file(FILTER_FILE.c_str(), filter);
+    load_bias_from_file(BIAS_FILE.c_str(), bias);
+    load_golden_output_from_file(GOLDEN_FILE.c_str(), golden_opsum);
 
     int E_idx;
     int num = 0;
     for (int M_idx = m - 1; M_idx < M; M_idx += m){
         for (E_idx = e - 1; E_idx < E; E_idx += e){
             printf("E_idx: %d\n", E_idx);
+            // int C_pad = ((C + q*r - 1) / (q*r)) * (q*r);  // 向上取整為 q*r 的倍數
             for (int c_idx = q * r - 1; c_idx < C; c_idx += q * r){
-                    printf("ifmap [%2d:%2d][%2d:%2d][%2d:%2d]\n",
-                        (E_idx - e + 1) * U, E_idx * U + 3 - 1,
-                        0, W-1,
-                        c_idx - q * r + 1, c_idx
-                    );
-                    ifmap_to_glb(
-                        c_idx - q * r + 1, c_idx,
-                        0, W-1,
-                        (E_idx - e + 1) * U, E_idx * U + 3 - 1,
-                        ifmap,
-                        0,
-                        glb
-                    );
-                    int current_pass_glb_opsum_addr = W * (U*(e-1)+R)* q*r + p*t *q*r*R*R + p*t*4;
+                // int c_start = c_idx - q * r + 1;
+                // int c_end   = std::min(c_idx, C - 1);  // 最多只能到 C-1，超過的當 padding
+                // int c_ = c_end - c_start + 1;
+                // printf("c_ is %d\n", c_);
+                
+                printf("ifmap [%2d:%2d][%2d:%2d][%2d:%2d]\n",
+                    (E_idx - e + 1) * U, E_idx * U + R - 1,
+                    0, W-1,
+                    c_idx - q * r + 1, c_idx
+                    // c_start, c_end
+                );
+                ifmap_to_glb(
+                    c_idx - q * r + 1, c_idx,
+                    // c_start, c_end,
+                    0, W-1,
+                    (E_idx - e + 1) * U, E_idx * U + R - 1,
+                    ifmap,
+                    0,
+                    glb
+                );
+                int current_pass_glb_opsum_addr = W * (U*(e-1)+R)* q*r + p * t * q*r * R * R + p * t * 4;
                 for (int m_idx = p * t - 1; m_idx < m; m_idx += p * t){
                     num++;
                     
                     // write filter to glb
                     printf("filter[%2d:%2d][%2d:%2d][%2d:%2d][%2d:%2d]\n",
-                        0, 2, 0, 2,
+                        0, R-1, 0, R-1,
                         c_idx - q * r + 1, c_idx,
+                        // c_start, c_end,
                         M_idx - m + 1 + m_idx - p * t + 1, M_idx - m + 1 + m_idx
                     );
                     filter_to_glb(
                         c_idx - q * r + 1, c_idx,
+                        // c_start, c_end,
                         M_idx - m + 1 + m_idx - p * t + 1, M_idx - m + 1 + m_idx,
-                        0, 2, 0, 2,
+                        0, R-1, 0, R-1,
                         filter,
-                        W * (U*(e-1)+R)* q*r,
+                        W * (U*(e-1)+R)* q*r ,
                         glb
                     );
                     
@@ -541,7 +543,7 @@ int main(int argc, char const *argv[])
                     // while(!done){}
                     dla_compute(
                         0,                                                     // glb_ifmap_addr
-                        W * (U * (e - 1) + R) * q * r,                         // glb_filter_addr
+                        W * (U * (e - 1) + R) * q*r,                            // glb_filter_addr
                         current_pass_glb_opsum_addr,                           // glb_opsum_addr
                         glb                                                    // glb pointer
                     );

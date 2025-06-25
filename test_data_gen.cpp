@@ -465,6 +465,19 @@ int main(){
                         fprintf(filter_file, ",");
                     }
                 }
+            }            
+            */
+            for (int oc = 0; oc < OUT_CHANNEL; oc++){
+                for (int row = 0; row < KERNEL_SIZE_H; row++){
+                    for (int col = 0; col < KERNEL_SIZE_W; col++){
+                        for (int ic = 0; ic < IN_CHANNEL; ic++){
+                            fprintf(filter_file, "%d", filter[oc][ic][row][col]);
+                            if(!(col == KERNEL_SIZE_W-1 && ic == IN_CHANNEL-1)){
+                                fprintf(filter_file, ",");
+                            }
+                        }
+                    }
+                }
             }
             */
             for (int oc = 0; oc < OUT_CHANNEL; oc++){

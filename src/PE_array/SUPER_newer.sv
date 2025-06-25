@@ -1,4 +1,4 @@
-`include "../../include/define.svh"
+`include "define.svh"
 module SUPER (
 	input clk,
 	input rst,

@@ -1,4 +1,4 @@
-`include "../../include/define.svh"
+`include "define.svh"
 module PE (
 	input clk,
 	input rst,

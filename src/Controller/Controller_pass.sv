@@ -1,4 +1,4 @@
-`include "../../src/Controller/ID_gen_combinational.v"
+`include "/src/Controller/ID_gen_combinational.v"
 
 module Controller_pass #(
     parameter NUMS_PE_ROW = `NUMS_PE_ROW,
@@ -12,7 +12,6 @@ module Controller_pass #(
     input rst,
 
     /* higher-level controller interface */
-    input start,
     input bias_ipsum_sel,
     input [31:0] op_config,
     input [31:0] mapping_param,
@@ -85,11 +84,12 @@ module Controller_pass #(
 );
 
     /* parameter decode */
-    wire conv_linear, PE_config_U, PE_config_dp;
-    wire [1:0] R, S, U, PE_config_p, PE_config_q, PE_config_R;
-    wire [2:0] p, q, r, t;
-    wire [4:0] e, PE_config_F;
-    wire [7:0] W;
+    wire conv_linear;
+    wire depthwise;
+    wire [1:0] R, S, U;
+    wire [2:0] p, q, r, t, PE_config_p, PE_config_q;
+    wire [4:0] e;
+    wire [7:0] W, PE_config_F;
     assign e = mapping_param[16:12];
     assign p = mapping_param[11:9];
     assign q = mapping_param[8:6];
@@ -100,12 +100,11 @@ module Controller_pass #(
     assign S = shape_param1[21:20];
     assign W = shape_param2[15:8];
     assign conv_linear = op_config[3];
-    assign PE_config_dp = op_config[10];
+    assign depthwise = op_config[10];
     assign PE_config_p = p - 1;
     assign PE_config_F = (W - R) / U;
     assign PE_config_q = q - 1;
     assign PE_config_U = U - 1;
-    assign PE_config_R = R - 1;
 
     wire [31:0] merge_num, merged_PE_ARRAY_W, merged_PE_ARRAY_H, array_H_tile, array_W_tile, t_H, t_W;
     assign merge_num = (e + NUMS_PE_COL - 1) / NUMS_PE_COL;
@@ -137,6 +136,7 @@ module Controller_pass #(
         .e(e),
         .t_H(t_H[2:0]),
         .t_W(t_W[2:0]),
+        .U(U),
         .PE_ARRAY_H(NUMS_PE_ROW[2:0]),
         .PE_ARRAY_W(NUMS_PE_COL[3:0]),
         .KERNEL_H(R),
@@ -162,7 +162,7 @@ module Controller_pass #(
         DONE = 6;
         
     reg [31:0] counter;
-    reg [31:0] row_ct, col_ct, chn_ct, num_ct, r_ct, tH_ct, tW_ct, ipsum_r_ct, ipsum_c_ct, opsum_r_ct, opsum_c_ct;
+    reg [31:0] row_ct, col_ct, chn_ct, num_ct, r_ct, tH_ct, tW_ct, ipsum_r_ct, ipsum_c_ct, opsum_r_ct, opsum_c_ct, u_ct;
     reg [2:0] cs, ns;
 
     /* SET_CONFIG output logic */
@@ -181,7 +181,7 @@ module Controller_pass #(
     assign set_LN = (cs == SET_CONFIG)? ((counter == 0)? 1 : 0) : 0;
 
     assign PE_en = (cs == READ_FILTER)? 48'hffff_ffff_ffff : 0;
-    assign PE_config_out =  {PE_config_dp, PE_config_R ,PE_config_U, PE_config_p, PE_config_F, PE_config_q};
+    assign PE_config_out = (depthwise << 12) | ((R - 1) << 10) | (PE_config_U << 9) | (PE_config_p << 7) | (PE_config_F << 2) | (PE_config_q);
 
     /***************************/
 
@@ -291,6 +291,7 @@ module Controller_pass #(
             GLB_filter_valid    <= 0;
             GLB_ipsum_valid     <= 0;
             GLB_opsum_ready     <= 0;
+            u_ct                <= 0;
         end
         else begin
             cs <= ns;
@@ -312,6 +313,7 @@ module Controller_pass #(
                 GLB_ifmap_valid     <= 0;
                 GLB_ipsum_valid     <= 0;
                 GLB_opsum_ready     <= 0;
+                u_ct                <= 0;
             end
             SET_CONFIG: begin
                 counter             <= (counter == NUMS_PE_ROW*NUMS_PE_COL-1)? 0 : counter + 1;
@@ -337,9 +339,10 @@ module Controller_pass #(
                     GLB_ifmap_valid     <= 0;
                     chn_ct              <= (chn_ct == r-1)? 0 : chn_ct + 1;
                     row_ct              <= (chn_ct == r-1)? ((row_ct == U*(e-1)+R-1)? 0 :  row_ct + 1) : row_ct;
-                    col_ct              <= (chn_ct == r-1 && row_ct == U*(e-1)+R-1)? ((col_ct >= S-1 && col_ct == W - 1)? 0 :  col_ct + 1) : col_ct;
+                    col_ct              <= (chn_ct == r-1 && row_ct == U*(e-1)+R-1)? ((col_ct == W - 1)? 0 : col_ct + 1) : col_ct;
+                    u_ct                <= (chn_ct == r-1 && row_ct == U*(e-1)+R-1)? (u_ct   == U-1 || col_ct == 0)? 0 : u_ct + 1 : u_ct;
                     r_ct                <= (r_ct   == r-1)? 0 : r_ct + 1;
-               end
+                end
                 else begin
                     GLB_ifmap_valid     <= 1;
                 end
@@ -388,7 +391,7 @@ module Controller_pass #(
             ns = (GLB_filter_valid & GLB_filter_ready & filter_addr == bias_baseaddr - q)? READ_IFMAP : READ_FILTER;
         end
         READ_IFMAP: begin
-            ns = (GLB_ifmap_valid & GLB_ifmap_ready && chn_ct == r-1 && row_ct == U*(e-1)+R-1 && col_ct >= S-1)? READ_IPSUM : READ_IFMAP;
+            ns = (GLB_ifmap_valid & GLB_ifmap_ready && chn_ct == r-1 && row_ct == U*(e-1)+R-1 && u_ct == U - 1 && col_ct >= S-1)? READ_IPSUM : READ_IFMAP;
         end
         READ_IPSUM: begin
             ns = (GLB_ipsum_valid & GLB_ipsum_ready && num_ct == p*t-1 && ipsum_r_ct == e-1)? WRITE_OPSUM : READ_IPSUM;

@@ -16,6 +16,11 @@ VERILATOR_FLAGS += --cc --exe
 VERILATOR_FLAGS += -I./include
 CXXFLAGS += -g
 
+FSDB_DEF := +FSDB
+ifeq ($(WV),0)
+FSDB_DEF := 
+endif
+
 # Optimize
 # VERILATOR_FLAGS += -x-assign fast
 
@@ -74,7 +79,7 @@ endif
 ######################################################################
 default: all
 
-.PHONY: all pe_all array_all ppu_all super_all
+.PHONY: all pe_all array_all ppu_all super_all vcs_all
 
 pe_all: pe0 pe1 pe2 pe3 pe4 pe5 pe6 pe7
 array_all: \
@@ -82,14 +87,15 @@ array_all: \
 	array5 array7 array8 array9 array10 \
 	array11 array12 array13 array14 array15 array16
 ppu_all: ppu0 ppu1 ppu2
-super_all:super0 super1 super2 super3 super7 super8 super9 super10
+super_all:super0 super1 super2 super3 \
+		  super4 super5 super6 \
+		  super7 super8 super9
 
 all: pe_all array_all ppu_all super_all
 
-VCS_all: \
-    vcs0 vcs1 vcs2 vcs3 vcs4 \
+vcs_all: vcs0 vcs1 vcs2 vcs3 vcs4 \
 	vcs5 vcs7 vcs8 vcs9 vcs10 \
-	vcs11 vcs12 vcs13 vcs14 vcs15 vcs16
+	vcs11 vcs12 vcs13 vcs14 vcs15 vcs16 vcs17
 
 run:
 	@echo
@@ -151,8 +157,16 @@ gen_test_data_for_array:
 	g++ test_data_gen.cpp -DWHOLE_IFMAP
 	./a.out > data.log
 
+gen_test_data_for_depthwise_array:
+	g++ test_data_gen.cpp -DWHOLE_IFMAP -DUSE_DEPTHWISE
+	./a.out > data.log
+
 gen_test_data_for_pe:
 	g++ test_data_gen.cpp
+	./a.out > data.log
+
+gen_test_data_for_depthwise_pe:
+	g++ test_data_gen.cpp -DUSE_DEPTHWISE
 	./a.out > data.log
 
 gen_test_data_for_mobilenet:
@@ -161,6 +175,10 @@ gen_test_data_for_mobilenet:
 
 gen_test_data_for_mobilenet_depthwise:
 	g++ mobilenet_data_gen.cpp -DUSE_DEPTHWISE
+	./a.out > data.log
+
+gen_test_data_for_mobilenet_linear:
+	g++ mobilenet_data_gen.cpp -DUSE_LINEAR
 	./a.out > data.log
 
 gen_ID_CONV:
@@ -184,20 +202,18 @@ id%:
 	./a.out
 
 vcs%:
-	g++ ID_to_verilog_file_format.cpp -DTBA=$*
-	./a.out
 	g++ GLB_mirror_gen.cpp -DTBA=$*
 	./a.out
 	mkdir -p logs
 	mkdir -p wave
-	vcs -R -sverilog +define+TBA$* +define+FSDB +incdir+./include +incdir+./src -debug_access+all -full64 testbench/one_pass_tb.sv | tee ./logs/vcs_simulation_result$*.log
+	vcs -R -sverilog +define+TBA$* +define+$(FSDB_DEF) +incdir+./include +incdir+./src -debug_access+all -full64 testbench/one_pass_tb.sv | tee ./logs/vcs_simulation_result$*.log
 	@echo "Detailed result store in ./logs/"
 
 # clean *.hex
 maintainer-copy::
 clean mostlyclean distclean maintainer-clean::
-	-rm -rf obj_dir logs a.out *.txt *.log *.dmp *.vpd wave/*.vcd wave/*.fsdb coverage.dat core *.zip release simv ucli.key simv.daidir csrc
-	-rm -rf simv_id_gen.daidir
-	-rm -f gen_ID.out simv_id_gen
+	-rm -rf obj_dir logs a.out *.txt *.log *.dmp *.vpd wave/*.vcd wave/*.fsdb coverage.dat core *.zip release simv ucli.key simv.daidir csrc nWaveLog
+	-rm -rf simv_id_gen.daidir vfastLog BSSLib.lib++
+	-rm -f gen_ID.out simv_id_gen novas.rc novas.conf
 # clean *.hex
 	find . -type f -name "*.hex" -delete 

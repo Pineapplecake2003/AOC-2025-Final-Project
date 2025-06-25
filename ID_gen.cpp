@@ -10,10 +10,10 @@ using namespace std;
 
 #define p               4
 #define q               4
-#define r               1
-#define t               1
-#define e               16
- 
+#define r               2
+#define t               4
+#define e               2
+#define STRIDE          1
 #define KERNEL_H        3
 
 void map_para_analysis(int& t_H, int& t_W) {
@@ -103,7 +103,7 @@ int main(){
                     ifmap_XID = first_col_idx;
                 }
                 else if(col_cnt != 0){
-                    ifmap_XID += 1;
+                    ifmap_XID += STRIDE;
                 }
             #else
                 if(col_cnt < t){

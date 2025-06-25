@@ -1,7 +1,7 @@
-`include "../../src/PPU/post_quant.sv"
-`include "../../src/PPU/Comparator_Qint8.sv"
-`include "../../src/PPU/ReLU_Qint8.sv"
-`include "../../include/define.svh"
+`include "src/PPU/post_quant.sv"
+`include "src/PPU/Comparator_Qint8.sv"
+`include "src/PPU/ReLU_Qint8.sv"
+`include "define.svh"
 
 module PPU (
   input clk,

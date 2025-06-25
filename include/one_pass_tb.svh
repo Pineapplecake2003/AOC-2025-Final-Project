@@ -34,12 +34,12 @@ parameter int t = 2;
 parameter int e = 8;
 parameter int STRIDE = 1;
 parameter int IFMAP_COL = 18;
-parameter int OFMAP_COL = IFMAP_COL - FILT_ROW + 1;
+parameter int OFMAP_COL = (IFMAP_COL - FILT_ROW)/STRIDE + 1;
 parameter int LN_CONFIG = 27;
 parameter int FILTER_RS = 3;
 parameter [47:0]PE_EN= (1'b1 << (PE_ARRAY_H * PE_ARRAY_W)) - 1;
 parameter int DEPTHWISE = 0;
-parameter int PE_CONFIG = (DEPTHWISE << 12) + ((FILTER_RS - 1) << 10) + ((p - 1) << 7) + ((OFMAP_COL - 1) << 2) + (q - 1);
+parameter int PE_CONFIG = (DEPTHWISE << 12) + ((FILTER_RS - 1) << 10) + ((STRIDE - 1) << 9) + ((p - 1) << 7) + ((OFMAP_COL - 1) << 2) + (q - 1);
 parameter int LINEAR = 0;
 
 `elsif TBA1
@@ -68,12 +68,12 @@ parameter int t = 2;
 parameter int e = 8;
 parameter int STRIDE = 1;
 parameter int IFMAP_COL = 34;
-parameter int OFMAP_COL = IFMAP_COL - FILT_ROW + 1;
+parameter int OFMAP_COL = (IFMAP_COL - FILT_ROW)/STRIDE + 1;
 parameter int LN_CONFIG = 27;
 parameter int FILTER_RS = 3;
 parameter [47:0]PE_EN= (1'b1 << (PE_ARRAY_H * PE_ARRAY_W)) - 1;
 parameter int DEPTHWISE = 0;
-parameter int PE_CONFIG = (DEPTHWISE << 12) + ((FILTER_RS - 1) << 10) + ((p - 1) << 7) + ((OFMAP_COL - 1) << 2) + (q - 1);
+parameter int PE_CONFIG = (DEPTHWISE << 12) + ((FILTER_RS - 1) << 10) + ((STRIDE - 1) << 9) + ((p - 1) << 7) + ((OFMAP_COL - 1) << 2) + (q - 1);
 parameter int LINEAR = 0;
 
 `elsif TBA2
@@ -102,12 +102,12 @@ parameter int t = 1;
 parameter int e = 8;
 parameter int STRIDE = 1;
 parameter int IFMAP_COL = 18;
-parameter int OFMAP_COL = IFMAP_COL - FILT_ROW + 1;
+parameter int OFMAP_COL = (IFMAP_COL - FILT_ROW)/STRIDE + 1;
 parameter int LN_CONFIG = 31;
 parameter int FILTER_RS = 3;
 parameter [47:0]PE_EN= (1'b1 << (PE_ARRAY_H * PE_ARRAY_W)) - 1;
 parameter int DEPTHWISE = 0;
-parameter int PE_CONFIG = (DEPTHWISE << 12) + ((FILTER_RS - 1) << 10) + ((p - 1) << 7) + ((OFMAP_COL - 1) << 2) + (q - 1);
+parameter int PE_CONFIG = (DEPTHWISE << 12) + ((FILTER_RS - 1) << 10) + ((STRIDE - 1) << 9) + ((p - 1) << 7) + ((OFMAP_COL - 1) << 2) + (q - 1);
 parameter int LINEAR = 0;
 
 `elsif TBA3
@@ -136,12 +136,12 @@ parameter int t = 2;
 parameter int e = 4;
 parameter int STRIDE = 1;
 parameter int IFMAP_COL = 18;
-parameter int OFMAP_COL = IFMAP_COL - FILT_ROW + 1;
+parameter int OFMAP_COL = (IFMAP_COL - FILT_ROW)/STRIDE + 1;
 parameter int LN_CONFIG = 31;
 parameter int FILTER_RS = 3;
 parameter [47:0]PE_EN= (1'b1 << (PE_ARRAY_H * PE_ARRAY_W)) - 1;
 parameter int DEPTHWISE = 0;
-parameter int PE_CONFIG = (DEPTHWISE << 12) + ((FILTER_RS - 1) << 10) + ((p - 1) << 7) + ((OFMAP_COL - 1) << 2) + (q - 1);
+parameter int PE_CONFIG = (DEPTHWISE << 12) + ((FILTER_RS - 1) << 10) + ((STRIDE - 1) << 9) + ((p - 1) << 7) + ((OFMAP_COL - 1) << 2) + (q - 1);
 parameter int LINEAR = 0;
 
 `elsif TBA4
@@ -170,12 +170,12 @@ parameter int t = 4;
 parameter int e = 4;
 parameter int STRIDE = 1;
 parameter int IFMAP_COL = 18;
-parameter int OFMAP_COL = IFMAP_COL - FILT_ROW + 1;
+parameter int OFMAP_COL = (IFMAP_COL - FILT_ROW)/STRIDE + 1;
 parameter int LN_CONFIG = 27;
 parameter int FILTER_RS = 3;
 parameter [47:0]PE_EN= (1'b1 << (PE_ARRAY_H * PE_ARRAY_W)) - 1;
 parameter int DEPTHWISE = 0;
-parameter int PE_CONFIG = (DEPTHWISE << 12) + ((FILTER_RS - 1) << 10) + ((p - 1) << 7) + ((OFMAP_COL - 1) << 2) + (q - 1);
+parameter int PE_CONFIG = (DEPTHWISE << 12) + ((FILTER_RS - 1) << 10) + ((STRIDE - 1) << 9) + ((p - 1) << 7) + ((OFMAP_COL - 1) << 2) + (q - 1);
 parameter int LINEAR = 0;
 
 `elsif TBA5
@@ -204,12 +204,12 @@ parameter int t = 1;
 parameter int e = 16;
 parameter int STRIDE = 1;
 parameter int IFMAP_COL = 18;
-parameter int OFMAP_COL = IFMAP_COL - FILT_ROW + 1;
+parameter int OFMAP_COL = (IFMAP_COL - FILT_ROW)/STRIDE + 1;
 parameter int LN_CONFIG = 27;
 parameter int FILTER_RS = 3;
 parameter [47:0]PE_EN= (1'b1 << (PE_ARRAY_H * PE_ARRAY_W)) - 1;
 parameter int DEPTHWISE = 0;
-parameter int PE_CONFIG = (DEPTHWISE << 12) + ((FILTER_RS - 1) << 10) + ((p - 1) << 7) + ((OFMAP_COL - 1) << 2) + (q - 1);
+parameter int PE_CONFIG = (DEPTHWISE << 12) + ((FILTER_RS - 1) << 10) + ((STRIDE - 1) << 9) + ((p - 1) << 7) + ((OFMAP_COL - 1) << 2) + (q - 1);
 parameter int LINEAR = 0;
 
 `elsif TBA6
@@ -238,12 +238,12 @@ parameter int t = 1;
 parameter int e = 16;
 parameter int STRIDE = 1;
 parameter int IFMAP_COL = 18;
-parameter int OFMAP_COL = IFMAP_COL - FILT_ROW + 1;
+parameter int OFMAP_COL = (IFMAP_COL - FILT_ROW)/STRIDE + 1;
 parameter int LN_CONFIG = 27;
 parameter int FILTER_RS = 3;
 parameter [47:0]PE_EN= (1'b1 << (PE_ARRAY_H * PE_ARRAY_W)) - 1;
 parameter int DEPTHWISE = 1;
-parameter int PE_CONFIG = (DEPTHWISE << 12) + ((FILTER_RS - 1) << 10) + ((p - 1) << 7) + ((OFMAP_COL - 1) << 2) + (q - 1);
+parameter int PE_CONFIG = (DEPTHWISE << 12) + ((FILTER_RS - 1) << 10) + ((STRIDE - 1) << 9) + ((p - 1) << 7) + ((OFMAP_COL - 1) << 2) + (q - 1);
 parameter int LINEAR = 0;
 `elsif TBA7
 
@@ -272,12 +272,12 @@ parameter int t = 2;
 parameter int e = 8;
 parameter int STRIDE = 1;
 parameter int IFMAP_COL = 18;
-parameter int OFMAP_COL = IFMAP_COL - FILT_ROW + 1;
+parameter int OFMAP_COL = (IFMAP_COL - FILT_ROW)/STRIDE + 1;
 parameter int LN_CONFIG = 27;
 parameter int FILTER_RS = 3;
 parameter [47:0]PE_EN= (1'b1 << (PE_ARRAY_H * PE_ARRAY_W)) - 1;
 parameter int DEPTHWISE = 1;
-parameter int PE_CONFIG = (DEPTHWISE << 12) + ((FILTER_RS - 1) << 10) + ((p - 1) << 7) + ((OFMAP_COL - 1) << 2) + (q - 1);
+parameter int PE_CONFIG = (DEPTHWISE << 12) + ((FILTER_RS - 1) << 10) + ((STRIDE - 1) << 9) + ((p - 1) << 7) + ((OFMAP_COL - 1) << 2) + (q - 1);
 parameter int LINEAR = 0;
 
 `elsif TBA8
@@ -306,12 +306,12 @@ parameter int t = 2;
 parameter int e = 8;
 parameter int STRIDE = 1;
 parameter int IFMAP_COL = 34;
-parameter int OFMAP_COL = IFMAP_COL - FILT_ROW + 1;
+parameter int OFMAP_COL = (IFMAP_COL - FILT_ROW)/STRIDE + 1;
 parameter int LN_CONFIG = 27;
 parameter int FILTER_RS = 3;
 parameter [47:0]PE_EN= (1'b1 << (PE_ARRAY_H * PE_ARRAY_W)) - 1;
 parameter int DEPTHWISE = 1;
-parameter int PE_CONFIG = (DEPTHWISE << 12) + ((FILTER_RS - 1) << 10) + ((p - 1) << 7) + ((OFMAP_COL - 1) << 2) + (q - 1);
+parameter int PE_CONFIG = (DEPTHWISE << 12) + ((FILTER_RS - 1) << 10) + ((STRIDE - 1) << 9) + ((p - 1) << 7) + ((OFMAP_COL - 1) << 2) + (q - 1);
 parameter int LINEAR = 0;
 
 `elsif TBA9
@@ -340,12 +340,12 @@ parameter int t = 1;
 parameter int e = 8;
 parameter int STRIDE = 1;
 parameter int IFMAP_COL = 18;
-parameter int OFMAP_COL = IFMAP_COL - FILT_ROW + 1;
+parameter int OFMAP_COL = (IFMAP_COL - FILT_ROW)/STRIDE + 1;
 parameter int LN_CONFIG = 31;
 parameter int FILTER_RS = 3;
 parameter [47:0]PE_EN= (1'b1 << (PE_ARRAY_H * PE_ARRAY_W)) - 1;
 parameter int DEPTHWISE = 1;
-parameter int PE_CONFIG = (DEPTHWISE << 12) + ((FILTER_RS - 1) << 10) + ((p - 1) << 7) + ((OFMAP_COL - 1) << 2) + (q - 1);
+parameter int PE_CONFIG = (DEPTHWISE << 12) + ((FILTER_RS - 1) << 10) + ((STRIDE - 1) << 9) + ((p - 1) << 7) + ((OFMAP_COL - 1) << 2) + (q - 1);
 parameter int LINEAR = 0;
 
 `elsif TBA10
@@ -374,12 +374,12 @@ parameter int t = 2;
 parameter int e = 4;
 parameter int STRIDE = 1;
 parameter int IFMAP_COL = 18;
-parameter int OFMAP_COL = IFMAP_COL - FILT_ROW + 1;
+parameter int OFMAP_COL = (IFMAP_COL - FILT_ROW)/STRIDE + 1;
 parameter int LN_CONFIG = 31;
 parameter int FILTER_RS = 3;
 parameter [47:0]PE_EN= (1'b1 << (PE_ARRAY_H * PE_ARRAY_W)) - 1;
 parameter int DEPTHWISE = 1;
-parameter int PE_CONFIG = (DEPTHWISE << 12) + ((FILTER_RS - 1) << 10) + ((p - 1) << 7) + ((OFMAP_COL - 1) << 2) + (q - 1);
+parameter int PE_CONFIG = (DEPTHWISE << 12) + ((FILTER_RS - 1) << 10) + ((STRIDE - 1) << 9) + ((p - 1) << 7) + ((OFMAP_COL - 1) << 2) + (q - 1);
 parameter int LINEAR = 0;
 
 `elsif TBA11
@@ -408,12 +408,12 @@ parameter int t = 4;
 parameter int e = 4;
 parameter int STRIDE = 1;
 parameter int IFMAP_COL = 18;
-parameter int OFMAP_COL = IFMAP_COL - FILT_ROW + 1;
+parameter int OFMAP_COL = (IFMAP_COL - FILT_ROW)/STRIDE + 1;
 parameter int LN_CONFIG = 27;
 parameter int FILTER_RS = 3;
 parameter [47:0]PE_EN= (1'b1 << (PE_ARRAY_H * PE_ARRAY_W)) - 1;
 parameter int DEPTHWISE = 1;
-parameter int PE_CONFIG = (DEPTHWISE << 12) + ((FILTER_RS - 1) << 10) + ((p - 1) << 7) + ((OFMAP_COL - 1) << 2) + (q - 1);
+parameter int PE_CONFIG = (DEPTHWISE << 12) + ((FILTER_RS - 1) << 10) + ((STRIDE - 1) << 9) + ((p - 1) << 7) + ((OFMAP_COL - 1) << 2) + (q - 1);
 parameter int LINEAR = 0;
 
 `elsif TBA12
@@ -442,12 +442,12 @@ parameter int t = 1;
 parameter int e = 16;
 parameter int STRIDE = 1;
 parameter int IFMAP_COL = 18;
-parameter int OFMAP_COL = IFMAP_COL - FILT_ROW + 1;
+parameter int OFMAP_COL = (IFMAP_COL - FILT_ROW)/STRIDE + 1;
 parameter int LN_CONFIG = 27;
 parameter int FILTER_RS = 3;
 parameter [47:0]PE_EN= (1'b1 << (PE_ARRAY_H * PE_ARRAY_W)) - 1;
 parameter int DEPTHWISE = 1;
-parameter int PE_CONFIG = (DEPTHWISE << 12) + ((FILTER_RS - 1) << 10) + ((p - 1) << 7) + ((OFMAP_COL - 1) << 2) + (q - 1);
+parameter int PE_CONFIG = (DEPTHWISE << 12) + ((FILTER_RS - 1) << 10) + ((STRIDE - 1) << 9) + ((p - 1) << 7) + ((OFMAP_COL - 1) << 2) + (q - 1);
 parameter int LINEAR = 0;
 
 `elsif TBA13
@@ -474,14 +474,14 @@ parameter int q = 4;
 parameter int r = 2;
 parameter int t = 4;
 parameter int e = 2;
-parameter int STRIDE = 1;
+parameter int STRIDE = 1; 
 parameter int IFMAP_COL = 18;
-parameter int OFMAP_COL = IFMAP_COL - FILT_ROW + 1;
+parameter int OFMAP_COL = (IFMAP_COL - FILT_ROW)/STRIDE + 1;
 parameter int LN_CONFIG = 31;
 parameter int FILTER_RS = 3;
 parameter [47:0]PE_EN= (1'b1 << (PE_ARRAY_H * PE_ARRAY_W)) - 1;
 parameter int DEPTHWISE = 1;
-parameter int PE_CONFIG = (DEPTHWISE << 12) + ((FILTER_RS - 1) << 10) + ((p - 1) << 7) + ((OFMAP_COL - 1) << 2) + (q - 1);
+parameter int PE_CONFIG = (DEPTHWISE << 12) + ((FILTER_RS - 1) << 10) + ((STRIDE - 1) << 9) + ((p - 1) << 7) + ((OFMAP_COL - 1) << 2) + (q - 1);
 parameter int LINEAR = 0;
 
 `elsif TBA14
@@ -510,12 +510,12 @@ parameter int t = 1;
 parameter int e = 16;
 parameter int STRIDE = 1;
 parameter int IFMAP_COL = 18;
-parameter int OFMAP_COL = IFMAP_COL - FILT_ROW + 1;
+parameter int OFMAP_COL = (IFMAP_COL - FILT_ROW)/STRIDE + 1;
 parameter int LN_CONFIG = 27;
 parameter int FILTER_RS = 3;
 parameter [47:0]PE_EN= (1'b1 << (PE_ARRAY_H * PE_ARRAY_W)) - 1;
 parameter int DEPTHWISE = 1;
-parameter int PE_CONFIG = (DEPTHWISE << 12) + ((FILTER_RS - 1) << 10) + ((p - 1) << 7) + ((OFMAP_COL - 1) << 2) + (q - 1);
+parameter int PE_CONFIG = (DEPTHWISE << 12) + ((FILTER_RS - 1) << 10) + ((STRIDE - 1) << 9) + ((p - 1) << 7) + ((OFMAP_COL - 1) << 2) + (q - 1);
 parameter int LINEAR = 0;
 
 `elsif TBA15
@@ -544,12 +544,12 @@ parameter int t = 3;
 parameter int e = 1;
 parameter int STRIDE = 1;
 parameter int IFMAP_COL = 1;
-parameter int OFMAP_COL = IFMAP_COL - FILT_ROW + 1;
+parameter int OFMAP_COL = (IFMAP_COL - FILT_ROW)/STRIDE + 1;
 parameter int LN_CONFIG = 31;
 parameter int FILTER_RS = 1;
 parameter [47:0]PE_EN= (1'b1 << (PE_ARRAY_H * PE_ARRAY_W)) - 1;
 parameter int DEPTHWISE = 0;
-parameter int PE_CONFIG = (DEPTHWISE << 12) + ((FILTER_RS - 1) << 10) + ((p - 1) << 7) + ((OFMAP_COL - 1) << 2) + (q - 1);
+parameter int PE_CONFIG = (DEPTHWISE << 12) + ((FILTER_RS - 1) << 10) + ((STRIDE - 1) << 9) + ((p - 1) << 7) + ((OFMAP_COL - 1) << 2) + (q - 1);
 parameter int LINEAR = 1;
 
 `elsif TBA16
@@ -578,13 +578,48 @@ parameter int t = 5;
 parameter int e = 1;
 parameter int STRIDE = 1;
 parameter int IFMAP_COL = 1;
-parameter int OFMAP_COL = IFMAP_COL - FILT_ROW + 1;
+parameter int OFMAP_COL = (IFMAP_COL - FILT_ROW)/STRIDE + 1;
 parameter int LN_CONFIG = 31;
 parameter int FILTER_RS = 1;
 parameter [47:0]PE_EN= (1'b1 << (PE_ARRAY_H * PE_ARRAY_W)) - 1;
 parameter int DEPTHWISE = 0;
-parameter int PE_CONFIG = (DEPTHWISE << 12) + ((FILTER_RS - 1) << 10) + ((p - 1) << 7) + ((OFMAP_COL - 1) << 2) + (q - 1);
+parameter int PE_CONFIG = (DEPTHWISE << 12) + ((FILTER_RS - 1) << 10) + ((STRIDE - 1) << 9) + ((p - 1) << 7) + ((OFMAP_COL - 1) << 2) + (q - 1);
 parameter int LINEAR = 1;
+
+
+`elsif TBA17
+`define DATA_SRC "./testbench/PE_array_test_data/depthwise_separable_tb7_format/"
+`define CONFIG_SRC "./testbench/PE_array_test_data/depthwise_separable_tb7_format/"
+`define IFMAP_CONFIG_XID_FILE  "./testbench/PE_array_test_data/depthwise_separable_tb7_format/ifmap_config_chain_XID_tb7.txt"
+`define IFMAP_CONFIG_YID_FILE  "./testbench/PE_array_test_data/depthwise_separable_tb7_format/ifmap_config_chain_YID_tb7.txt"
+`define FILTER_CONFIG_XID_FILE "./testbench/PE_array_test_data/depthwise_separable_tb7_format/filter_config_chain_XID_tb7.txt"
+`define FILTER_CONFIG_YID_FILE "./testbench/PE_array_test_data/depthwise_separable_tb7_format/filter_config_chain_YID_tb7.txt"
+`define IPSUM_CONFIG_XID_FILE  "./testbench/PE_array_test_data/depthwise_separable_tb7_format/ipsum_config_chain_XID_tb7.txt"
+`define IPSUM_CONFIG_YID_FILE  "./testbench/PE_array_test_data/depthwise_separable_tb7_format/ipsum_config_chain_YID_tb7.txt"
+`define OPSUM_CONFIG_XID_FILE  "./testbench/PE_array_test_data/depthwise_separable_tb7_format/opsum_config_chain_XID_tb7.txt"
+`define OPSUM_CONFIG_YID_FILE  "./testbench/PE_array_test_data/depthwise_separable_tb7_format/opsum_config_chain_YID_tb7.txt"
+`define IFMAP_FILE             "./testbench/PE_array_test_data/depthwise_separable_tb7_format/ifmap.txt"
+`define FILTER_FILE            "./testbench/PE_array_test_data/depthwise_separable_tb7_format/filter.txt"
+`define IPSUM_FILE             "./testbench/PE_array_test_data/depthwise_separable_tb7_format/pointwise_ipsum.txt"
+`define OPSUM_FILE             "./testbench/PE_array_test_data/depthwise_separable_tb7_format/opsum.txt"
+`define GLB_MIRROR_FILE        "./testbench/PE_array_test_data/depthwise_separable_tb7_format/GLB_mirror.hex"
+`define GOLDEN_FILE            "./testbench/PE_array_test_data/depthwise_separable_tb7_format/golden.hex"
+parameter int FILT_ROW = 3;
+parameter int FILT_COL = 3;
+parameter int p = 4;
+parameter int q = 4;
+parameter int r = 2;
+parameter int t = 2;
+parameter int e = 4;
+parameter int STRIDE = 2;
+parameter int IFMAP_COL = 33;
+parameter int OFMAP_COL = (IFMAP_COL - FILT_ROW)/STRIDE + 1;
+parameter int LN_CONFIG = 31;
+parameter int FILTER_RS = 3;
+parameter [47:0]PE_EN= (1'b1 << (PE_ARRAY_H * PE_ARRAY_W)) - 1;
+parameter int DEPTHWISE = 1;
+parameter int PE_CONFIG = (DEPTHWISE << 12) + ((FILTER_RS - 1) << 10) + ((STRIDE - 1) << 9) + ((p - 1) << 7) + ((OFMAP_COL - 1) << 2) + (q - 1);
+parameter int LINEAR = 0;
 
 `endif
 

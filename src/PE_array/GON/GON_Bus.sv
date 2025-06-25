@@ -1,4 +1,5 @@
-`include "../../include/define.svh"
+/* verilator lint_off MULTITOP */
+`include "define.svh"
 
 module GON_Bus #(
     parameter NUMS_MASTER = `NUMS_PE_COL,

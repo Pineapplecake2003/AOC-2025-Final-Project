@@ -7,6 +7,7 @@ module pe_array_id_generator (
     input [4:0] e,         // t_H parameter  
     input [2:0] t_H,         // t_H parameter  
     input [2:0] t_W,         // t_H parameter  
+    input [1:0] U,
     input [2:0] PE_ARRAY_H,
     input [3:0] PE_ARRAY_W,
     input [1:0] KERNEL_H,
@@ -134,7 +135,7 @@ module pe_array_id_generator (
                         temp_ifmap_XID = first_col_idx;
                     end else if (col_cnt != 0) begin
                     // end else begin
-                        temp_ifmap_XID = temp_ifmap_XID + 1;
+                        temp_ifmap_XID = temp_ifmap_XID + U;
                     end 
                     ifmap_XID[idx] = temp_ifmap_XID;
                 end else begin

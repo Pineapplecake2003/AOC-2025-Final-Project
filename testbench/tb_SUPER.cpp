@@ -18,8 +18,9 @@ using namespace std;
 #define SEND_CONFIG 0
 #define SEND_FILT 1
 #define SEND_IFMAP 2
-#define SEND_IPSUM 3
-#define STORE_OPSUM 4
+#define SEND_IFMAP_STRIDE2 3
+#define SEND_IPSUM 4
+#define STORE_OPSUM 5
 
 #define step(dut, fp, time)          \
     (fp)->dump((time) += CYCLE / 2); \
@@ -129,19 +130,22 @@ void printFilterData(const std::vector<std::vector<std::vector<int8_t>>>& filter
     }
     
 }
+
+
 void transaction(VSUPER* dut, int& send_data_type, Index* index, const vector<vector<vector<int8_t>>>& filter_data,
                  const vector<vector<uint8_t>>& ifmap_data, const vector<vector<int>>& ipsum_data,
                  vector<vector<int>>& opsum_data, bool& opsum_end) {
+    
     int send_data = 0;
     if (send_data_type != SEND_FILT) dut->filter_valid = 0;
-    if (send_data_type != SEND_IFMAP) dut->ifmap_valid = 0;
+    if (send_data_type != SEND_IFMAP && send_data_type != SEND_IFMAP_STRIDE2) dut->ifmap_valid = 0;
     if (send_data_type != SEND_IPSUM) dut->depthwise_ipsum_valid = 0;
     if (send_data_type != STORE_OPSUM) dut->opsum_ready = 0;
 
     switch (send_data_type) {
         case SEND_CONFIG:
             set_signal(dut, dut->PE_en, 1);
-            set_signal(dut, dut->i_config, ((DEPTHWISE<<12)+((FILTER_RS - 1) << 10) + ((OFMAP_CH - 1) << 7) + ((OFMAP_COL - 1) << 2) + (I_CH - 1)));            send_data_type = SEND_FILT;
+            set_signal(dut, dut->i_config, ((DEPTHWISE<<12) + ((FILTER_RS - 1) << 10) + ((STRIDE - 1) << 9) + ((OFMAP_CH - 1) << 7) + ((OFMAP_COL - 1) << 2) + (I_CH - 1)));            send_data_type = SEND_FILT;
             break;
         case SEND_FILT:
             set_signal(dut, dut->PE_en, 0);
@@ -206,17 +210,41 @@ void transaction(VSUPER* dut, int& send_data_type, Index* index, const vector<ve
             if (dut->ifmap_valid && dut->ifmap_ready) {
                 if (index->count_ifmap_col < (FILT_COL - 1)) {
                     index->count_ifmap_col++;
+                } else if(STRIDE==2 && index->count_ifmap_col > 2){
+                    send_data_type = SEND_IFMAP_STRIDE2;
+                    index->count_ifmap_col++;
+                    // cout << "count_ifmap_col: " << index->count_ifmap_col << endl;
                 } else {
                     send_data_type = SEND_IPSUM;
                 }
             }
             break;
+        case SEND_IFMAP_STRIDE2:
+            set_signal(dut, dut->ifmap_valid, rand() % 2);  // randomize idata_valid 0 or 1
 
+            // send_data
+            // if(index->count_ifmap_col <= (IFMAP_COL - 1))
+            for (int i = 0; i < I_CH; i++) send_data += ifmap_data[index->count_ifmap_col][i] << (8 * i);
+            for (int i = I_CH; i < 4; i++) send_data += 128 << (8 * i);
+            if (dut->ifmap_valid) {
+                set_signal(dut, dut->ifmap, send_data);
+            } else {
+                set_signal(dut, dut->ifmap, 0);
+            }
+
+            // hand shake
+            if (dut->ifmap_valid && dut->ifmap_ready) {
+                send_data_type = SEND_IPSUM;
+            }
+            break;       
         case SEND_IPSUM:
             if(DEPTHWISE){
                 set_signal(dut, dut->pointwise_ipsum_valid, rand() % 2);  // randomize ipsum_valid 0 or 1
                 if (dut->pointwise_ipsum_valid && dut->pointwise_ipsum_ready) {
-                    set_signal(dut, dut->pointwise_ipsum, ipsum_data[index->count_ifmap_col - FILT_COL + 1][index->count_ipsum_ch]);
+                    int idx_ipsum = ((index->count_ifmap_col + 1) - FILT_COL) / STRIDE;
+                    // cout << "idx_ipsum: " << idx_ipsum << endl;
+
+                    set_signal(dut, dut->pointwise_ipsum, ipsum_data[idx_ipsum][index->count_ipsum_ch]);
                     if (index->count_ipsum_ch == (OFMAP_CH - 1)) {
                         index->count_ipsum_ch = 0;
                         send_data_type = STORE_OPSUM;
@@ -228,7 +256,10 @@ void transaction(VSUPER* dut, int& send_data_type, Index* index, const vector<ve
             else{
                 set_signal(dut, dut->depthwise_ipsum_valid, rand() % 2);  // randomize ipsum_valid 0 or 1
                 if (dut->depthwise_ipsum_valid && dut->depthwise_ipsum_ready) {
-                    set_signal(dut, dut->depthwise_ipsum, ipsum_data[index->count_ifmap_col - FILT_COL + 1][index->count_ipsum_ch]);
+                    int idx_ipsum = ((index->count_ifmap_col + 1) - FILT_COL) / STRIDE;
+                    // cout << "idx_ipsum: " << idx_ipsum << endl;
+
+                    set_signal(dut, dut->depthwise_ipsum, ipsum_data[idx_ipsum][index->count_ipsum_ch]);
                     if (index->count_ipsum_ch == (OFMAP_CH - 1)) {
                         index->count_ipsum_ch = 0;
                         send_data_type = STORE_OPSUM;
@@ -242,14 +273,19 @@ void transaction(VSUPER* dut, int& send_data_type, Index* index, const vector<ve
         case STORE_OPSUM:
             set_signal(dut, dut->opsum_ready, rand() % 2);  // randomize opsum_ready 0 or 1
             if (dut->opsum_ready && dut->opsum_valid) {
-                opsum_data[index->count_ifmap_col - FILT_COL + 1][index->count_ofmap_ch] = dut->opsum;
+
+                int idx_opsum = ((index->count_ifmap_col + 1) - FILT_COL) / STRIDE;
+                // cout << "idx_opsum: " << idx_opsum << endl;
+                opsum_data[idx_opsum][index->count_ofmap_ch] = dut->opsum;
                 if (index->count_ofmap_ch == (OFMAP_CH - 1)) {
                     index->count_ofmap_ch = 0;
                     send_data_type = SEND_IFMAP;
                     if (index->count_ifmap_col == (IFMAP_COL - 1))
                         opsum_end = 1;
-                    else
+                    else {
                         index->count_ifmap_col++;
+                    }
+                        
                 } else
                     index->count_ofmap_ch++;
             }

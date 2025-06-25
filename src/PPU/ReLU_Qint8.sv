@@ -1,4 +1,4 @@
-`include "../../include/define.svh"
+`include "define.svh"
 
 module ReLU_Qint8 (
 	input relu_en,
