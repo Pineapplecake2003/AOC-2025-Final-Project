@@ -10,6 +10,7 @@ F74106092 吳翰宇
 ## File Hierachy
 ```
 AOC-2025-Final-Project--->
+AOC-2025-Final-Project/
 ├── art
 │   ├── fail.txt
 │   └── pass.txt
@@ -102,335 +103,66 @@ AOC-2025-Final-Project--->
 │   ├── one_pass_tb.sv
 │   ├── PE_array_test_data
 │   │   ├── depthwise_separable_p_leq_4
-│   │   │   ├── bias.txt
-│   │   │   ├── data.log
-│   │   │   ├── depthwise_ipsum.txt
-│   │   │   ├── filter_config_chain_XID_tb5.txt
-│   │   │   ├── filter_config_chain_YID_tb5.txt
-│   │   │   ├── filter.txt
-│   │   │   ├── ifmap_config_chain_XID_tb5.txt
-│   │   │   ├── ifmap_config_chain_YID_tb5.txt
-│   │   │   ├── ifmap.txt
-│   │   │   ├── ipsum_config_chain_XID_tb5.txt
-│   │   │   ├── ipsum_config_chain_YID_tb5.txt
-│   │   │   ├── opsum_config_chain_XID_tb5.txt
-│   │   │   ├── opsum_config_chain_YID_tb5.txt
-│   │   │   ├── opsum.txt
-│   │   │   └── pointwise_ipsum.txt
+│   │   │   └── test data ...
 │   │   ├── depthwise_separable_tb0_format
-│   │   │   ├── bias.txt
-│   │   │   ├── data.log
-│   │   │   ├── depthwise_ipsum.txt
-│   │   │   ├── filter_config_chain_XID_tb0.txt
-│   │   │   ├── filter_config_chain_YID_tb0.txt
-│   │   │   ├── filter.txt
-│   │   │   ├── ifmap_config_chain_XID_tb0.txt
-│   │   │   ├── ifmap_config_chain_YID_tb0.txt
-│   │   │   ├── ifmap.txt
-│   │   │   ├── ipsum_config_chain_XID_tb0.txt
-│   │   │   ├── ipsum_config_chain_YID_tb0.txt
-│   │   │   ├── opsum_config_chain_XID_tb0.txt
-│   │   │   ├── opsum_config_chain_YID_tb0.txt
-│   │   │   ├── opsum.txt
-│   │   │   └── pointwise_ipsum.txt
+│   │   │   └── test data ...
 │   │   ├── depthwise_separable_tb1_format
-│   │   │   ├── bias.txt
-│   │   │   ├── data.log
-│   │   │   ├── depthwise_ipsum.txt
-│   │   │   ├── filter_config_chain_XID_tb1.txt
-│   │   │   ├── filter_config_chain_YID_tb1.txt
-│   │   │   ├── filter.txt
-│   │   │   ├── ifmap_config_chain_XID_tb1.txt
-│   │   │   ├── ifmap_config_chain_YID_tb1.txt
-│   │   │   ├── ifmap.txt
-│   │   │   ├── ipsum_config_chain_XID_tb1.txt
-│   │   │   ├── ipsum_config_chain_YID_tb1.txt
-│   │   │   ├── opsum_config_chain_XID_tb1.txt
-│   │   │   ├── opsum_config_chain_YID_tb1.txt
-│   │   │   ├── opsum.txt
-│   │   │   └── pointwise_ipsum.txt
+│   │   │   └── test data ...
 │   │   ├── depthwise_separable_tb2_format
-│   │   │   ├── bias.txt
-│   │   │   ├── data.log
-│   │   │   ├── depthwise_ipsum.txt
-│   │   │   ├── filter_config_chain_XID_tb2.txt
-│   │   │   ├── filter_config_chain_YID_tb2.txt
-│   │   │   ├── filter.txt
-│   │   │   ├── ifmap_config_chain_XID_tb2.txt
-│   │   │   ├── ifmap_config_chain_YID_tb2.txt
-│   │   │   ├── ifmap.txt
-│   │   │   ├── ipsum_config_chain_XID_tb2.txt
-│   │   │   ├── ipsum_config_chain_YID_tb2.txt
-│   │   │   ├── opsum_config_chain_XID_tb2.txt
-│   │   │   ├── opsum_config_chain_YID_tb2.txt
-│   │   │   ├── opsum.txt
-│   │   │   └── pointwise_ipsum.txt
+│   │   │   └── test data ...
 │   │   ├── depthwise_separable_tb3_format
-│   │   │   ├── bias.txt
-│   │   │   ├── data.log
-│   │   │   ├── depthwise_ipsum.txt
-│   │   │   ├── filter_config_chain_XID_tb3.txt
-│   │   │   ├── filter_config_chain_YID_tb3.txt
-│   │   │   ├── filter.txt
-│   │   │   ├── ifmap_config_chain_XID_tb3.txt
-│   │   │   ├── ifmap_config_chain_YID_tb3.txt
-│   │   │   ├── ifmap.txt
-│   │   │   ├── ipsum_config_chain_XID_tb3.txt
-│   │   │   ├── ipsum_config_chain_YID_tb3.txt
-│   │   │   ├── opsum_config_chain_XID_tb3.txt
-│   │   │   ├── opsum_config_chain_YID_tb3.txt
-│   │   │   ├── opsum.txt
-│   │   │   └── pointwise_ipsum.txt
+│   │   │   └── test data ...
 │   │   ├── depthwise_separable_tb4_format
-│   │   │   ├── bias.txt
-│   │   │   ├── data.log
-│   │   │   ├── depthwise_ipsum.txt
-│   │   │   ├── filter_config_chain_XID_tb4.txt
-│   │   │   ├── filter_config_chain_YID_tb4.txt
-│   │   │   ├── filter.txt
-│   │   │   ├── ifmap_config_chain_XID_tb4.txt
-│   │   │   ├── ifmap_config_chain_YID_tb4.txt
-│   │   │   ├── ifmap.txt
-│   │   │   ├── ipsum_config_chain_XID_tb4.txt
-│   │   │   ├── ipsum_config_chain_YID_tb4.txt
-│   │   │   ├── opsum_config_chain_XID_tb4.txt
-│   │   │   ├── opsum_config_chain_YID_tb4.txt
-│   │   │   ├── opsum.txt
-│   │   │   └── pointwise_ipsum.txt
+│   │   │   └── test data ...
 │   │   ├── depthwise_separable_tb5_format
-│   │   │   ├── bias.txt
-│   │   │   ├── data.log
-│   │   │   ├── depthwise_ipsum.txt
-│   │   │   ├── filter_config_chain_XID_tb5.txt
-│   │   │   ├── filter_config_chain_YID_tb5.txt
-│   │   │   ├── filter.txt
-│   │   │   ├── ifmap_config_chain_XID_tb5.txt
-│   │   │   ├── ifmap_config_chain_YID_tb5.txt
-│   │   │   ├── ifmap.txt
-│   │   │   ├── ipsum_config_chain_XID_tb5.txt
-│   │   │   ├── ipsum_config_chain_YID_tb5.txt
-│   │   │   ├── opsum_config_chain_XID_tb5.txt
-│   │   │   ├── opsum_config_chain_YID_tb5.txt
-│   │   │   ├── opsum.txt
-│   │   │   └── pointwise_ipsum.txt
+│   │   │   └── test data ...
 │   │   ├── depthwise_separable_tb6_format
-│   │   │   ├── bias.txt
-│   │   │   ├── data.log
-│   │   │   ├── depthwise_ipsum.txt
-│   │   │   ├── filter_config_chain_XID_tb6.txt
-│   │   │   ├── filter_config_chain_YID_tb6.txt
-│   │   │   ├── filter.txt
-│   │   │   ├── ifmap_config_chain_XID_tb6.txt
-│   │   │   ├── ifmap_config_chain_YID_tb6.txt
-│   │   │   ├── ifmap.txt
-│   │   │   ├── ipsum_config_chain_XID_tb6.txt
-│   │   │   ├── ipsum_config_chain_YID_tb6.txt
-│   │   │   ├── opsum_config_chain_XID_tb6.txt
-│   │   │   ├── opsum_config_chain_YID_tb6.txt
-│   │   │   ├── opsum.txt
-│   │   │   └── pointwise_ipsum.txt
+│   │   │   └── test data ...
 │   │   ├── linear_tb1
-│   │   │   ├── data.log
-│   │   │   ├── filter_config_chain_XID_linear.txt
-│   │   │   ├── filter_config_chain_YID_linear.txt
-│   │   │   ├── filter.txt
-│   │   │   ├── ifmap_config_chain_XID_linear.txt
-│   │   │   ├── ifmap_config_chain_YID_linear.txt
-│   │   │   ├── ifmap.txt
-│   │   │   ├── ipsum_config_chain_XID_linear.txt
-│   │   │   ├── ipsum_config_chain_YID_linea.txt
-│   │   │   ├── ipsum.txt
-│   │   │   ├── opsum_config_chain_XID_linear.txt
-│   │   │   ├── opsum_config_chain_YID_linear.txt
-│   │   │   └── opsum.txt
+│   │   │   └── test data ...
 │   │   ├── linear_tb2
-│   │   │   ├── data.log
-│   │   │   ├── filter_config_chain_XID_linear.txt
-│   │   │   ├── filter_config_chain_YID_linear.txt
-│   │   │   ├── filter.txt
-│   │   │   ├── ifmap_config_chain_XID_linear.txt
-│   │   │   ├── ifmap_config_chain_YID_linear.txt
-│   │   │   ├── ifmap.txt
-│   │   │   ├── ipsum_config_chain_XID_linear.txt
-│   │   │   ├── ipsum_config_chain_YID_linea.txt
-│   │   │   ├── ipsum.txt
-│   │   │   ├── opsum_config_chain_XID_linear.txt
-│   │   │   ├── opsum_config_chain_YID_linear.txt
-│   │   │   └── opsum.txt
+│   │   │   └── test data ...
 │   │   ├── tb0
-│   │   │   ├── bias.txt
-│   │   │   ├── filter_config_chain_XID_tb0.txt
-│   │   │   ├── filter_config_chain_YID_tb0.txt
-│   │   │   ├── filter_tb0.txt
-│   │   │   ├── ifmap_config_chain_XID_tb0.txt
-│   │   │   ├── ifmap_config_chain_YID_tb0.txt
-│   │   │   ├── ifmap_tb0.txt
-│   │   │   ├── ipsum_config_chain_XID_tb0.txt
-│   │   │   ├── ipsum_config_chain_YID_tb0.txt
-│   │   │   ├── ipsum_tb0.txt
-│   │   │   ├── opsum_config_chain_XID_tb0.txt
-│   │   │   ├── opsum_config_chain_YID_tb0.txt
-│   │   │   └── opsum_tb0.txt
+│   │   │   └── test data ...
 │   │   ├── tb1
-│   │   │   ├── bias.txt
-│   │   │   ├── filter_config_chain_XID_tb1.txt
-│   │   │   ├── filter_config_chain_YID_tb1.txt
-│   │   │   ├── filter_tb1.txt
-│   │   │   ├── ifmap_config_chain_XID_tb1.txt
-│   │   │   ├── ifmap_config_chain_YID_tb1.txt
-│   │   │   ├── ifmap_tb1.txt
-│   │   │   ├── ipsum_config_chain_XID_tb1.txt
-│   │   │   ├── ipsum_config_chain_YID_tb1.txt
-│   │   │   ├── ipsum_tb1.txt
-│   │   │   ├── opsum_config_chain_XID_tb1.txt
-│   │   │   ├── opsum_config_chain_YID_tb1.txt
-│   │   │   └── opsum_tb1.txt
+│   │   │   └── test data ...
 │   │   ├── tb2
-│   │   │   ├── bias.txt
-│   │   │   ├── filter_config_chain_XID_tb2.txt
-│   │   │   ├── filter_config_chain_YID_tb2.txt
-│   │   │   ├── filter_tb2.txt
-│   │   │   ├── filter.txt
-│   │   │   ├── ifmap_config_chain_XID_tb2.txt
-│   │   │   ├── ifmap_config_chain_YID_tb2.txt
-│   │   │   ├── ifmap_tb2.txt
-│   │   │   ├── ifmap.txt
-│   │   │   ├── ipsum_config_chain_XID_tb2.txt
-│   │   │   ├── ipsum_config_chain_YID_tb2.txt
-│   │   │   ├── ipsum_tb2.txt
-│   │   │   ├── ipsum.txt
-│   │   │   ├── opsum_config_chain_XID_tb2.txt
-│   │   │   ├── opsum_config_chain_YID_tb2.txt
-│   │   │   └── opsum_tb2.txt
+│   │   │   └── test data ...
 │   │   ├── tb3
-│   │   │   ├── bias.txt
-│   │   │   ├── filter_config_chain_XID_tb3.txt
-│   │   │   ├── filter_config_chain_YID_tb3.txt
-│   │   │   ├── filter_tb3.txt
-│   │   │   ├── ifmap_config_chain_XID_tb3.txt
-│   │   │   ├── ifmap_config_chain_YID_tb3.txt
-│   │   │   ├── ifmap_tb3.txt
-│   │   │   ├── ipsum_config_chain_XID_tb3.txt
-│   │   │   ├── ipsum_config_chain_YID_tb3.txt
-│   │   │   ├── ipsum_tb3.txt
-│   │   │   ├── opsum_config_chain_XID_tb3.txt
-│   │   │   ├── opsum_config_chain_YID_tb3.txt
-│   │   │   └── opsum_tb3.txt
+│   │   │   └── test data ...
 │   │   ├── tb4
-│   │   │   ├── bias.txt
-│   │   │   ├── filter_config_chain_XID_tb4.txt
-│   │   │   ├── filter_config_chain_YID_tb4.txt
-│   │   │   ├── filter_tb4.txt
-│   │   │   ├── ifmap_config_chain_XID_tb4.txt
-│   │   │   ├── ifmap_config_chain_YID_tb4.txt
-│   │   │   ├── ifmap_tb4.txt
-│   │   │   ├── ipsum_config_chain_XID_tb4.txt
-│   │   │   ├── ipsum_config_chain_YID_tb4.txt
-│   │   │   ├── ipsum_tb4.txt
-│   │   │   ├── opsum_config_chain_XID_tb4.txt
-│   │   │   ├── opsum_config_chain_YID_tb4.txt
-│   │   │   └── opsum_tb4.txt
+│   │   │   └── test data ...
 │   │   ├── tb5
-│   │   │   ├── bias.txt
-│   │   │   ├── filter_config_chain_XID_tb5.txt
-│   │   │   ├── filter_config_chain_YID_tb5.txt
-│   │   │   ├── filter_tb5.txt
-│   │   │   ├── ifmap_config_chain_XID_tb5.txt
-│   │   │   ├── ifmap_config_chain_YID_tb5.txt
-│   │   │   ├── ifmap_tb5.txt
-│   │   │   ├── ipsum_config_chain_XID_tb5.txt
-│   │   │   ├── ipsum_config_chain_YID_tb5.txt
-│   │   │   ├── ipsum_tb5.txt
-│   │   │   ├── opsum_config_chain_XID_tb5.txt
-│   │   │   ├── opsum_config_chain_YID_tb5.txt
-│   │   │   └── opsum_tb5.txt
+│   │   │   └── test data ...
 │   │   └── tb6
-│   │       ├── bias.txt
-│   │       ├── filter_config_chain_XID_tb6.txt
-│   │       ├── filter_config_chain_YID_tb6.txt
-│   │       ├── filter_tb6.txt
-│   │       ├── ifmap_config_chain_XID_tb6.txt
-│   │       ├── ifmap_config_chain_YID_tb6.txt
-│   │       ├── ifmap_tb6.txt
-│   │       ├── ipsum_config_chain_XID_tb6.txt
-│   │       ├── ipsum_config_chain_YID_tb6.txt
-│   │       ├── ipsum_tb6.txt
-│   │       ├── opsum_config_chain_XID_tb6.txt
-│   │       ├── opsum_config_chain_YID_tb6.txt
-│   │       └── opsum_tb6.txt
+│   │       └── test data ...
 │   ├── PE_test_data
 │   │   ├── depthwise_separable0
-│   │   │   ├── depthwise_ipsum.txt
-│   │   │   ├── filter.txt
-│   │   │   ├── ifmap.txt
-│   │   │   ├── opsum.txt
-│   │   │   └── pointwise_ipsum.txt
+│   │   │   └── test data ...
 │   │   ├── depthwise_separable1
-│   │   │   ├── depthwise_ipsum.txt
-│   │   │   ├── filter.txt
-│   │   │   ├── ifmap.txt
-│   │   │   ├── opsum.txt
-│   │   │   └── pointwise_ipsum.txt
+│   │   │   └── test data ...
 │   │   ├── depthwise_separable2
-│   │   │   ├── depthwise_ipsum.txt
-│   │   │   ├── filter.txt
-│   │   │   ├── ifmap.txt
-│   │   │   ├── opsum.txt
-│   │   │   └── pointwise_ipsum.txt
+│   │   │   └── test data ...
 │   │   ├── depthwise_separable3
-│   │   │   ├── depthwise_ipsum.txt
-│   │   │   ├── filter.txt
-│   │   │   ├── ifmap.txt
-│   │   │   ├── opsum.txt
-│   │   │   └── pointwise_ipsum.txt
+│   │   │   └── test data ...
 │   │   ├── tb0
-│   │   │   ├── filter_tb0.txt
-│   │   │   ├── ifmap_tb0.txt
-│   │   │   ├── ipsum_tb0.txt
-│   │   │   └── ofmap_tb0.txt
+│   │   │   └── test data ...
 │   │   ├── tb1
-│   │   │   ├── filter_tb1.txt
-│   │   │   ├── ifmap_tb1.txt
-│   │   │   ├── ipsum_tb1.txt
-│   │   │   └── ofmap_tb1.txt
+│   │   │   └── test data ...
 │   │   ├── tb2
-│   │   │   ├── filter_tb2.txt
-│   │   │   ├── ifmap_tb2.txt
-│   │   │   ├── ipsum_tb2.txt
-│   │   │   └── ofmap_tb2.txt
+│   │   │   └── test data ...
 │   │   ├── tb3
-│   │   │   ├── filter_tb3.txt
-│   │   │   ├── ifmap_tb3.txt
-│   │   │   ├── ipsum_tb3.txt
-│   │   │   └── ofmap_tb3.txt
+│   │   │   └── test data ...
 │   │   ├── tb4
-│   │   │   ├── filter_tb4.txt
-│   │   │   ├── ifmap_tb4.txt
-│   │   │   ├── ipsum_tb4.txt
-│   │   │   └── ofmap_tb4.txt
+│   │   │   └── test data ...
 │   │   ├── tb5
-│   │   │   ├── filter_tb5.txt
-│   │   │   ├── ifmap_tb5.txt
-│   │   │   ├── ipsum_tb5.txt
-│   │   │   └── ofmap_tb5.txt
+│   │   │   └── test data ...
 │   │   ├── tb6
-│   │   │   ├── filter_tb6.txt
-│   │   │   ├── ifmap_tb6.txt
-│   │   │   ├── ipsum_tb6.txt
-│   │   │   └── ofmap_tb6.txt
+│   │   │   └── test data ...
 │   │   └── tb7
-│   │       ├── data.log
-│   │       ├── filter_tb7.txt
-│   │       ├── ifmap_tb7.txt
-│   │       ├── ipsum_tb7.txt
-│   │       └── opsum_tb7.txt
+│   │       └── test data ...
 │   ├── PPU_test_data
-│   │   ├── tb0_golden.txt
-│   │   ├── tb0.txt
-│   │   ├── tb1_golden.txt
-│   │   ├── tb1.txt
-│   │   ├── tb2_golden.txt
-│   │   └── tb2.txt
+│   │       └── test data ...
 │   ├── tb_array.cpp
 │   ├── tb_PE.cpp
 │   ├── tb_PPU.cpp
@@ -538,127 +270,15 @@ AOC-2025-Final-Project--->
     │   │   ├── __init__.py
     │   │   ├── note.py
     │   │   ├── __pycache__
-    │   │   │   ├── codegen.cpython-311.pyc
-    │   │   │   ├── datagen.cpython-311.pyc
-    │   │   │   ├── fuse.cpython-311.pyc
-    │   │   │   ├── __init__.cpython-311.pyc
-    │   │   │   ├── note.cpython-311.pyc
-    │   │   │   └── utils.cpython-311.pyc
     │   │   └── utils.py
     │   └── VisuTVM
     │       ├── main.py
     │       ├── __pycache__
-    │       │   ├── utils.cpython-311.pyc
-    │       │   └── visu_tvm.cpython-311.pyc
     │       ├── utils.py
     │       └── visu_tvm.py
     ├── simulation
     │   ├── hardware
-    │   │   ├── libVasic_wrapper.a
-    │   │   ├── libverilated.a
-    │   │   ├── Vasic_wrapper___024root__DepSet_h96dbd89d__0.cpp
-    │   │   ├── Vasic_wrapper___024root__DepSet_h96dbd89d__0.d
-    │   │   ├── Vasic_wrapper___024root__DepSet_h96dbd89d__0.o
-    │   │   ├── Vasic_wrapper___024root__DepSet_h96dbd89d__0__Slow.cpp
-    │   │   ├── Vasic_wrapper___024root__DepSet_h96dbd89d__0__Slow.d
-    │   │   ├── Vasic_wrapper___024root__DepSet_h96dbd89d__0__Slow.o
-    │   │   ├── Vasic_wrapper___024root__DepSet_hc7f50bc6__0.cpp
-    │   │   ├── Vasic_wrapper___024root__DepSet_hc7f50bc6__0.d
-    │   │   ├── Vasic_wrapper___024root__DepSet_hc7f50bc6__0.o
-    │   │   ├── Vasic_wrapper___024root__DepSet_hc7f50bc6__0__Slow.cpp
-    │   │   ├── Vasic_wrapper___024root__DepSet_hc7f50bc6__0__Slow.d
-    │   │   ├── Vasic_wrapper___024root__DepSet_hc7f50bc6__0__Slow.o
-    │   │   ├── Vasic_wrapper___024root.h
-    │   │   ├── Vasic_wrapper___024root__Slow.cpp
-    │   │   ├── Vasic_wrapper___024root__Slow.d
-    │   │   ├── Vasic_wrapper___024root__Slow.o
-    │   │   ├── Vasic_wrapper__ALL.a
-    │   │   ├── Vasic_wrapper_classes.mk
-    │   │   ├── Vasic_wrapper__ConstPool_0.cpp
-    │   │   ├── Vasic_wrapper__ConstPool_0.d
-    │   │   ├── Vasic_wrapper__ConstPool_0.o
-    │   │   ├── Vasic_wrapper.cpp
-    │   │   ├── Vasic_wrapper.d
-    │   │   ├── Vasic_wrapper_GIN_Bus__T4__DepSet_h29500e2c__0__Slow.cpp
-    │   │   ├── Vasic_wrapper_GIN_Bus__T4__DepSet_h29500e2c__0__Slow.d
-    │   │   ├── Vasic_wrapper_GIN_Bus__T4__DepSet_h29500e2c__0__Slow.o
-    │   │   ├── Vasic_wrapper_GIN_Bus__T4__DepSet_h849ebe82__0.cpp
-    │   │   ├── Vasic_wrapper_GIN_Bus__T4__DepSet_h849ebe82__0.d
-    │   │   ├── Vasic_wrapper_GIN_Bus__T4__DepSet_h849ebe82__0.o
-    │   │   ├── Vasic_wrapper_GIN_Bus__T4__DepSet_h849ebe82__0__Slow.cpp
-    │   │   ├── Vasic_wrapper_GIN_Bus__T4__DepSet_h849ebe82__0__Slow.d
-    │   │   ├── Vasic_wrapper_GIN_Bus__T4__DepSet_h849ebe82__0__Slow.o
-    │   │   ├── Vasic_wrapper_GIN_Bus__T4.h
-    │   │   ├── Vasic_wrapper_GIN_Bus__T4__Slow.cpp
-    │   │   ├── Vasic_wrapper_GIN_Bus__T4__Slow.d
-    │   │   ├── Vasic_wrapper_GIN_Bus__T4__Slow.o
-    │   │   ├── Vasic_wrapper_GON_Bus__T4__DepSet_h41453ef8__0__Slow.cpp
-    │   │   ├── Vasic_wrapper_GON_Bus__T4__DepSet_h41453ef8__0__Slow.d
-    │   │   ├── Vasic_wrapper_GON_Bus__T4__DepSet_h41453ef8__0__Slow.o
-    │   │   ├── Vasic_wrapper_GON_Bus__T4__DepSet_hf05d1119__0.cpp
-    │   │   ├── Vasic_wrapper_GON_Bus__T4__DepSet_hf05d1119__0.d
-    │   │   ├── Vasic_wrapper_GON_Bus__T4__DepSet_hf05d1119__0.o
-    │   │   ├── Vasic_wrapper_GON_Bus__T4__DepSet_hf05d1119__0__Slow.cpp
-    │   │   ├── Vasic_wrapper_GON_Bus__T4__DepSet_hf05d1119__0__Slow.d
-    │   │   ├── Vasic_wrapper_GON_Bus__T4__DepSet_hf05d1119__0__Slow.o
-    │   │   ├── Vasic_wrapper_GON_Bus__T4.h
-    │   │   ├── Vasic_wrapper_GON_Bus__T4__Slow.cpp
-    │   │   ├── Vasic_wrapper_GON_Bus__T4__Slow.d
-    │   │   ├── Vasic_wrapper_GON_Bus__T4__Slow.o
-    │   │   ├── Vasic_wrapper.h
-    │   │   ├── Vasic_wrapper.mk
-    │   │   ├── Vasic_wrapper.o
-    │   │   ├── Vasic_wrapper__pch.h
-    │   │   ├── Vasic_wrapper__pch.h.fast.d
-    │   │   ├── Vasic_wrapper__pch.h.fast.gch
-    │   │   ├── Vasic_wrapper__pch.h.slow.d
-    │   │   ├── Vasic_wrapper__pch.h.slow.gch
-    │   │   ├── Vasic_wrapper_PE__DepSet_h8ca1d622__0.cpp
-    │   │   ├── Vasic_wrapper_PE__DepSet_h8ca1d622__0.d
-    │   │   ├── Vasic_wrapper_PE__DepSet_h8ca1d622__0.o
-    │   │   ├── Vasic_wrapper_PE__DepSet_h8ca1d622__0__Slow.cpp
-    │   │   ├── Vasic_wrapper_PE__DepSet_h8ca1d622__0__Slow.d
-    │   │   ├── Vasic_wrapper_PE__DepSet_h8ca1d622__0__Slow.o
-    │   │   ├── Vasic_wrapper_PE__DepSet_h8ca1d622__1.cpp
-    │   │   ├── Vasic_wrapper_PE__DepSet_h8ca1d622__1.d
-    │   │   ├── Vasic_wrapper_PE__DepSet_h8ca1d622__1.o
-    │   │   ├── Vasic_wrapper_PE__DepSet_h8ca1d622__2.cpp
-    │   │   ├── Vasic_wrapper_PE__DepSet_h8ca1d622__2.d
-    │   │   ├── Vasic_wrapper_PE__DepSet_h8ca1d622__2.o
-    │   │   ├── Vasic_wrapper_PE__DepSet_h8ca1d622__3.cpp
-    │   │   ├── Vasic_wrapper_PE__DepSet_h8ca1d622__3.d
-    │   │   ├── Vasic_wrapper_PE__DepSet_h8ca1d622__3.o
-    │   │   ├── Vasic_wrapper_PE__DepSet_h8ca1d622__4.cpp
-    │   │   ├── Vasic_wrapper_PE__DepSet_h8ca1d622__4.d
-    │   │   ├── Vasic_wrapper_PE__DepSet_h8ca1d622__4.o
-    │   │   ├── Vasic_wrapper_PE__DepSet_hef61c206__0__Slow.cpp
-    │   │   ├── Vasic_wrapper_PE__DepSet_hef61c206__0__Slow.d
-    │   │   ├── Vasic_wrapper_PE__DepSet_hef61c206__0__Slow.o
-    │   │   ├── Vasic_wrapper_PE.h
-    │   │   ├── Vasic_wrapper_PE__Slow.cpp
-    │   │   ├── Vasic_wrapper_PE__Slow.d
-    │   │   ├── Vasic_wrapper_PE__Slow.o
-    │   │   ├── Vasic_wrapper__Syms.cpp
-    │   │   ├── Vasic_wrapper__Syms.d
-    │   │   ├── Vasic_wrapper__Syms.h
-    │   │   ├── Vasic_wrapper__Syms.o
-    │   │   ├── Vasic_wrapper__Trace__0.cpp
-    │   │   ├── Vasic_wrapper__Trace__0.d
-    │   │   ├── Vasic_wrapper__Trace__0.o
-    │   │   ├── Vasic_wrapper__Trace__0__Slow.cpp
-    │   │   ├── Vasic_wrapper__Trace__0__Slow.d
-    │   │   ├── Vasic_wrapper__Trace__0__Slow.o
-    │   │   ├── Vasic_wrapper__TraceDecls__0__Slow.cpp
-    │   │   ├── Vasic_wrapper__TraceDecls__0__Slow.d
-    │   │   ├── Vasic_wrapper__TraceDecls__0__Slow.o
-    │   │   ├── Vasic_wrapper__ver.d
-    │   │   ├── Vasic_wrapper__verFiles.dat
-    │   │   ├── verilated.d
-    │   │   ├── verilated.o
-    │   │   ├── verilated_threads.d
-    │   │   ├── verilated_threads.o
-    │   │   ├── verilated_vcd_c.d
-    │   │   └── verilated_vcd_c.o
+    │   │   └── Compiled hardware files.
     │   └── software
     │       ├── include
     │       │   ├── eyeriss
@@ -692,27 +312,10 @@ AOC-2025-Final-Project--->
         │   ├── main.cpp
         │   ├── Makefile
         │   └── obj
-        │       ├── hardware_cpu.o
-        │       ├── input.o
-        │       ├── main.o
-        │       ├── model.o
-        │       ├── runtime_cpu.o
-        │       ├── utils.o
-        │       └── weight.o
         └── dla
             ├── main.cpp
             ├── Makefile
             └── obj
-                ├── hal.o
-                ├── hardware_cpu.o
-                ├── hardware_dla.o
-                ├── input.o
-                ├── main.o
-                ├── model.o
-                ├── runtime_cpu.o
-                ├── runtime_dla.o
-                ├── utils.o
-                └── weight.o
 ```
 ## Main Purpose And Motivation 
 本研究的主要目的是在執行卷積神經網路（CNN）推論時，優化系統的能源效率。隨著深度學習模型在邊緣裝置與嵌入式系統中的應用越來越普遍，能源消耗成為一個關鍵課題。根據 ESL 的資料指出，DRAM 存取最多可佔系統總能耗的 70%，因此，如何有效減少資料移動，並選用一個適合實作且修改過的模型放在 Eyeriss 硬體上運行，最終選擇 Mobilenet v1 去改良，去檢測是否符合我們預期結果。成為提升能效的首要任務。
