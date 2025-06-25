@@ -64,14 +64,6 @@ tvm_auto_args_NOTES = {
         "input",
         "input_scale",
         "input_zero_point",
-        "weight",
-        "weight_scale",
-        "weight_zero_point",
-        "bias",
-        "bias_scale",
-        "bias_zero_point",
-        "dequantize_scale",
-        "dequantize_zero_point",
     ],
     f"{COMPILER_NAME}_quantize":[
         "input",
@@ -136,13 +128,10 @@ tvm_c_func_call_gen = {
   );
 """,
     f"{COMPILER_NAME}_qglobal_avg_pool2d": lambda config: f"""
-#ifndef CPU_ONLY
-  qglobal_avg_pool2d(
-#else
   qglobal_avg_pool2d_cpu(
     {config["input"]}, {config["output"]},
     {config["C_I"]}, {config["H"]}, {config["W"]},
-    {convert_log(config["input_scale"] * config["weight_scale"] / config["dequantize_scale"])}
+    {convert_log(config["input_scale"])}
   );
 """,
     f"{COMPILER_NAME}_quantize": lambda config: f"""

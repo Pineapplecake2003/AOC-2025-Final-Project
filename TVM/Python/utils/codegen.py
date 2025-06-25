@@ -408,7 +408,7 @@ class CodegenC(CodegenCBase):
             config["H"] = in_shape[2]
             config["W"] = in_shape[3]
             config["C_F"] = 1 if config["G"] == config["C_I"] else config["C_I"]
-            print("[conv2d info]", config)
+            #print("[conv2d info]", config)
         elif "global_avg_pool2d" in func_name:
             config = dict()
             config["N"] = in_shape[0]
