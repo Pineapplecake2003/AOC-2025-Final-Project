@@ -63,7 +63,6 @@ void conv(uint32_t input_C, uint32_t input_H, uint32_t input_W,
           uint32_t padding, uint8_t* output, uint32_t scale) {
 
     //! hint>>
-    //if (filter_C == 1 && filter_N == input_C) { }
     for (uint32_t n = 0; n < filter_N; n++) {
         for (uint32_t h = 0; h < input_H; h++) {
             for (uint32_t w = 0; w < input_W; w++) {
@@ -81,7 +80,8 @@ void conv(uint32_t input_C, uint32_t input_H, uint32_t input_W,
                                 uint32_t filter_index =
                                     // f_index_upper +
                                     n * filter_C * filter_H * filter_W +
-                                    c * filter_H * filter_W + fh * filter_W +
+                                    c * filter_H * filter_W +
+                                    fh * filter_W +
                                     fw;
                                 int32_t activation_val =
                                     activation[activation_index] - 128;

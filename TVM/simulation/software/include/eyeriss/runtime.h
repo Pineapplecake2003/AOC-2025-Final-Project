@@ -2,6 +2,13 @@
 #define RUNTIME_H
 
 /* default mapping parameters */
+/*#define DEFAULT_m 64
+#define DEFAULT_p 4
+#define DEFAULT_q 4
+#define DEFAULT_r 1
+#define DEFAULT_t 2
+#define DEFAULT_e 8*/
+
 #define DEFAULT_m 64
 #define DEFAULT_p 4
 #define DEFAULT_q 4
@@ -22,7 +29,8 @@ extern "C" {
 /*
     Parameter meaning:
     M : ofmap channel
-    C : ifmap/filter channel
+    C_I : ifmap
+    C_F : filter channel
     H/W : ifmap size ,height/width
     R/S : filter size ,height/width
     PAD: padding number
@@ -170,8 +178,8 @@ int qconv2d_relu(uint8_t *input_in_DRAM, int8_t *filter_in_DRAM,
                  uint32_t m, uint32_t e, uint32_t p, uint32_t q, uint32_t r,
                  uint32_t t,
                  // shape parameter
-                 uint32_t PAD, uint32_t U, uint32_t R, uint32_t S, uint32_t C,
-                 uint32_t M, uint32_t W, uint32_t H, uint32_t scale);
+                 uint32_t PAD, uint32_t U, uint32_t R, uint32_t S, uint32_t C_F,
+                 uint32_t M, uint32_t W, uint32_t H,uint32_t C_I, uint32_t scale);
 
 /**********************************
 ***                             ***
@@ -229,7 +237,8 @@ int qconv2d_relu_cpu(uint8_t *input_in_DRAM, int8_t *filter_in_DRAM,
                      uint32_t ifmap_len, uint32_t filter_len,
                      // shape parameter
                      uint32_t PAD, uint32_t U, uint32_t R, uint32_t S,
-                     uint32_t C, uint32_t M, uint32_t W, uint32_t H,
+                     uint32_t C_F, uint32_t M, uint32_t W, uint32_t H,
+                     uint32_t C_I,
                      uint32_t scale);
 
 /**
@@ -274,6 +283,13 @@ int qlinear_cpu(uint8_t *input_in_DRAM, int8_t *filter_in_DRAM,
                 uint8_t *opsum_in_DRAM, int32_t *bias, uint32_t ofmap_len,
                 uint32_t ifmap_len, uint32_t filter_len, uint32_t scale);
 
+int qglobal_avg_pool2d_cpu(uint8_t *input_in_DRAM, uint8_t *output_in_DRAM,
+                            uint32_t C, uint32_t H, uint32_t W,
+                            uint32_t scale);
+                            
+void global_avg_pool2d(uint32_t input_C, uint32_t input_H, uint32_t input_W,
+    uint8_t* input, uint8_t* output, uint32_t scale) ;
+
 /**
  * @brief  Quantizes floating-point input data to 8-bit integers.
  *
@@ -303,52 +319,6 @@ void quantize_cpu(float *input_in_DRAM, uint8_t *output_in_DRAM, uint32_t size,
  */
 void dequantize_cpu(uint8_t *input_in_DRAM, float *output_in_DRAM,
                     uint32_t size, uint32_t scale);
-
-/**
- * @brief Performs quantized global average pooling 2D on the CPU.
- *
- * This function executes global average pooling on a quantized input feature map,
- * reducing spatial dimensions to a vector per channel.
- *
- * @param input_in_DRAM   Pointer to input feature map in DRAM (NHWC format).
- * @param opsum_in_DRAM   Pointer to output vector in DRAM.
- * @param batch           Batch size.
- * @param height          Input feature map height.
- * @param width           Input feature map width.
- * @param channels        Number of channels.
- * @param scale           Scale factor for quantization (bit-shift operation).
- *
- * @return Returns the number of CPU cycles taken for execution.
- */
-int qglobal_avg_pool2d_cpu(uint8_t *input_in_DRAM, uint8_t *opsum_in_DRAM,
-                           uint32_t batch, uint32_t height, uint32_t width,
-                           uint32_t channels, uint32_t scale);
-
-// DLA API new
-/**
- * @brief Performs quantized global average pooling 2D on the DLA.
- *
- * This function configures the Deep Learning Accelerator (DLA) to execute
- * quantized global average pooling on an input feature map.
- *
- * @param input_in_DRAM   Pointer to input feature map in DRAM (NHWC format).
- * @param opsum_in_DRAM   Pointer to output vector in DRAM.
- * @param batch           Batch size.
- * @param height          Input feature map height.
- * @param width           Input feature map width.
- * @param channels        Number of channels.
- * @param m, e, p, q, r, t  Mapping parameters for hardware execution.
- * @param scale           Scale factor for quantization (bit-shift operation).
- *
- * @return Returns 0 on successful execution.
- */
-int qglobal_avg_pool2d(uint8_t *input_in_DRAM, uint8_t *opsum_in_DRAM,
-                       uint32_t batch, uint32_t height, uint32_t width,
-                       uint32_t channels,
-                       // mapping parameter
-                       uint32_t m, uint32_t e, uint32_t p, uint32_t q,
-                       uint32_t r, uint32_t t,
-                       uint32_t scale);
 
 #ifdef __cplusplus
 }
