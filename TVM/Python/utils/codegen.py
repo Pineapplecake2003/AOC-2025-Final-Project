@@ -321,6 +321,7 @@ class CodegenC(CodegenCBase):
                 conv2d_info["R"] = op.attrs["kernel_size"][0]
                 conv2d_info["S"] = op.attrs["kernel_size"][1]
                 conv2d_info["m"] = conv2d_info["M"] 
+                conv2d_info["G"] = op.attrs["groups"]
             for node in op.args:
                 if isinstance(node, Call):
                     op_list.append(node)
@@ -403,13 +404,15 @@ class CodegenC(CodegenCBase):
         # Conv2d op info
         if "conv2d" in func_name:
             config = self.get_conv_info(call)
-            config["C"] = in_shape[1]
+            config["C_I"] = in_shape[1]
             config["H"] = in_shape[2]
             config["W"] = in_shape[3]
+            config["C_F"] = 1 if config["G"] == config["C_I"] else config["C_I"]
+            #print("[conv2d info]", config)
         elif "global_avg_pool2d" in func_name:
             config = dict()
             config["N"] = in_shape[0]
-            config["C"] = in_shape[1]
+            config["C_I"] = in_shape[1]
             config["H"] = in_shape[2]
             config["W"] = in_shape[3]
         else:
@@ -524,6 +527,7 @@ class CSourceCodegen(CSourceModuleCodegenBase):
             flattened_size = np.prod(data_numpy.shape)
             self.weight_h_stream.write(f"extern {const_var.dtype} {const_var.name}[];\n")
             self.weight_c_stream.write(f"{const_var.dtype} {const_var.name} [{flattened_size}];//{N},{C},{H},{W}\n")
+            # Generate the load weight code
 
             if padded:
                 load_weight_script += f"""

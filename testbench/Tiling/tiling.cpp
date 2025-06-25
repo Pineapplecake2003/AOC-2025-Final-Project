@@ -1,35 +1,35 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
-#include<iostream>
+#include <iostream>
+#include <iomanip> // for std::setw
 using namespace std;
 // ifmap [row][col][c]
 // psum [row][col][oc]
 // filter [row][col][ic][oc]
-#define M 32
-#define C 3
-#define m 32
+#define C 512
+#define M 512
+#define m 512
 #define p 4
-#define q 3
-#define r 1
+#define q 4
+#define r 2
 #define t 2
 #define U 1
-#define e 8
+#define e 4
 #define R 3
-#define H 34
-#define W 34
+#define H 6 // H after padding
+#define W 6 // W after padding
 #define PAD 0
 #define F ((W-3+2*PAD)/U+1)
 #define E ((H-3+2*PAD)/U+1)
 
-void print_ifmap_custom(uint8_t* data, int h, int w, int c) {
+void print_ifmap_custom(uint8_t data[H][W][C], int h, int w, int c) {
     printf("ifmap:\n");
     for (int d3 = 0; d3 < c; d3++) {
         printf("Layer %d:\n", d3);
         for (int d2 = 0; d2 < h; d2++) {
             for (int d1 = 0; d1 < w; d1++) {
-                int idx = d2 * w * c + d1 * c + d3;
-                printf("%4d ", data[idx]);
+                printf("%4d ", data[d2][d1][d3]);
             }
             printf("\n");
         }
@@ -102,7 +102,7 @@ void load_ifmap_from_file(const char* filename, uint8_t ifmap_buf[H][W][C]) {
             for (int c_idx = 0; c_idx < C; c_idx++) {
                 int temp;
                 fscanf(file, "%d,", &temp);
-                ifmap_buf[h_idx][w_idx][c_idx] = (int8_t)temp;
+                ifmap_buf[h_idx][w_idx][c_idx] = (uint8_t)temp;
             }
         }
     }
@@ -114,10 +114,21 @@ void load_filter_from_file(const char* filename, int8_t filter_buf[R][R][C][M]) 
         printf("Failed to open %s\n", filename);
         exit(1);
     }
-    for (int r_idx = 0; r_idx < R; r_idx++) {
-        for (int s_idx = 0; s_idx < R; s_idx++) {
-            for (int c_idx = 0; c_idx < C; c_idx++) {
-                for (int m_idx = 0; m_idx < M; m_idx++) {
+    // for (int r_idx = 0; r_idx < R; r_idx++) {
+    //     for (int s_idx = 0; s_idx < R; s_idx++) {
+    //         for (int c_idx = 0; c_idx < C; c_idx++) {
+    //             for (int m_idx = 0; m_idx < M; m_idx++) {
+    //                 int temp;
+    //                 fscanf(file, "%d,", &temp);
+    //                 filter_buf[r_idx][s_idx][c_idx][m_idx] = (int8_t)temp;
+    //             }
+    //         }
+    //     }
+    // }
+    for (int m_idx = 0; m_idx < M; m_idx++){
+        for (int r_idx = 0; r_idx < R; r_idx++) {
+            for (int s_idx = 0; s_idx < R; s_idx++) {
+                for (int c_idx = 0; c_idx < C; c_idx++) {
                     int temp;
                     fscanf(file, "%d,", &temp);
                     filter_buf[r_idx][s_idx][c_idx][m_idx] = (int8_t)temp;
@@ -180,6 +191,8 @@ void dla_compute(int glb_ifmap_addr, int glb_filter_addr,int glb_opsum_addr, uin
     printf("DLA compute. opsum addr: %d\n", glb_opsum_addr);
     uint8_t ifmap_tile[U*(e-1)+R][W][q*r];
     int8_t filter_tile[3][3][q*r][p*t];
+    int8_t depthwise_filter_tile[R][R][q*r];
+    int8_t pointwise_filter_tile[1][1][q*r][p*t];
     int32_t psum_tile[e][F][p*t]={{{0}}};
     int psum_addr = glb_opsum_addr;
     for (int h = 0; h < e; h++) {
@@ -230,10 +243,69 @@ void dla_compute(int glb_ifmap_addr, int glb_filter_addr,int glb_opsum_addr, uin
             }
         }
     }
+
+    #ifdef USE_DEPTHWISE
+        for (int row = 0; row < R; row++) {
+            for (int col = 0; col < R; col++) {
+                for (int ic = 0; ic < q * r; ic++) {
+                    depthwise_filter_tile[row][col][ic] = filter_tile[row][col][ic][0];
+                }
+            }
+        }
+        // std::cout << "===== depthwise_filter_tile =====\n";
+        // for (int c = 0; c < q * r; c++) {
+        //     std::cout << "Channel " << c << ":\n";
+        //     for (int row = 0; row < R; row++) {
+        //         for (int col = 0; col < R; col++) {
+        //             std::cout << std::setw(4) << (int)depthwise_filter_tile[row][col][c] << " ";
+        //         }
+        //         std::cout << "\n";
+        //     }
+        //     std::cout << "---------------------\n";
+        // }
+        /* assume p=4 */ 
+        for (int tt = 0; tt < t; tt++) {
+            int oc_t = p * tt;
+            for (int ic = 0; ic < q * r; ic++) {
+                pointwise_filter_tile[0][0][ic][oc_t] = filter_tile[0][0][ic][oc_t+1];
+                pointwise_filter_tile[0][0][ic][oc_t+1] = filter_tile[0][1][ic][oc_t+1];
+                pointwise_filter_tile[0][0][ic][oc_t+2] = filter_tile[0][2][ic][oc_t+1];
+                pointwise_filter_tile[0][0][ic][oc_t+3] = filter_tile[0][0][ic][oc_t+2];
+            }
+        }
+        // std::cout << "===== pointwise_filter_tile =====\n";
+        // for (int oc = 0; oc < p * t; oc++) {
+        //     std::cout << "Output Channel " << oc << ":\n";
+        //     for (int ic = 0; ic < q * r; ic++) {
+        //         std::cout << "  IC " << std::setw(2) << ic << ": " 
+        //                   << std::setw(4) << (int)pointwise_filter_tile[0][0][ic][oc] << "\n";
+        //     }
+        //     std::cout << "---------------------\n";
+        // }
+    #endif
+
     //print_filter_custom(&filter_tile[0][0][0][0], R,R,q*r, p*t);
     ////cin >>ttt;
-
-    for (int oc = 0; oc < p * t; oc++) {
+    #ifndef USE_DEPTHWISE
+        for (int oc = 0; oc < p * t; oc++) {
+            for (int ic = 0; ic < q * r; ic++) {                      // input channel
+                for (int w = 0; w < F; w++) {                         // output width
+                    for (int h = 0; h < e; h++) {                     // output height
+                        for (int rr = 0; rr < R; rr++) {              // filter height
+                            for (int s = 0; s < R; s++) {             // filter width
+                                int h_in = h * U + rr;
+                                int w_in = w * U + s;
+                                psum_tile[h][w][oc] +=
+                                    ifmap_tile[h_in][w_in][ic] *
+                                    filter_tile[rr][s][ic][oc];
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    #else
+        int depthwise_result_tile[e][F][q*r] = {{{0}}}; 
         for (int ic = 0; ic < q * r; ic++) {                      // input channel
             for (int w = 0; w < F; w++) {                         // output width
                 for (int h = 0; h < e; h++) {                     // output height
@@ -241,16 +313,48 @@ void dla_compute(int glb_ifmap_addr, int glb_filter_addr,int glb_opsum_addr, uin
                         for (int s = 0; s < R; s++) {             // filter width
                             int h_in = h * U + rr;
                             int w_in = w * U + s;
-                            psum_tile[h][w][oc] +=
+                            depthwise_result_tile[h][w][ic] +=
                                 ifmap_tile[h_in][w_in][ic] *
-                                filter_tile[rr][s][ic][oc];
+                                depthwise_filter_tile[rr][s][ic];
                         }
                     }
                 }
             }
         }
-    }
-
+        // std::cout << "===== depthwise_result_tile =====\n";
+        // for (int ic = 0; ic < q * r; ic++) {
+        //     std::cout << "Input Channel " << ic << ":\n";
+        //     for (int h = 0; h < e; h++) {
+        //         for (int w = 0; w < F; w++) {
+        //             std::cout << std::setw(6) << depthwise_result_tile[h][w][ic] << " ";
+        //         }
+        //         std::cout << "\n";
+        //     }
+        //     std::cout << "-----------------------------\n";
+        // }
+        for (int oc = 0; oc < p * t; oc++) {
+            for (int ic = 0; ic < q * r; ic++) {                      // input channel
+                for (int w = 0; w < F; w++) {                         // output width
+                    for (int h = 0; h < e; h++) {                     // output height
+                        psum_tile[h][w][oc] +=
+                            depthwise_result_tile[h][w][ic] *
+                            pointwise_filter_tile[0][0][ic][oc];
+                    }
+                }
+            }
+        }
+        // std::cout << "===== psum_tile =====\n";
+        // for (int oc = 0; oc < p * t; oc++) {
+        //     std::cout << "Output Channel " << oc << ":\n";
+        //     for (int h = 0; h < e; h++) {
+        //         for (int w = 0; w < F; w++) {
+        //             std::cout << std::setw(8) << psum_tile[h][w][oc] << " ";
+        //         }
+        //         std::cout << "\n";
+        //     }
+        //     std::cout << "-----------------------------\n";
+        // }
+    #endif
     //print_opsum_custom(&psum_tile[0][0][0],e, F, p*t);
     ////cin >> ttt;
 
@@ -361,10 +465,10 @@ int main(int argc, char const *argv[])
     int32_t golden_opsum[E][F][M];
     uint8_t glb[65535] = {0};
 
-    load_ifmap_from_file("./tb1/ifmap.txt", ifmap);
-    load_filter_from_file("./tb1/filter.txt", filter);
-    load_bias_from_file("./tb1/bias.txt", bias);
-    load_golden_output_from_file("./tb1/golden_output.txt", golden_opsum);
+    load_ifmap_from_file("./conv7/ifmap.txt", ifmap);
+    load_filter_from_file("./conv7/filter.txt", filter);
+    load_bias_from_file("./conv7/bias.txt", bias);
+    load_golden_output_from_file("./conv7/golden_output.txt", golden_opsum);
 
     int E_idx;
     int num = 0;
@@ -456,7 +560,7 @@ int main(int argc, char const *argv[])
         // TODO remain e
     }
     printf("%d\n", num);
-    print_ifmap_custom(&ifmap[0][0][0], W, H, C);
+    print_ifmap_custom(ifmap, W, H, C);
     print_filter_custom(&filter[0][0][0][0], R, R, C, M);
 
     printf("GOLDEN\n");
